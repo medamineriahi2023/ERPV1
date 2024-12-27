@@ -1,0 +1,34 @@
+{
+  "users": [
+    {
+      "id": 1,
+      "nom": "John Doe",
+      "email": "john.doe@erp.com",
+      "role": "Manager",
+      "managerId": null,
+      "subordonnes": [2, 3],
+      "dateEmbauche": "2023-01-01",
+      "departement": "IT"
+    },
+    {
+      "id": 2,
+      "nom": "Jane Smith",
+      "email": "jane.smith@erp.com",
+      "role": "Employé",
+      "managerId": 1,
+      "subordonnes": [],
+      "dateEmbauche": "2023-03-15",
+      "departement": "IT"
+    },
+    {
+      "id": 3,
+      "nom": "Bob Wilson",
+      "email": "bob.wilson@erp.com",
+      "role": "Employé",
+      "managerId": 1,
+      "subordonnes": [],
+      "dateEmbauche": "2023-06-01",
+      "departement": "IT"
+    }
+  ]
+}

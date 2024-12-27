@@ -1,0 +1,199 @@
+<div class="min-h-screen bg-gray-50 py-8">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+    <div class="mt-8">
+      <div class="bg-white rounded-lg shadow-sm p-6">
+        <!-- En-tête -->
+        <div class="mb-8">
+          <h1 class="text-2xl font-semibold text-gray-900">Validation des Congés</h1>
+          <p class="mt-2 text-sm text-gray-600">Gérez les demandes de congés de votre équipe</p>
+        </div>
+
+        <!-- Table des demandes -->
+        <p-table 
+          [value]="conges"
+          [paginator]="true"
+          [rows]="10"
+          [loading]="loading"
+          [rowHover]="true"
+          styleClass="p-datatable-lg"
+          [globalFilterFields]="['employeeId', 'type', 'status']"
+          [showCurrentPageReport]="true"
+          currentPageReportTemplate="Affichage de {first} à {last} sur {totalRecords} demandes">
+          
+          <ng-template pTemplate="caption">
+            <div class="flex justify-between items-center p-3">
+              <h2 class="text-xl font-semibold">Liste des demandes</h2>
+              <span class="p-input-icon-left">
+                <i class="pi pi-search"></i>
+                <input 
+                  pInputText 
+                  type="text" 
+                  [(ngModel)]="searchTerm"
+                  placeholder="Rechercher..."
+                  class="p-inputtext-sm" />
+              </span>
+            </div>
+          </ng-template>
+
+          <ng-template pTemplate="header">
+            <tr>
+              <th>Employé</th>
+              <th>Type
+                <p-dropdown 
+                  [options]="typeOptions"
+                  placeholder="Tous les types"
+                  [showClear]="true"
+                  styleClass="p-column-filter">
+                </p-dropdown>
+              </th>
+              <th>Période</th>
+              <th>Durée</th>
+              <th>Raison</th>
+              <th>Urgence</th>
+              <th>Statut
+                <p-dropdown 
+                  [options]="statusOptions"
+                  placeholder="Tous les statuts"
+                  [showClear]="true"
+                  styleClass="p-column-filter">
+                </p-dropdown>
+              </th>
+              <th>Actions</th>
+            </tr>
+          </ng-template>
+
+          <ng-template pTemplate="body" let-conge>
+            <tr [ngClass]="{'bg-red-50': isUrgent(conge)}">
+              <td>
+                <div class="flex items-center gap-3">
+                  <p-avatar 
+                    [label]="conge.employee?.firstName?.charAt(0) || '?'"
+                    styleClass="mr-2"
+                    [style]="{'background-color': '#2196F3', 'color': '#ffffff'}"
+                    shape="circle">
+                  </p-avatar>
+                  <div>
+                    <div class="font-medium">
+                      {{ conge.employee?.firstName }} {{ conge.employee?.lastName }}
+                    </div>
+                    <div class="text-sm text-gray-500">
+                      {{ calculateDaysUntilStart(conge.startDate) }} jours avant début
+                    </div>
+                  </div>
+                </div>
+              </td>
+
+              <td>
+                <p-tag 
+                  [value]="getTypeLabel(conge.type)"
+                  [severity]="getTypeSeverity(conge.type)">
+                </p-tag>
+              </td>
+
+              <td>
+                <div class="text-sm">
+                  <div>Du {{ conge.startDate | date:'dd/MM/yyyy' }}</div>
+                  <div>Au {{ conge.endDate | date:'dd/MM/yyyy' }}</div>
+                </div>
+              </td>
+
+              <td>
+                <span class="font-medium">{{ conge.duration }} jours</span>
+              </td>
+
+              <td>
+                <div class="text-sm text-gray-600">
+                  {{ conge.reason || 'Non spécifié' }}
+                </div>
+              </td>
+
+              <td>
+                <p-tag 
+                  [value]="conge.urgencyLevel === 'URGENT' ? 'Urgent' : 'Normal'"
+                  [severity]="conge.urgencyLevel === 'URGENT' ? 'danger' : 'secondary'">
+                </p-tag>
+              </td>
+
+              <td>
+                <p-tag 
+                  [value]="getStatusLabel(conge.status)"
+                  [severity]="getStatusSeverity(conge.status)">
+                </p-tag>
+              </td>
+
+              <td>
+                <div class="flex gap-2">
+                  <button 
+                    pButton 
+                    pRipple 
+                    icon="pi pi-check" 
+                    class="p-button-rounded p-button-success mr-2"
+                    (click)="approveConge(conge)">
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </ng-template>
+
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td colspan="8" class="text-center p-4">
+                Aucune demande de congé trouvée
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Dialog de validation -->
+<p-dialog 
+  [(visible)]="showApprovalDialog"
+  [modal]="true" 
+  [style]="{width: '450px'}"
+  header="Validation de la demande"
+  class="p-fluid">
+
+  <ng-template pTemplate="content">
+    <div class="field">
+      <label for="comment">Commentaire</label>
+      <textarea 
+        id="comment" 
+        pInputTextarea 
+        [(ngModel)]="approverComment" 
+        required 
+        rows="3" 
+        class="w-full"></textarea>
+    </div>
+  </ng-template>
+
+  <ng-template pTemplate="footer">
+    <button 
+      pButton 
+      pRipple 
+      label="Approuver" 
+      class="p-button-success" 
+      (click)="confirmApproval()">
+    </button>
+    <button 
+      pButton 
+      pRipple 
+      label="Refuser" 
+      class="p-button-danger" 
+      (click)="confirmRejection()">
+    </button>
+    <button 
+      pButton 
+      pRipple 
+      label="Annuler" 
+      class="p-button-secondary" 
+      (click)="hideDialog()">
+    </button>
+  </ng-template>
+</p-dialog>
+
+<p-toast></p-toast>
+<p-confirmDialog></p-confirmDialog>

@@ -1,0 +1,112 @@
+<div class="min-h-screen bg-gray-50 py-8">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="mt-8">
+      <div class="bg-white rounded-lg shadow-sm p-6">
+        <!-- En-tête -->
+        <div class="mb-8">
+          <h1 class="text-2xl font-semibold text-gray-900">Historique des Congés</h1>
+          <p class="mt-2 text-sm text-gray-600">Consultez l'historique de vos demandes de congés</p>
+        </div>
+
+        <!-- Table des demandes -->
+        <p-table 
+          [value]="conges"
+          [paginator]="true"
+          [rows]="10"
+          [loading]="loading"
+          [rowHover]="true"
+          styleClass="p-datatable-lg"
+          [globalFilterFields]="['type', 'status', 'reason']"
+          [showCurrentPageReport]="true"
+          currentPageReportTemplate="Affichage de {first} à {last} sur {totalRecords} demandes">
+          
+          <ng-template pTemplate="caption">
+            <div class="flex justify-between items-center p-3">
+              <h2 class="text-xl font-semibold">Mes demandes</h2>
+              <span class="p-input-icon-left">
+                <i class="pi pi-search"></i>
+                <input 
+                  pInputText 
+                  type="text" 
+                  [(ngModel)]="searchTerm"
+                  placeholder="Rechercher..."
+                  class="p-inputtext-sm" />
+              </span>
+            </div>
+          </ng-template>
+
+          <ng-template pTemplate="header">
+            <tr>
+              <th>Type</th>
+              <th>Période</th>
+              <th>Durée</th>
+              <th>Motif</th>
+              <th>Urgence</th>
+              <th>Statut</th>
+              <th>Commentaire</th>
+            </tr>
+          </ng-template>
+
+          <ng-template pTemplate="body" let-conge>
+            <tr>
+              <td>
+                <p-tag 
+                  [value]="getTypeLabel(conge.type)"
+                  [severity]="getTypeSeverity(conge.type)">
+                </p-tag>
+              </td>
+
+              <td>
+                <div class="text-sm">
+                  <div>Du {{ conge.startDate | date:'dd/MM/yyyy' }}</div>
+                  <div>Au {{ conge.endDate | date:'dd/MM/yyyy' }}</div>
+                </div>
+              </td>
+
+              <td>
+                <span class="font-medium">{{ conge.duration }} jours</span>
+              </td>
+
+              <td>
+                <span class="text-sm">{{ conge.reason }}</span>
+              </td>
+
+              <td>
+                <p-tag 
+                  [value]="conge.urgencyLevel === 'URGENT' ? 'Urgent' : 'Normal'"
+                  [severity]="getUrgencySeverity(conge.urgencyLevel)">
+                </p-tag>
+              </td>
+
+              <td>
+                <p-tag 
+                  [value]="getStatusLabel(conge.status)"
+                  [severity]="getStatusSeverity(conge.status)">
+                </p-tag>
+              </td>
+
+              <td>
+                <span class="text-sm" *ngIf="conge.approverComment">
+                  {{ conge.approverComment }}
+                </span>
+                <span class="text-sm text-gray-400" *ngIf="!conge.approverComment">
+                  Aucun commentaire
+                </span>
+              </td>
+            </tr>
+          </ng-template>
+
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td colspan="7" class="text-center p-4">
+                Aucune demande de congé trouvée
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<p-toast></p-toast>

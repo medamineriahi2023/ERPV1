@@ -1,0 +1,146 @@
+<div class="grid">
+  <!-- Current Time Card -->
+  <div class="col-12 md:col-6 lg:col-3">
+    <p-card>
+      <div class="text-center">
+        <h3 class="text-xl font-semibold mb-2">Heure actuelle</h3>
+        <div class="text-4xl font-bold text-primary">
+          {{ currentTime | date:'HH:mm:ss' }}
+        </div>
+        <div class="text-sm text-gray-600 mt-2">
+          {{ currentTime | date:'EEEE d MMMM yyyy' }}
+        </div>
+      </div>
+    </p-card>
+  </div>
+
+  <!-- Last Pointage Card -->
+  <div class="col-12 md:col-6 lg:col-3">
+    <p-card>
+      <div class="text-center">
+        <h3 class="text-xl font-semibold mb-2">Dernier pointage</h3>
+        @if (lastPointage) {
+          <div class="text-lg font-medium">
+            {{ getPointageTypeLabel() }}
+          </div>
+          <div class="text-sm text-gray-600">
+            {{ lastPointage.timestamp | date:'HH:mm' }}
+          </div>
+        } @else {
+          <div class="text-gray-500">
+            Aucun pointage aujourd'hui
+          </div>
+        }
+      </div>
+    </p-card>
+  </div>
+
+  <!-- Quick Actions -->
+  <div class="col-12">
+    <p-card header="Actions rapides">
+      <div class="grid">
+        <div class="col-12 md:col-3">
+          <button pButton 
+                  label="Entrée" 
+                  icon="pi pi-sign-in" 
+                  class="p-button-success w-full"
+                  (click)="openConfirmDialog('ENTREE')"
+                  [disabled]="lastPointage?.type === 'ENTREE'">
+          </button>
+        </div>
+        <div class="col-12 md:col-3">
+          <button pButton 
+                  label="Sortie" 
+                  icon="pi pi-sign-out" 
+                  class="p-button-danger w-full"
+                  (click)="openConfirmDialog('SORTIE')"
+                  [disabled]="lastPointage?.type === 'SORTIE'">
+          </button>
+        </div>
+        <div class="col-12 md:col-3">
+          <button pButton 
+                  label="Début pause" 
+                  icon="pi pi-clock" 
+                  class="p-button-warning w-full"
+                  (click)="openConfirmDialog('PAUSE_DEBUT')"
+                  [disabled]="lastPointage?.type === 'PAUSE_DEBUT'">
+          </button>
+        </div>
+        <div class="col-12 md:col-3">
+          <button pButton 
+                  label="Fin pause" 
+                  icon="pi pi-refresh" 
+                  class="p-button-info w-full"
+                  (click)="openConfirmDialog('PAUSE_FIN')"
+                  [disabled]="lastPointage?.type === 'PAUSE_FIN'">
+          </button>
+        </div>
+      </div>
+    </p-card>
+  </div>
+</div>
+
+<!-- Confirmation Dialog -->
+<p-dialog [(visible)]="showConfirmDialog" 
+          [header]="getPointageTypeLabel()" 
+          [modal]="true"
+          [style]="{width: '450px'}"
+          [closable]="!isLoading">
+  <div class="flex flex-column gap-3">
+    <div class="text-center mb-3">
+      <h3>{{ currentTime | date:'HH:mm:ss' }}</h3>
+    </div>
+
+    <!-- Mood Selection -->
+    <div class="flex justify-content-center gap-3">
+      <button pButton 
+              class="p-button-rounded p-button-text" 
+              icon="pi pi-smile"
+              [class.text-primary]="selectedMood === 'HAPPY'"
+              (click)="selectedMood = 'HAPPY'">
+      </button>
+      <button pButton 
+              class="p-button-rounded p-button-text" 
+              icon="pi pi-minus-circle"
+              [class.text-primary]="selectedMood === 'NEUTRAL'"
+              (click)="selectedMood = 'NEUTRAL'">
+      </button>
+      <button pButton 
+              class="p-button-rounded p-button-text" 
+              icon="pi pi-times-circle"
+              [class.text-primary]="selectedMood === 'TIRED'"
+              (click)="selectedMood = 'TIRED'">
+      </button>
+    </div>
+
+    <!-- Note Input -->
+    <div>
+      <textarea pInputTextarea 
+                [(ngModel)]="pointageNote"
+                [rows]="3" 
+                [cols]="30" 
+                placeholder="Ajouter une note (optionnel)"
+                class="w-full">
+      </textarea>
+    </div>
+  </div>
+
+  <ng-template pTemplate="footer">
+    <div class="flex justify-content-end gap-2">
+      <button pButton 
+              label="Annuler" 
+              class="p-button-text"
+              (click)="cancelPointage()"
+              [disabled]="isLoading">
+      </button>
+      <button pButton 
+              label="Confirmer" 
+              class="p-button-success"
+              (click)="confirmPointage()"
+              [loading]="isLoading">
+      </button>
+    </div>
+  </ng-template>
+</p-dialog>
+
+<p-toast></p-toast>

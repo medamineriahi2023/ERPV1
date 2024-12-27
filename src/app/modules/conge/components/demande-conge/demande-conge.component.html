@@ -1,0 +1,289 @@
+<div class="bg-gray-50 min-h-screen py-8">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <!-- Header -->
+    <div class="mb-8">
+      <h1 class="text-2xl font-bold text-gray-900">Gestion des Congés</h1>
+      <p class="mt-2 text-sm text-gray-600">Consultez vos statistiques et soumettez une nouvelle demande de congé</p>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+      <!-- Total Days -->
+      <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-sm font-medium text-gray-500">Total jours</p>
+            <p class="text-2xl font-semibold text-gray-900 mt-1">{{ leaveStats.totalDays }}</p>
+          </div>
+          <div class="w-12 h-12 bg-blue-50 rounded-full flex items-center justify-center">
+            <i class="pi pi-calendar text-blue-500 text-xl"></i>
+          </div>
+        </div>
+      </div>
+
+      <!-- Used Days -->
+      <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-sm font-medium text-gray-500">Jours utilisés</p>
+            <p class="text-2xl font-semibold text-gray-900 mt-1">{{ leaveStats.usedDays }}</p>
+          </div>
+          <div class="w-12 h-12 bg-green-50 rounded-full flex items-center justify-center">
+            <i class="pi pi-check-circle text-green-500 text-xl"></i>
+          </div>
+        </div>
+      </div>
+
+      <!-- Remaining Days -->
+      <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+        <div class="flex items-center justify-between mb-4">
+          <div>
+            <p class="text-sm font-medium text-gray-500">Jours restants</p>
+            <p class="text-2xl font-semibold text-gray-900 mt-1">{{ leaveStats.remainingDays }}</p>
+          </div>
+          <div class="w-12 h-12 bg-yellow-50 rounded-full flex items-center justify-center">
+            <i class="pi pi-clock text-yellow-500 text-xl"></i>
+          </div>
+        </div>
+        <div class="w-full bg-gray-200 rounded-full h-2">
+          <div class="bg-blue-600 h-2 rounded-full" 
+               [style.width]="(leaveStats.remainingDays / leaveStats.totalDays * 100) + '%'">
+          </div>
+        </div>
+      </div>
+
+      <!-- Pending Days -->
+      <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-sm font-medium text-gray-500">En attente</p>
+            <p class="text-2xl font-semibold text-gray-900 mt-1">{{ leaveStats.pendingDays }}</p>
+          </div>
+          <div class="w-12 h-12 bg-purple-50 rounded-full flex items-center justify-center">
+            <i class="pi pi-hourglass text-purple-500 text-xl"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Leave History -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+      <!-- Recent Leaves -->
+      <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">Congés récents</h3>
+        <div class="space-y-3">
+          <div *ngFor="let leave of recentLeaves" 
+               class="flex items-center p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+            <div class="flex-1">
+              <p class="text-sm font-medium text-gray-900">{{ getTypeLabel(leave.type) }}</p>
+              <p class="text-sm text-gray-500">{{ leave.startDate | date:'shortDate' }} - {{ leave.endDate | date:'shortDate' }}</p>
+            </div>
+            <span [class]="'px-3 py-1 rounded-full text-xs font-medium ' + getStatusColor(leave.status)">
+              {{ getStatusLabel(leave.status) }}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Upcoming Leaves -->
+      <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">Congés à venir</h3>
+        <div class="space-y-3">
+          <div *ngFor="let leave of upcomingLeaves" 
+               class="flex items-center p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+            <div class="flex-1">
+              <p class="text-sm font-medium text-gray-900">{{ getTypeLabel(leave.type) }}</p>
+              <p class="text-sm text-gray-500">{{ leave.startDate | date:'shortDate' }} - {{ leave.endDate | date:'shortDate' }}</p>
+            </div>
+            <span [class]="'px-3 py-1 rounded-full text-xs font-medium ' + getStatusColor(leave.status)">
+              {{ getStatusLabel(leave.status) }}
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Leave Request Form -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100">
+      <div class="p-6">
+        <h3 class="text-lg font-semibold text-gray-900 mb-6">Nouvelle demande de congé</h3>
+        <form [formGroup]="leaveForm" (ngSubmit)="onSubmit()" class="space-y-6">
+          <!-- Type and Urgency -->
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div class="space-y-2">
+              <label class="block text-sm font-medium text-gray-700">Type de congé *</label>
+              <p-dropdown
+                formControlName="type"
+                [options]="typeOptions"
+                optionLabel="label"
+                [style]="{'width': '100%'}"
+                styleClass="w-full"
+                placeholder="Sélectionnez un type"
+              >
+                <ng-template pTemplate="item" let-option>
+                  <div class="flex items-center">
+                    <i [class]="option.icon" [style.color]="option.color"></i>
+                    <span class="ml-2">{{ option.label }}</span>
+                  </div>
+                </ng-template>
+              </p-dropdown>
+            </div>
+
+            <div class="space-y-2">
+              <label class="block text-sm font-medium text-gray-700">Niveau d'urgence</label>
+              <p-dropdown
+                formControlName="urgencyLevel"
+                [options]="urgencyOptions"
+                optionLabel="label"
+                [style]="{'width': '100%'}"
+                styleClass="w-full"
+                placeholder="Sélectionnez l'urgence"
+              >
+                <ng-template pTemplate="item" let-option>
+                  <div class="flex items-center">
+                    <i [class]="option.icon"></i>
+                    <span class="ml-2">{{ option.label }}</span>
+                  </div>
+                </ng-template>
+              </p-dropdown>
+            </div>
+          </div>
+
+          <!-- Dates -->
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div class="space-y-2">
+              <label class="block text-sm font-medium text-gray-700">Date de début *</label>
+              <p-calendar
+                formControlName="startDate"
+                [minDate]="minDate"
+                [showIcon]="true"
+                [disabledDates]="publicHolidays"
+                [disabledDays]="[0,6]"
+                dateFormat="dd/mm/yy"
+                [style]="{'width': '100%'}"
+                styleClass="w-full"
+                [readonlyInput]="true"
+                placeholder="Sélectionnez une date"
+              ></p-calendar>
+              <p class="text-sm text-gray-500" *ngIf="leaveForm.get('startDate')?.value">
+                {{ leaveForm.get('startDate')?.value | date:'EEEE d MMMM yyyy' }}
+              </p>
+            </div>
+
+            <div class="space-y-2">
+              <label class="block text-sm font-medium text-gray-700">Date de fin *</label>
+              <p-calendar
+                formControlName="endDate"
+                [minDate]="leaveForm.get('startDate')?.value || minDate"
+                [showIcon]="true"
+                [disabledDates]="publicHolidays"
+                [disabledDays]="[0,6]"
+                dateFormat="dd/mm/yy"
+                [style]="{'width': '100%'}"
+                styleClass="w-full"
+                [readonlyInput]="true"
+                placeholder="Sélectionnez une date"
+              ></p-calendar>
+              <p class="text-sm text-gray-500" *ngIf="leaveForm.get('endDate')?.value">
+                {{ leaveForm.get('endDate')?.value | date:'EEEE d MMMM yyyy' }}
+              </p>
+            </div>
+          </div>
+
+          <!-- Duration Info -->
+          <div *ngIf="calculatedDays > 0" 
+               class="bg-blue-50 border border-blue-100 rounded-lg p-4 flex items-start space-x-3">
+            <i class="pi pi-info-circle text-blue-500 mt-0.5"></i>
+            <div>
+              <h4 class="text-sm font-medium text-blue-900">Durée calculée</h4>
+              <p class="text-sm text-blue-700 mt-1">{{ calculatedDays }} jour(s) ouvré(s)</p>
+              <p *ngIf="weekendDays > 0" class="text-sm text-blue-700 mt-1">
+                ({{ weekendDays }} weekend(s)/jour(s) férié(s) exclus)
+              </p>
+            </div>
+          </div>
+
+          <!-- Reason -->
+          <div class="space-y-2">
+            <label class="block text-sm font-medium text-gray-700">Motif détaillé *</label>
+            <textarea
+              formControlName="reason"
+              rows="4"
+              placeholder="Décrivez le motif de votre demande de congé..."
+              class="w-full px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none transition duration-150 ease-in-out"
+            ></textarea>
+            <div class="flex justify-between text-sm">
+              <span class="text-gray-500">Minimum 10 caractères</span>
+              <span [class.text-red-500]="leaveForm.get('reason')?.value?.length < 10"
+                    class="text-gray-500">
+                {{ leaveForm.get('reason')?.value?.length || 0 }}/10
+              </span>
+            </div>
+          </div>
+
+          <!-- Additional Info -->
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div class="space-y-2">
+              <label class="block text-sm font-medium text-gray-700">Employé remplaçant</label>
+              <input
+                type="text"
+                formControlName="replacementEmployee"
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="Nom de l'employé remplaçant"
+              >
+            </div>
+
+            <div class="flex items-start space-x-3">
+              <div class="flex items-center h-5">
+                <input
+                  type="checkbox"
+                  formControlName="impactOnTraining"
+                  class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                >
+              </div>
+              <div class="flex flex-col">
+                <label class="text-sm font-medium text-gray-700">Impact sur la formation</label>
+                <span class="text-sm text-gray-500">Cochez si votre absence impacte une formation</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- File Upload -->
+          <div class="space-y-2">
+            <label class="block text-sm font-medium text-gray-700">Pièces jointes</label>
+            <p-fileUpload
+              (onSelect)="onFileUpload($event)"
+              [multiple]="true"
+              accept="image/*,application/pdf"
+              [maxFileSize]="1000000"
+              [showUploadButton]="false"
+              [showCancelButton]="false"
+              chooseLabel="Choisir les fichiers"
+              styleClass="w-full"
+            >
+              <ng-template pTemplate="content">
+                <div class="text-sm text-gray-500 mt-2" *ngIf="uploadedFiles.length > 0">
+                  {{ uploadedFiles.length }} fichier(s) sélectionné(s)
+                </div>
+              </ng-template>
+            </p-fileUpload>
+          </div>
+
+          <!-- Submit Button -->
+          <div class="flex justify-end pt-4">
+            <button
+              type="submit"
+              [disabled]="!leaveForm.valid || loading"
+              class="inline-flex items-center px-6 py-3 border border-transparent text-sm font-medium rounded-lg shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-150"
+            >
+              <i class="pi pi-spin pi-spinner mr-2" *ngIf="loading"></i>
+              {{ loading ? 'Envoi en cours...' : 'Envoyer la demande' }}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<p-toast></p-toast>

@@ -1,0 +1,142 @@
+/* Custom styles for the profile page */
+
+/* Custom Tab Styles */
+::ng-deep .custom-tabs {
+  .p-tabview-nav {
+    @apply border-b border-gray-200;
+
+    li {
+      @apply mr-2;
+
+      .p-tabview-nav-link {
+        @apply bg-white border-gray-200 text-gray-600 rounded-t-lg px-6 py-3 font-medium;
+        
+        &:not(.p-disabled):focus {
+          @apply outline-none ring-2 ring-blue-500 ring-offset-2;
+        }
+
+        &:hover {
+          @apply bg-gray-50 border-gray-300 text-gray-700;
+        }
+      }
+
+      &.p-highlight .p-tabview-nav-link {
+        @apply border-b-2 border-blue-500 text-blue-600;
+      }
+    }
+  }
+
+  .p-tabview-panels {
+    @apply border-none p-0 mt-6;
+  }
+}
+
+/* Timeline Customization */
+::ng-deep .customized-timeline {
+  .p-timeline-event-opposite {
+    @apply flex items-center justify-center;
+  }
+
+  .p-timeline-event-content {
+    @apply p-4;
+  }
+}
+
+/* Dialog Customization */
+::ng-deep .p-dialog-custom {
+  .p-dialog-header {
+    @apply bg-gray-50 border-b border-gray-200;
+  }
+
+  .p-dialog-content {
+    @apply p-6;
+  }
+}
+
+/* Confirmation Dialog Customization */
+::ng-deep .p-confirm-dialog-custom {
+  .p-dialog-content {
+    @apply p-6;
+  }
+
+  .p-dialog-footer {
+    @apply border-t border-gray-200 p-4;
+
+    button {
+      @apply rounded-lg;
+    }
+  }
+}
+
+/* Performance Rating Colors */
+.performance-rating {
+  &.low {
+    @apply text-red-500;
+  }
+  
+  &.medium {
+    @apply text-yellow-500;
+  }
+  
+  &.high {
+    @apply text-green-500;
+  }
+}
+
+/* Hover Effects */
+.skill-chip {
+  @apply transition-all duration-200;
+  
+  &:hover {
+    @apply transform scale-105;
+  }
+}
+
+/* Status Indicator Animation */
+.status-indicator {
+  @apply transition-all duration-300;
+  
+  &.pulse {
+    animation: pulse 2s infinite;
+  }
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.7);
+  }
+  
+  70% {
+    transform: scale(1);
+    box-shadow: 0 0 0 10px rgba(59, 130, 246, 0);
+  }
+  
+  100% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(59, 130, 246, 0);
+  }
+}
+
+/* Responsive Design Adjustments */
+@media (max-width: 768px) {
+  .profile-header {
+    @apply h-48;
+  }
+
+  .profile-avatar {
+    @apply -bottom-16;
+    
+    img {
+      @apply w-24 h-24;
+    }
+  }
+
+  .profile-info {
+    @apply pt-20;
+
+    h1 {
+      @apply text-2xl;
+    }
+  }
+}

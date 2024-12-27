@@ -1,0 +1,134 @@
+<div class="grid">
+  <!-- Training Progress Overview -->
+  <div class="col-12 lg:col-4">
+    <p-card>
+      <div class="text-center mb-4">
+        <h3 class="text-xl font-semibold mb-2">Progression Globale</h3>
+        <div class="text-4xl font-bold text-blue-600 mb-2">
+          {{ calculateCompletionRate() | number:'1.0-0' }}%
+        </div>
+        <p class="text-gray-600">des formations terminées</p>
+      </div>
+      <div class="flex justify-content-between mb-2">
+        <span>Formations en cours</span>
+        <span class="font-semibold">{{ inProgressTrainings }}</span>
+      </div>
+      <div class="flex justify-content-between mb-2">
+        <span>Formations à venir</span>
+        <span class="font-semibold">{{ notStartedTrainings }}</span>
+      </div>
+      <div class="flex justify-content-between">
+        <span>Formations terminées</span>
+        <span class="font-semibold">{{ completedTrainings }}</span>
+      </div>
+    </p-card>
+  </div>
+
+  <!-- Active Certifications -->
+  <div class="col-12 lg:col-8">
+    <p-card header="Certifications Actives">
+      <div class="grid">
+        <div *ngFor="let cert of certifications" class="col-12 md:col-6">
+          <div class="border rounded-lg p-4 h-full">
+            <div class="flex justify-content-between align-items-start mb-3">
+              <div>
+                <h4 class="text-lg font-semibold mb-1">{{ cert.name }}</h4>
+                <p class="text-gray-600">{{ cert.issuer }}</p>
+              </div>
+              <p-tag [severity]="getCertificationStatus(cert) === 'ACTIVE' ? 'success' : 'danger'"
+                [value]="getCertificationStatus(cert) === 'ACTIVE' ? 'Actif' : 'Expiré'">
+              </p-tag>
+            </div>
+            <div class="mb-3">
+              <div class="text-sm text-gray-600 mb-1">Obtenu le</div>
+              <div>{{ cert.dateObtained | date:'mediumDate' }}</div>
+            </div>
+            <div *ngIf="cert.expiryDate">
+              <div class="text-sm text-gray-600 mb-1">Expire le</div>
+              <div>{{ cert.expiryDate | date:'mediumDate' }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </p-card>
+  </div>
+
+  <!-- Training List -->
+  <div class="col-12">
+    <p-card header="Formations">
+      <p-table [value]="trainings" [tableStyle]="{ 'min-width': '50rem' }">
+        <ng-template pTemplate="header">
+          <tr>
+            <th>Formation</th>
+            <th>Statut</th>
+            <th>Progression</th>
+            <th>Date de fin</th>
+            <th>Actions</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-training>
+          <tr>
+            <td>
+              <div class="font-semibold">{{ training.title }}</div>
+              <div class="text-sm text-gray-600">{{ training.provider }}</div>
+            </td>
+            <td>
+              <p-tag [severity]="getStatusSeverity(training.status)" [value]="getStatusLabel(training.status)"></p-tag>
+            </td>
+            <td>
+              <p-progressBar [value]="training.progress" [showValue]="true"></p-progressBar>
+            </td>
+            <td>
+              <div>{{ training.endDate | date:'mediumDate' }}</div>
+              <div class="text-sm" [class.text-red-500]="getDaysRemaining(training.endDate) < 7">
+                {{ getDaysRemaining(training.endDate) }} jours restants
+              </div>
+            </td>
+            <td>
+              <button pButton icon="pi pi-eye" class="p-button-text" (click)="viewTrainingDetails(training)"></button>
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </p-card>
+  </div>
+</div>
+
+<!-- Training Details Dialog -->
+<p-dialog [(visible)]="showTrainingDialog" [modal]="true" 
+  [style]="{width: '90vw', maxWidth: '700px'}" 
+  [header]="selectedTraining?.title || ''">
+  <div *ngIf="selectedTraining">
+    <div class="mb-4">
+      <h4 class="text-lg font-semibold mb-2">Description</h4>
+      <p>{{ selectedTraining.description }}</p>
+    </div>
+    <div class="grid">
+      <div class="col-12 md:col-6">
+        <h4 class="text-lg font-semibold mb-2">Détails</h4>
+        <div class="mb-2">
+          <div class="text-sm text-gray-600">Fournisseur</div>
+          <div>{{ selectedTraining.provider }}</div>
+        </div>
+        <div class="mb-2">
+          <div class="text-sm text-gray-600">Durée</div>
+          <div>{{ selectedTraining.duration }} heures</div>
+        </div>
+        <div class="mb-2">
+          <div class="text-sm text-gray-600">Date de début</div>
+          <div>{{ selectedTraining.startDate | date:'mediumDate' }}</div>
+        </div>
+        <div>
+          <div class="text-sm text-gray-600">Date de fin</div>
+          <div>{{ selectedTraining.endDate | date:'mediumDate' }}</div>
+        </div>
+      </div>
+      <div class="col-12 md:col-6">
+        <h4 class="text-lg font-semibold mb-2">Compétences</h4>
+        <div class="flex flex-wrap gap-2">
+          <p-chip *ngFor="let skill of selectedTraining.skills" [label]="skill"></p-chip>
+        </div>
+      </div>
+    </div>
+  </div>
+</p-dialog>

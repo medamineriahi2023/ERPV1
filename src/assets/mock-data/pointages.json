@@ -1,0 +1,30 @@
+{
+  "pointages": [
+    {
+      "id": 1,
+      "utilisateurId": 2,
+      "date": "2024-12-25",
+      "heureEntree": "08:00",
+      "heureSortie": "17:00",
+      "pauseDejeuner": {
+        "debut": "12:00",
+        "fin": "13:00"
+      },
+      "totalHeures": 8,
+      "status": "Complet"
+    },
+    {
+      "id": 2,
+      "utilisateurId": 2,
+      "date": "2024-12-26",
+      "heureEntree": "08:30",
+      "heureSortie": "17:30",
+      "pauseDejeuner": {
+        "debut": "12:30",
+        "fin": "13:30"
+      },
+      "totalHeures": 8,
+      "status": "Complet"
+    }
+  ]
+}

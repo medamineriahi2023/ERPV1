@@ -1,0 +1,85 @@
+{
+  "users": [
+    {
+      "id": 1,
+      "username": "manager",
+      "password": "123456",
+      "email": "manager@company.com",
+      "firstName": "John",
+      "lastName": "Manager",
+      "name": "John Manager",
+      "role": "manager",
+      "photoUrl": "assets/images/avatar-1.png",
+      "department": "Management",
+      "position": "Team Manager",
+      "managerId": null,
+      "managedEmployees": [2, 3],
+      "hireDate": "2020-01-01",
+      "leaveBalance": {
+        "annual": 30,
+        "sick": 15
+      },
+      "workSchedule": {
+        "startTime": "09:00",
+        "endTime": "17:00",
+        "lunchBreakDuration": 60
+      },
+      "status": "active",
+      "contractType": "CDI"
+    },
+    {
+      "id": 2,
+      "username": "sarah",
+      "password": "123456",
+      "email": "sarah.martin@company.com",
+      "firstName": "Sarah",
+      "lastName": "Martin",
+      "name": "Sarah Martin",
+      "role": "employee",
+      "photoUrl": "assets/images/avatar-2.png",
+      "department": "Engineering",
+      "position": "Senior Developer",
+      "managerId": 1,
+      "managedEmployees": [],
+      "hireDate": "2022-01-15",
+      "leaveBalance": {
+        "annual": 25,
+        "sick": 12
+      },
+      "workSchedule": {
+        "startTime": "09:00",
+        "endTime": "17:00",
+        "lunchBreakDuration": 60
+      },
+      "status": "active",
+      "contractType": "CDI"
+    },
+    {
+      "id": 3,
+      "username": "mohammed",
+      "password": "123456",
+      "email": "mohammed.alami@company.com",
+      "firstName": "Mohammed",
+      "lastName": "Alami",
+      "name": "Mohammed Alami",
+      "role": "employee",
+      "photoUrl": "assets/images/avatar-3.png",
+      "department": "Product",
+      "position": "Product Manager",
+      "managerId": 1,
+      "managedEmployees": [],
+      "hireDate": "2022-03-01",
+      "leaveBalance": {
+        "annual": 25,
+        "sick": 12
+      },
+      "workSchedule": {
+        "startTime": "09:00",
+        "endTime": "17:00",
+        "lunchBreakDuration": 60
+      },
+      "status": "active",
+      "contractType": "CDI"
+    }
+  ]
+}

@@ -1,0 +1,203 @@
+<div class="container mx-auto px-4 py-4 sm:py-8 max-w-7xl">
+  <p-toast></p-toast>
+
+  <!-- En-tête -->
+  <div class="mb-6 sm:mb-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+    <div>
+      <h1 class="text-2xl sm:text-3xl font-bold text-gray-900">Pointage</h1>
+      <p class="text-sm sm:text-base text-gray-600">{{ currentTime | date:'EEEE d MMMM yyyy, HH:mm:ss' }}</p>
+    </div>
+    <div class="text-left sm:text-right">
+      <div class="text-xs sm:text-sm text-gray-600">Série actuelle</div>
+      <div class="text-xl sm:text-2xl font-bold text-green-600">{{ streakDays }} jours 🔥</div>
+    </div>
+  </div>
+
+  <!-- Actions rapides -->
+  <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-4 mb-6 sm:mb-8">
+    <button pButton 
+      label="Entrée" 
+      icon="pi pi-sign-in" 
+      class="p-button-success p-button-lg text-sm sm:text-base"
+      (click)="openPointageDialog('ENTREE')"
+      [disabled]="lastPointage?.type === 'ENTREE'">
+    </button>
+    
+    <button pButton 
+      label="Sortie" 
+      icon="pi pi-sign-out" 
+      class="p-button-danger p-button-lg text-sm sm:text-base"
+      (click)="openPointageDialog('SORTIE')"
+      [disabled]="!lastPointage || lastPointage.type === 'SORTIE'">
+    </button>
+    
+    <button pButton 
+      label="Début Pause" 
+      icon="pi pi-clock" 
+      class="p-button-warning p-button-lg text-sm sm:text-base"
+      (click)="openPointageDialog('PAUSE_DEBUT')"
+      [disabled]="!lastPointage || lastPointage.type === 'PAUSE_DEBUT'">
+    </button>
+    
+    <button pButton 
+      label="Fin Pause" 
+      icon="pi pi-refresh" 
+      class="p-button-info p-button-lg text-sm sm:text-base"
+      (click)="openPointageDialog('PAUSE_FIN')"
+      [disabled]="!lastPointage || lastPointage.type !== 'PAUSE_DEBUT'">
+    </button>
+  </div>
+
+  <!-- Progression et Statistiques -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+    <!-- Progression journée -->
+    <p-card class="w-full">
+      <div class="text-center">
+        <h3 class="text-base sm:text-lg font-semibold mb-4">Progression de la journée</h3>
+        <div class="flex justify-center">
+          <p-knob 
+            [(ngModel)]="progressValue" 
+            [readonly]="true"
+            [size]="120"
+            [strokeWidth]="10"
+            valueColor="#4CAF50"
+            rangeColor="#E5E7EB">
+          </p-knob>
+        </div>
+        <div class="mt-4">
+          <p class="text-xs sm:text-sm text-gray-600">Temps restant estimé</p>
+          <p class="text-lg sm:text-xl font-semibold">{{ remainingTime }}</p>
+        </div>
+        @if (lastPointage?.weather) {
+          <div class="mt-4 flex items-center justify-center gap-2">
+            <i class="pi pi-sun text-yellow-500 text-lg sm:text-xl"></i>
+            @if (lastPointage?.weather?.temperature) {
+              <span class="text-sm sm:text-base">{{ lastPointage?.weather?.temperature }}°C</span>
+            }
+            @if (lastPointage?.weather?.condition) {
+              <span class="text-sm sm:text-base">{{ lastPointage?.weather?.condition }}</span>
+            }
+          </div>
+        }
+      </div>
+    </p-card>
+
+    <!-- Timeline activités -->
+    <p-card class="w-full">
+      <h3 class="text-base sm:text-lg font-semibold mb-4">Activités du jour</h3>
+      <p-timeline [value]="timelineEvents" align="left" class="text-sm sm:text-base">
+        <ng-template pTemplate="content" let-event>
+          <div class="flex items-center">
+            <i [class]="event.icon" [style.color]="event.color" class="mr-2 text-base sm:text-lg"></i>
+            <div>
+              <div class="flex items-center gap-2">
+                <small class="text-gray-500">{{event.date | date:'HH:mm'}}</small>
+                <span>{{event.status}}</span>
+                @if (event.mood) {
+                  <span [class]="getMoodEmoji(event.mood)"></span>
+                }
+              </div>
+              @if (event.note) {
+                <small class="text-gray-600 block text-xs sm:text-sm">{{event.note}}</small>
+              }
+            </div>
+          </div>
+        </ng-template>
+      </p-timeline>
+    </p-card>
+
+    <!-- Graphique heures -->
+    <p-card class="w-full">
+      <h3 class="text-base sm:text-lg font-semibold mb-4">Heures travaillées cette semaine</h3>
+      <p-chart type="line" [data]="chartData" [options]="chartOptions" class="h-48 sm:h-auto"></p-chart>
+      @if (workingSummary) {
+        <div class="mt-4 grid grid-cols-2 gap-3 sm:gap-4">
+          <div>
+            <p class="text-xs sm:text-sm text-gray-600">Total heures</p>
+            <p class="text-base sm:text-lg font-semibold">{{ workingSummary.totalHours }}h</p>
+          </div>
+          <div>
+            <p class="text-xs sm:text-sm text-gray-600">Heures supp.</p>
+            <p class="text-base sm:text-lg font-semibold text-orange-500">+{{ workingSummary.overtime }}h</p>
+          </div>
+          <div>
+            <p class="text-xs sm:text-sm text-gray-600">Jour le + productif</p>
+            <p class="text-base sm:text-lg font-semibold">{{ workingSummary.mostProductiveDay }}</p>
+          </div>
+          <div>
+            <p class="text-xs sm:text-sm text-gray-600">Tendance humeur</p>
+            <p class="text-base sm:text-lg font-semibold">{{ workingSummary.moodTrend }}</p>
+          </div>
+        </div>
+      }
+    </p-card>
+  </div>
+</div>
+
+<!-- Dialog de pointage -->
+<p-dialog 
+  [(visible)]="showPointageDialog" 
+  [header]="getPointageDialogTitle()"
+  [modal]="true"
+  [style]="{width: '90vw', maxWidth: '450px'}"
+  [breakpoints]="{'960px': '75vw', '640px': '90vw'}"
+  [closable]="false">
+  
+  <div class="p-fluid">
+    <div class="field mb-4">
+      <label class="block text-gray-700 text-sm sm:text-base mb-2">Comment vous sentez-vous ?</label>
+      <div class="flex gap-4 justify-center sm:justify-start">
+        <button pButton 
+          class="p-button-rounded p-button-text text-2xl sm:text-3xl" 
+          [class.selected-mood]="selectedMood === 'HAPPY'"
+          (click)="selectedMood = 'HAPPY'">
+          😊
+        </button>
+        <button pButton 
+          class="p-button-rounded p-button-text text-2xl sm:text-3xl"
+          [class.selected-mood]="selectedMood === 'NEUTRAL'"
+          (click)="selectedMood = 'NEUTRAL'">
+          😐
+        </button>
+        <button pButton 
+          class="p-button-rounded p-button-text text-2xl sm:text-3xl"
+          [class.selected-mood]="selectedMood === 'TIRED'"
+          (click)="selectedMood = 'TIRED'">
+          😫
+        </button>
+      </div>
+    </div>
+
+    <div class="field mb-4">
+      <label for="note" class="block text-gray-700 text-sm sm:text-base mb-2">Note (optionnel)</label>
+      <textarea 
+        pInputTextarea 
+        id="note" 
+        [(ngModel)]="pointageNote" 
+        [rows]="3"
+        class="text-sm sm:text-base"
+        placeholder="Ajouter une note à votre pointage...">
+      </textarea>
+    </div>
+  </div>
+
+  <ng-template pTemplate="footer">
+    <div class="flex gap-2 justify-end">
+      <button 
+        pButton 
+        label="Annuler" 
+        icon="pi pi-times" 
+        class="p-button-text text-sm sm:text-base"
+        (click)="cancelPointage()">
+      </button>
+      <button 
+        pButton 
+        [label]="'Confirmer ' + getPointageTypeLabel()"
+        icon="pi pi-check" 
+        class="p-button-success text-sm sm:text-base"
+        (click)="confirmPointage()"
+        [loading]="isLoading">
+      </button>
+    </div>
+  </ng-template>
+</p-dialog>

@@ -1,0 +1,24 @@
+{
+  "projets": [
+    {
+      "id": 1,
+      "nom": "Développement Application RH",
+      "description": "Application de gestion interne des ressources humaines",
+      "managerId": 1,
+      "dateDebut": "2024-01-01",
+      "dateFin": "2024-06-30",
+      "status": "En cours",
+      "participants": [2, 3],
+      "comptesRendus": [
+        {
+          "id": 1,
+          "semaine": "2024-W52",
+          "utilisateurId": 2,
+          "date": "2024-12-25",
+          "contenu": "Avancement du module de pointage terminé.",
+          "heuresPassees": 40
+        }
+      ]
+    }
+  ]
+}

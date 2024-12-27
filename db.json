@@ -1,0 +1,472 @@
+{
+  "users": [
+    {
+      "id": 1,
+      "firstName": "John",
+      "lastName": "Manager",
+      "email": "manager@company.com",
+      "phone": "+216 55-123-456",
+      "birthDate": "1985-06-15",
+      "address": "123 Manager Street, City",
+      "position": "Team Manager",
+      "department": "Management",
+      "joinDate": "2020-01-01",
+      "status": "active",
+      "contractType": "CDI",
+      "avatar": "assets/images/avatar-1.png",
+      "skills": [
+        "Leadership",
+        "Project Management",
+        "Team Building"
+      ],
+      "salary": {
+        "base": 75000,
+        "bonus": 15000,
+        "lastReview": "2023-12-01"
+      },
+      "performanceRating": 4.8,
+      "role": "manager",
+      "username": "manager",
+      "password": "123456",
+      "managerId": null,
+      "managedEmployees": [
+        2,
+        3,
+        4,
+        6,
+        7
+      ],
+      "name": "John Manager",
+      "photoUrl": "assets/images/avatar-1.png",
+      "hireDate": "2020-01-01",
+      "leaveBalance": {
+        "annual": 30,
+        "sick": 15
+      },
+      "workSchedule": {
+        "startTime": "09:00",
+        "endTime": "17:00",
+        "lunchBreakDuration": 60
+      }
+    },
+    {
+      "id": 2,
+      "firstName": "Sarah",
+      "lastName": "Martin",
+      "email": "sarah.martin@company.com",
+      "phone": "+216 55-789-123",
+      "birthDate": "1990-03-20",
+      "address": "456 Developer Avenue, City",
+      "position": "Senior Developer",
+      "department": "Engineering",
+      "joinDate": "2022-01-15",
+      "status": "ACTIVE",
+      "contractType": "CDI",
+      "avatar": "assets/images/avatar-2.png",
+      "skills": [
+        "Angular",
+        "TypeScript",
+        "Node.js"
+      ],
+      "salary": {
+        "base": 65000,
+        "bonus": 8000,
+        "lastReview": "2023-11-15"
+      },
+      "performanceRating": 4.5,
+      "role": "employee",
+      "username": "sarah",
+      "password": "123456",
+      "managerId": 1,
+      "managedEmployees": []
+    },
+    {
+      "id": 3,
+      "firstName": "Mohammed",
+      "lastName": "Alami",
+      "email": "mohammed.alami@company.com",
+      "phone": "+216 55-456-789",
+      "birthDate": "1988-09-10",
+      "address": "789 Product Road, City",
+      "position": "Product Manager",
+      "department": "Product",
+      "joinDate": "2022-03-01",
+      "status": "ACTIVE",
+      "contractType": "CDI",
+      "avatar": "assets/images/avatar-3.png",
+      "skills": [
+        "Product Strategy",
+        "Agile",
+        "User Research"
+      ],
+      "salary": {
+        "base": 70000,
+        "bonus": 10000,
+        "lastReview": "2023-10-01"
+      },
+      "performanceRating": 4.6,
+      "role": "employee",
+      "username": "mohammed",
+      "password": "123456",
+      "managerId": 1,
+      "managedEmployees": []
+    },
+    {
+      "id": 4,
+      "firstName": "Mohamed Amine",
+      "lastName": "Riahi",
+      "email": "riahimedaminer@gmail.com",
+      "phone": "",
+      "birthDate": "",
+      "address": "",
+      "position": "Tech lead",
+      "department": "IT",
+      "joinDate": "2024-12-27",
+      "status": "ACTIVE",
+      "contractType": "CDI",
+      "avatar": "assets/images/avatar-1.png",
+      "skills": [],
+      "salary": {
+        "base": 0,
+        "bonus": 0,
+        "lastReview": ""
+      },
+      "performanceRating": 0,
+      "role": "manager",
+      "username": "medaminer",
+      "password": "21282925Aa",
+      "managerId": 1,
+      "managedEmployees": [
+        5
+      ]
+    },
+    {
+      "id": 5,
+      "firstName": "Ahmed",
+      "lastName": "Ahmed",
+      "email": "ahmed@gmail.com",
+      "phone": "",
+      "birthDate": "",
+      "address": "",
+      "position": "Developpeur",
+      "department": "IT",
+      "joinDate": "2024-12-27",
+      "status": "ACTIVE",
+      "contractType": "CDI",
+      "avatar": "assets/images/avatar-1.png",
+      "skills": [],
+      "salary": {
+        "base": 0,
+        "bonus": 0,
+        "lastReview": ""
+      },
+      "performanceRating": 0,
+      "role": "employee",
+      "username": "ahmed123",
+      "password": "21282925Aa",
+      "managerId": 4,
+      "managedEmployees": []
+    },
+    {
+      "username": "",
+      "password": "",
+      "email": "riahimedamdiner@gmail.com",
+      "firstName": "qsdfsdqf",
+      "lastName": "sqdfsqd",
+      "name": "qsdfsdqf sqdfsqd",
+      "role": "employee",
+      "photoUrl": "assets/images/default-avatar.png",
+      "department": "Engineering",
+      "position": "Tech lead",
+      "managerId": 1,
+      "managedEmployees": [],
+      "hireDate": "2024-12-27T03:49:14.546Z",
+      "leaveBalance": {
+        "annual": 30,
+        "sick": 15
+      },
+      "workSchedule": {
+        "startTime": "09:00",
+        "endTime": "17:00",
+        "lunchBreakDuration": 60
+      },
+      "rating": 0,
+      "status": "active",
+      "contractType": "CDI",
+      "id": 6
+    },
+    {
+      "username": "qsdfsqdfdqs",
+      "password": "21282925Aa",
+      "email": "riahimedafdfminer@gmail.com",
+      "firstName": "sdqfsdqf",
+      "lastName": "qssdfqsdf",
+      "name": "sdqfsdqf qssdfqsdf",
+      "role": "employee",
+      "photoUrl": "assets/images/default-avatar.png",
+      "department": "Engineering",
+      "position": "Manager fore",
+      "managerId": 1,
+      "managedEmployees": [],
+      "hireDate": "2024-12-27T03:53:23.005Z",
+      "leaveBalance": {
+        "annual": 30,
+        "sick": 15
+      },
+      "workSchedule": {
+        "startTime": "09:00",
+        "endTime": "17:00",
+        "lunchBreakDuration": 60
+      },
+      "rating": 0,
+      "status": "active",
+      "contractType": "CDI",
+      "id": 7
+    }
+  ],
+  "leaveRequests": [
+    {
+      "id": 1,
+      "employeeId": 2,
+      "startDate": "2024-01-15",
+      "endDate": "2024-01-20",
+      "type": "annual",
+      "reason": "Vacances d'hiver",
+      "status": "approved",
+      "createdAt": "2024-01-01",
+      "approvedBy": 1,
+      "approvedAt": "2024-01-02"
+    },
+    {
+      "id": 2,
+      "employeeId": 3,
+      "startDate": "2024-02-01",
+      "endDate": "2024-02-03",
+      "type": "sick",
+      "reason": "Maladie",
+      "status": "pending",
+      "createdAt": "2024-01-25"
+    }
+  ],
+  "timeEntries": [
+    {
+      "id": 1,
+      "employeeId": 2,
+      "date": "2024-01-02",
+      "checkIn": "09:00",
+      "checkOut": "17:30",
+      "totalHours": 8.5,
+      "status": "approved"
+    },
+    {
+      "id": 2,
+      "employeeId": 3,
+      "date": "2024-01-02",
+      "checkIn": "08:45",
+      "checkOut": "17:15",
+      "totalHours": 8.5,
+      "status": "approved"
+    }
+  ],
+  "performanceReviews": [
+    {
+      "id": 1,
+      "employeeId": 2,
+      "reviewerId": 1,
+      "date": "2023-12-15",
+      "period": "2023-H2",
+      "rating": 4,
+      "strengths": [
+        "Technical expertise",
+        "Team collaboration"
+      ],
+      "areasForImprovement": [
+        "Leadership skills"
+      ],
+      "goals": [
+        "Learn new framework",
+        "Mentor junior developers"
+      ],
+      "comments": "Excellent performance overall",
+      "status": "completed"
+    },
+    {
+      "id": 2,
+      "employeeId": 3,
+      "reviewerId": 1,
+      "date": "2023-12-16",
+      "period": "2023-H2",
+      "rating": 4.5,
+      "strengths": [
+        "Project management",
+        "Communication"
+      ],
+      "areasForImprovement": [
+        "Technical documentation"
+      ],
+      "goals": [
+        "Improve product metrics",
+        "Enhance team processes"
+      ],
+      "comments": "Outstanding contribution to product success",
+      "status": "completed"
+    }
+  ],
+  "departments": [
+    {
+      "id": 1,
+      "name": "Management",
+      "description": "Company management and strategy"
+    },
+    {
+      "id": 2,
+      "name": "Engineering",
+      "description": "Software development and technical operations"
+    },
+    {
+      "id": 3,
+      "name": "Product",
+      "description": "Product management and development"
+    }
+  ],
+  "positions": [
+    {
+      "id": 1,
+      "name": "Team Manager",
+      "department": "Management",
+      "level": "Senior"
+    },
+    {
+      "id": 2,
+      "name": "Senior Developer",
+      "department": "Engineering",
+      "level": "Senior"
+    },
+    {
+      "id": 3,
+      "name": "Product Manager",
+      "department": "Product",
+      "level": "Senior"
+    }
+  ],
+  "conges": [
+    {
+      "id": 1,
+      "employeeId": 2,
+      "type": "CONGE_PAYE",
+      "startDate": "2024-01-15",
+      "endDate": "2024-01-20",
+      "duration": 5,
+      "status": "APPROUVE",
+      "reason": "Vacances d'hiver",
+      "createdAt": "2023-12-20",
+      "updatedAt": "2023-12-21",
+      "urgencyLevel": "NORMAL",
+      "impactOnTraining": true,
+      "trainingAdjustments": [
+        {
+          "trainingId": 1,
+          "newEndDate": "2024-03-15",
+          "currentProgress": 60
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "employeeId": 3,
+      "type": "MALADIE",
+      "startDate": "2024-02-01",
+      "endDate": "2024-02-03",
+      "duration": 2,
+      "status": "REFUSE",
+      "reason": "Consultation médicale",
+      "createdAt": "2023-12-26",
+      "updatedAt": "2024-12-27T00:41:40.115Z",
+      "urgencyLevel": "URGENT",
+      "approverComment": "sdqfdsqfsqd"
+    },
+    {
+      "employeeId": 2,
+      "startDate": "2024-12-27T00:34:22.670Z",
+      "endDate": "2024-12-30T23:00:00.000Z",
+      "type": "CONGE_PAYE",
+      "urgencyLevel": "NORMAL",
+      "reason": "dsqfsqdfsdqfsdqf",
+      "status": "APPROUVE",
+      "duration": 4,
+      "createdAt": "2024-12-27T00:34:32.323Z",
+      "updatedAt": "2024-12-27T00:41:31.380Z",
+      "id": 3,
+      "approverComment": "dfsgdfsg"
+    },
+    {
+      "employeeId": 2,
+      "startDate": "2024-12-27T01:26:12.803Z",
+      "endDate": "2024-12-30T23:00:00.000Z",
+      "type": "CONGE_PAYE",
+      "urgencyLevel": "NORMAL",
+      "reason": "dsqfdsqfdsqf",
+      "status": "REFUSE",
+      "duration": 4,
+      "createdAt": "2024-12-27T01:26:23.447Z",
+      "updatedAt": "2024-12-27T01:30:41.508Z",
+      "id": 4,
+      "approverComment": ""
+    },
+    {
+      "employeeId": 2,
+      "startDate": "2024-12-27T23:00:00.000Z",
+      "endDate": "2024-12-30T23:00:00.000Z",
+      "type": "CONGE_PAYE",
+      "urgencyLevel": "NORMAL",
+      "reason": "je veux un ccongé car j'ai des affaire ",
+      "status": "REFUSE",
+      "duration": 3,
+      "createdAt": "2024-12-27T01:31:28.842Z",
+      "updatedAt": "2024-12-27T01:32:18.432Z",
+      "id": 5,
+      "approverComment": ""
+    },
+    {
+      "employeeId": 2,
+      "startDate": "2024-12-27T01:35:23.062Z",
+      "endDate": "2025-02-27T23:00:00.000Z",
+      "type": "CONGE_PAYE",
+      "urgencyLevel": "NORMAL",
+      "reason": "je veux un congéé ",
+      "status": "APPROUVE",
+      "duration": 63,
+      "createdAt": "2024-12-27T01:35:38.310Z",
+      "updatedAt": "2024-12-27T01:36:23.336Z",
+      "id": 6,
+      "approverComment": "ok vasy"
+    },
+    {
+      "employeeId": 2,
+      "startDate": "2024-12-27T01:53:46.776Z",
+      "endDate": "2024-12-30T23:00:00.000Z",
+      "type": {
+        "label": "Congé payé",
+        "value": "CONGE_PAYE",
+        "icon": "pi pi-calendar",
+        "color": "#22C55E"
+      },
+      "urgencyLevel": {
+        "label": "Normal",
+        "value": "NORMAL",
+        "icon": "pi pi-clock"
+      },
+      "reason": "sqdfsdqfdsqfsdqfdsqfdsqfdsqfdsqfdsqf",
+      "status": "EN_ATTENTE",
+      "duration": 2,
+      "createdAt": "2024-12-27T01:54:52.816Z",
+      "updatedAt": "2024-12-27T01:54:52.816Z",
+      "impactOnTraining": false,
+      "attachments": [
+        "profile-pic (2).png",
+        "profile-pic (2).png"
+      ],
+      "id": 7
+    }
+  ]
+}

@@ -1,0 +1,137 @@
+<div class="container mx-auto px-4 py-8">
+  <div class="flex flex-column gap-4">
+    <!-- Header -->
+    <div class="flex justify-content-between align-items-center">
+      <h1 class="text-3xl font-bold text-gray-900">Historique des Pointages</h1>
+      <div class="flex align-items-center gap-3">
+        <p-calendar [(ngModel)]="dateRange" 
+                   selectionMode="range"
+                   [showIcon]="true"
+                   [readonlyInput]="true"
+                   placeholder="Sélectionner une période"
+                   dateFormat="dd/mm/yy">
+        </p-calendar>
+        <button pButton 
+                label="Rechercher" 
+                icon="pi pi-search"
+                (click)="loadPointages()"
+                [loading]="loading">
+        </button>
+      </div>
+    </div>
+
+    <!-- Summary Card -->
+    <p-card>
+      <div class="grid">
+        <div class="col-12 md:col-6 lg:col-3">
+          <div class="text-center">
+            <h3 class="text-xl font-semibold mb-2">Total des heures</h3>
+            <div class="text-4xl font-bold text-primary">
+              {{ totalHeures }}h
+            </div>
+          </div>
+        </div>
+      </div>
+    </p-card>
+
+    <!-- Pointages Table -->
+    <p-card>
+      <p-table [value]="pointages" 
+               [loading]="loading"
+               [paginator]="true" 
+               [rows]="10"
+               [showCurrentPageReport]="true"
+               currentPageReportTemplate="Affichage de {first} à {last} sur {totalRecords} pointages"
+               [rowsPerPageOptions]="[10,25,50]"
+               responsiveLayout="stack">
+        
+        <ng-template pTemplate="header">
+          <tr>
+            <th>Date</th>
+            <th>Heure</th>
+            <th>Type</th>
+            <th>Humeur</th>
+            <th>Note</th>
+            <th>Actions</th>
+          </tr>
+        </ng-template>
+
+        <ng-template pTemplate="body" let-pointage>
+          <tr>
+            <td>{{ pointage.timestamp | date:'dd/MM/yyyy' }}</td>
+            <td>{{ pointage.timestamp | date:'HH:mm:ss' }}</td>
+            <td>
+              <span [class]="'badge status-' + pointage.type.toLowerCase()">
+                {{ getPointageTypeLabel(pointage.type) }}
+              </span>
+            </td>
+            <td>{{ getMoodEmoji(pointage.mood) }}</td>
+            <td>
+              <span *ngIf="pointage.note" class="text-sm text-gray-600">
+                {{ pointage.note | slice:0:30 }}{{ pointage.note.length > 30 ? '...' : '' }}
+              </span>
+            </td>
+            <td>
+              <button pButton 
+                      icon="pi pi-eye" 
+                      class="p-button-text p-button-rounded"
+                      (click)="showDetails(pointage)">
+              </button>
+            </td>
+          </tr>
+        </ng-template>
+
+        <ng-template pTemplate="emptymessage">
+          <tr>
+            <td colspan="6" class="text-center p-4">
+              Aucun pointage trouvé pour cette période
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </p-card>
+  </div>
+</div>
+
+<!-- Details Dialog -->
+<p-dialog [(visible)]="showDetailsDialog" 
+          [header]="'Détails du pointage'"
+          [modal]="true"
+          [style]="{width: '450px'}">
+  <div class="flex flex-column gap-3" *ngIf="selectedPointage">
+    <div class="grid">
+      <div class="col-4 font-semibold">Date:</div>
+      <div class="col-8">{{ selectedPointage.timestamp | date:'dd/MM/yyyy' }}</div>
+
+      <div class="col-4 font-semibold">Heure:</div>
+      <div class="col-8">{{ selectedPointage.timestamp | date:'HH:mm:ss' }}</div>
+
+      <div class="col-4 font-semibold">Type:</div>
+      <div class="col-8">{{ getPointageTypeLabel(selectedPointage.type) }}</div>
+
+      <div class="col-4 font-semibold">Humeur:</div>
+      <div class="col-8">{{ getMoodEmoji(selectedPointage.mood) }}</div>
+
+      <div class="col-4 font-semibold">Device:</div>
+      <div class="col-8">{{ selectedPointage.device }}</div>
+
+      <div class="col-12" *ngIf="selectedPointage.note">
+        <div class="font-semibold mb-2">Note:</div>
+        <div class="p-2 surface-ground border-round">
+          {{ selectedPointage.note }}
+        </div>
+      </div>
+
+      <div class="col-12" *ngIf="selectedPointage.location">
+        <div class="font-semibold mb-2">Localisation:</div>
+        <div class="p-2 surface-ground border-round">
+          Lat: {{ selectedPointage.location.latitude }}<br>
+          Long: {{ selectedPointage.location.longitude }}<br>
+          Précision: {{ selectedPointage.location.accuracy }}m
+        </div>
+      </div>
+    </div>
+  </div>
+</p-dialog>
+
+<p-toast></p-toast>

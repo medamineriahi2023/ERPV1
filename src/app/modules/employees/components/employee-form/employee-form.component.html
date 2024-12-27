@@ -1,0 +1,454 @@
+<div class="min-h-screen bg-gray-50/50">
+  <div class="employee-form-container p-6 md:p-8 lg:p-10">
+    <form [formGroup]="employeeForm" (ngSubmit)="onSubmit()" class="p-fluid">
+      <!-- Progress Steps -->
+      <div class="steps-container mb-8 bg-white rounded-xl shadow-sm p-4">
+        <p-steps [model]="items" [readonly]="false" [activeIndex]="currentStep"></p-steps>
+      </div>
+
+      <!-- Form Sections -->
+      <div [ngSwitch]="currentStep" class="form-sections">
+        <!-- Section 1: Informations Personnelles -->
+        <div *ngSwitchCase="0" class="animate__animated animate__fadeIn">
+          <div class="bg-white rounded-xl shadow-sm p-6 md:p-8">
+            <div class="flex items-center mb-6">
+              <i class="pi pi-user mr-3 text-2xl text-primary"></i>
+              <h3 class="text-2xl font-semibold text-gray-800">Informations Personnelles</h3>
+            </div>
+
+            <div class="grid">
+              <!-- Photo de profil -->
+              <div class="col-12 flex justify-center mb-8">
+                <div class="flex flex-col items-center">
+                  <div class="relative mb-4">
+                    <img [src]="profileImageUrl || 'assets/images/default-avatar.png'" 
+                         alt="Profile" 
+                         class="w-32 h-32 rounded-full object-cover border-4 border-white shadow-lg">
+                    <button pButton 
+                            type="button" 
+                            icon="pi pi-camera" 
+                            (click)="fileInput.click()"
+                            class="p-button-rounded p-button-text absolute bottom-0 right-0 bg-white shadow-md">
+                    </button>
+                  </div>
+                  <input #fileInput 
+                         type="file" 
+                         (change)="uploadFile($event)" 
+                         style="display: none" 
+                         accept="image/*">
+                </div>
+              </div>
+
+              <!-- Informations de base -->
+              <div class="col-12 md:col-6 mb-4">
+                <span class="p-float-label">
+                  <input id="firstName" 
+                         type="text" 
+                         pInputText 
+                         formControlName="firstName" 
+                         class="w-full">
+                  <label for="firstName" class="required-field">Prénom</label>
+                </span>
+                <small class="p-error block mt-1" 
+                       *ngIf="employeeForm.get('firstName')?.invalid && employeeForm.get('firstName')?.touched">
+                  Le prénom est requis et doit contenir au moins 2 caractères
+                </small>
+              </div>
+
+              <div class="col-12 md:col-6 mb-4">
+                <span class="p-float-label">
+                  <input id="lastName" 
+                         type="text" 
+                         pInputText 
+                         formControlName="lastName" 
+                         class="w-full">
+                  <label for="lastName" class="required-field">Nom</label>
+                </span>
+                <small class="p-error block mt-1" 
+                       *ngIf="employeeForm.get('lastName')?.invalid && employeeForm.get('lastName')?.touched">
+                  Le nom est requis et doit contenir au moins 2 caractères
+                </small>
+              </div>
+
+              <div class="col-12 md:col-6 mb-4">
+                <span class="p-float-label">
+                  <input id="username" 
+                         type="text" 
+                         pInputText 
+                         formControlName="username" 
+                         class="w-full">
+                  <label for="username" class="required-field">Nom d'utilisateur</label>
+                </span>
+                <small class="p-error block mt-1" 
+                       *ngIf="employeeForm.get('username')?.invalid && employeeForm.get('username')?.touched">
+                  Le nom d'utilisateur est requis et doit contenir au moins 4 caractères
+                </small>
+              </div>
+
+              <div class="col-12 md:col-6 mb-4">
+                <span class="p-float-label">
+                  <p-password id="password" 
+                             formControlName="password" 
+                             [inputStyle]="{'width': '100%'}"
+                             [style]="{'width': '100%'}"
+                             [showClear]="true">
+                  </p-password>
+                  <label for="password" class="required-field">Mot de passe</label>
+                </span>
+                <small class="p-error block mt-1" 
+                       *ngIf="employeeForm.get('password')?.invalid && employeeForm.get('password')?.touched">
+                  Le mot de passe est requis et doit contenir au moins 6 caractères
+                </small>
+              </div>
+
+              <div class="col-12 md:col-6 mb-4">
+                <span class="p-float-label">
+                  <input id="email" type="email" pInputText formControlName="email" 
+                         class="w-full rounded-lg border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary/20">
+                  <label for="email" class="required-field text-gray-600">Email</label>
+                </span>
+                <small class="p-error block mt-1" *ngIf="employeeForm.get('email')?.invalid && employeeForm.get('email')?.touched">
+                  Email invalide
+                </small>
+              </div>
+
+              <div class="col-12 md:col-6 mb-4">
+                <span class="p-float-label">
+                  <p-inputMask id="phone" 
+                              mask="+216 99-999-999" 
+                              formControlName="phone" 
+                              placeholder="+216 XX-XXX-XXX"
+                              [unmask]="false"
+                              styleClass="w-full rounded-lg">
+                  </p-inputMask>
+                  <label for="phone" class="required-field text-gray-600">Téléphone</label>
+                </span>
+                <small class="p-error block mt-1" *ngIf="employeeForm.get('phone')?.invalid && employeeForm.get('phone')?.touched">
+                  Veuillez entrer un numéro de téléphone tunisien valide (+216 XX-XXX-XXX)
+                </small>
+              </div>
+
+              <div class="col-12 mb-4">
+                <span class="p-float-label">
+                  <p-calendar id="birthDate" 
+                             formControlName="birthDate"
+                             [showIcon]="true"
+                             [showButtonBar]="true"
+                             dateFormat="dd/mm/yy"
+                             [yearNavigator]="true"
+                             styleClass="w-full">
+                  </p-calendar>
+                  <label for="birthDate" class="required-field text-gray-600">Date de naissance</label>
+                </span>
+                <small class="p-error block mt-1" *ngIf="employeeForm.get('birthDate')?.invalid && employeeForm.get('birthDate')?.touched">
+                  Date de naissance invalide
+                </small>
+              </div>
+
+              <div class="col-12 mb-4">
+                <span class="p-float-label">
+                  <input id="address" 
+                         type="text" 
+                         pInputText 
+                         formControlName="address"
+                         class="w-full rounded-lg border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary/20">
+                  <label for="address" class="text-gray-600">Adresse</label>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 2: Informations Professionnelles -->
+        <div *ngSwitchCase="1" class="animate__animated animate__fadeIn">
+          <div class="bg-white rounded-xl shadow-sm p-6 md:p-8">
+            <div class="flex items-center mb-6">
+              <i class="pi pi-briefcase mr-3 text-2xl text-primary"></i>
+              <h3 class="text-2xl font-semibold text-gray-800">Informations Professionnelles</h3>
+            </div>
+
+            <div class="grid">
+              <div class="col-12 md:col-6 mb-4">
+                <span class="p-float-label">
+                  <input id="position" type="text" pInputText formControlName="position" 
+                         class="w-full rounded-lg border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary/20">
+                  <label for="position" class="required-field text-gray-600">Poste</label>
+                </span>
+              </div>
+
+              <div class="col-12 md:col-6 mb-4">
+                <span class="p-float-label">
+                  <p-dropdown id="department" 
+                             [options]="departments" 
+                             formControlName="department" 
+                             [showClear]="true"
+                             [filter]="true"
+                             styleClass="w-full rounded-lg">
+                  </p-dropdown>
+                  <label for="department" class="required-field text-gray-600">Département</label>
+                </span>
+              </div>
+
+              <div class="col-12 md:col-6 mb-4">
+                <span class="p-float-label">
+                  <p-calendar id="joinDate" 
+                             formControlName="joinDate" 
+                             [showIcon]="true"
+                             [showButtonBar]="true"
+                             dateFormat="dd/mm/yy"
+                             [minDate]="minJoinDate"
+                             styleClass="w-full">
+                  </p-calendar>
+                  <label for="joinDate" class="required-field text-gray-600">Date d'entrée</label>
+                </span>
+              </div>
+
+              <div class="col-12 md:col-6 mb-4">
+                <span class="p-float-label">
+                  <p-dropdown id="contractType" 
+                             [options]="contractTypes" 
+                             formControlName="contractType" 
+                             [showClear]="true"
+                             styleClass="w-full rounded-lg">
+                    <ng-template pTemplate="selectedItem">
+                      <div class="flex items-center gap-2" *ngIf="employeeForm.get('contractType')?.value">
+                        <i class="pi" [ngClass]="getContractTypeIcon(employeeForm.get('contractType')?.value)"></i>
+                        <span>{{getContractTypeLabel(employeeForm.get('contractType')?.value)}}</span>
+                      </div>
+                    </ng-template>
+                    <ng-template let-item pTemplate="item">
+                      <div class="flex items-center gap-2">
+                        <i class="pi" [ngClass]="getContractTypeIcon(item.value)"></i>
+                        <span>{{item.label}}</span>
+                      </div>
+                    </ng-template>
+                  </p-dropdown>
+                  <label for="contractType" class="required-field text-gray-600">Type de Contrat</label>
+                </span>
+              </div>
+
+              <div class="col-12 md:col-6 mb-4">
+                <span class="p-float-label">
+                  <p-dropdown id="status" 
+                             [options]="statuses" 
+                             formControlName="status"
+                             styleClass="w-full rounded-lg">
+                    <ng-template pTemplate="selectedItem">
+                      <div class="flex items-center gap-2" *ngIf="employeeForm.get('status')?.value">
+                        <i class="status-indicator" [ngClass]="getStatusClass(employeeForm.get('status')?.value)"></i>
+                        <span>{{getStatusLabel(employeeForm.get('status')?.value)}}</span>
+                      </div>
+                    </ng-template>
+                    <ng-template let-item pTemplate="item">
+                      <div class="flex items-center gap-2">
+                        <i class="status-indicator" [ngClass]="getStatusClass(item.value)"></i>
+                        <span>{{item.label}}</span>
+                      </div>
+                    </ng-template>
+                  </p-dropdown>
+                  <label for="status" class="required-field text-gray-600">Statut</label>
+                </span>
+              </div>
+
+              <div class="col-12 mb-4">
+                <span class="p-float-label">
+                  <input id="skills"
+                         type="text"
+                         pInputText
+                         formControlName="skills"
+                         class="w-full rounded-lg border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary/20"
+                         placeholder="Entrez les compétences séparées par des virgules">
+                  <label for="skills" class="text-gray-600">Compétences</label>
+                </span>
+                <small class="text-500 block mt-1">
+                  Séparez les compétences par des virgules
+                </small>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 3: Informations Salariales -->
+        <div *ngSwitchCase="2" class="animate__animated animate__fadeIn">
+          <div class="bg-white rounded-xl shadow-sm p-6 md:p-8">
+            <div class="flex items-center mb-6">
+              <i class="pi pi-money-bill mr-3 text-2xl text-primary"></i>
+              <h3 class="text-2xl font-semibold text-gray-800">Informations Salariales</h3>
+            </div>
+
+            <div class="grid">
+              <div class="col-12 md:col-6 mb-4" formGroupName="salary">
+                <span class="p-float-label">
+                  <p-inputNumber id="base" 
+                                formControlName="base" 
+                                [showButtons]="false" 
+                                mode="currency" 
+                                currency="MAD"
+                                locale="fr-FR"
+                                [minFractionDigits]="2"
+                                styleClass="w-full rounded-lg">
+                  </p-inputNumber>
+                  <label for="base" class="text-gray-600">Salaire de Base</label>
+                </span>
+              </div>
+
+              <div class="col-12 md:col-6 mb-4" formGroupName="salary">
+                <span class="p-float-label">
+                  <p-inputNumber id="bonus" 
+                                formControlName="bonus" 
+                                [showButtons]="false" 
+                                mode="currency" 
+                                currency="MAD"
+                                locale="fr-FR"
+                                [minFractionDigits]="2"
+                                styleClass="w-full rounded-lg">
+                  </p-inputNumber>
+                  <label for="bonus" class="text-gray-600">Bonus</label>
+                </span>
+              </div>
+
+              <div class="col-12 md:col-6">
+                <span class="p-float-label">
+                  <p-rating id="performanceRating"
+                           formControlName="performanceRating"
+                           [stars]="5">
+                  </p-rating>
+                  <label for="performanceRating" class="text-gray-600">Note de Performance</label>
+                </span>
+                <small class="text-500 block mt-1">
+                  Évaluez la performance de 1 à 5 étoiles
+                </small>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Navigation Buttons -->
+      <div class="flex justify-between mt-6">
+        <button pButton type="button" 
+                label="Précédent"
+                icon="pi pi-arrow-left"
+                [disabled]="currentStep === 0"
+                (click)="previousStep()"
+                class="p-button-outlined hover:bg-gray-50 transition-colors duration-200">
+        </button>
+
+        <div class="flex gap-3">
+          <button pButton type="button"
+                  label="Annuler"
+                  (click)="onCancel()"
+                  class="p-button-secondary p-button-outlined hover:bg-gray-50 transition-colors duration-200">
+          </button>
+
+          <button *ngIf="currentStep < 2" 
+                  pButton type="button"
+                  label="Suivant"
+                  icon="pi pi-arrow-right"
+                  iconPos="right"
+                  [disabled]="!isStepValid(currentStep)"
+                  (click)="nextStep()"
+                  class="p-button-primary hover:shadow-md transition-shadow duration-200">
+          </button>
+
+          <button *ngIf="currentStep === 2" 
+                  pButton type="submit"
+                  label="Enregistrer"
+                  icon="pi pi-check"
+                  [loading]="submitting"
+                  [disabled]="submitting"
+                  class="p-button-success hover:shadow-md transition-shadow duration-200">
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<style>
+  :host ::ng-deep {
+    .employee-form-container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .profile-image-container {
+      position: relative;
+      width: 150px;
+      height: 150px;
+      border-radius: 9999px;
+      overflow: hidden;
+      border: 3px solid var(--primary-color);
+      background-color: white;
+      
+      .profile-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .image-overlay {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(2px);
+        padding: 0.75rem;
+        display: flex;
+        justify-content: center;
+        transition: all 0.3s;
+        opacity: 0;
+      }
+
+      &:hover .image-overlay {
+        opacity: 1;
+      }
+    }
+
+    .hidden-upload {
+      display: none;
+    }
+
+    .p-steps {
+      .p-steps-item {
+        .p-menuitem-link {
+          background: transparent;
+          transition: all 0.3s;
+
+          &:not(.p-disabled):hover {
+            background: rgba(var(--primary-color-rgb), 0.04);
+          }
+        }
+        
+        &.p-highlight .p-steps-number {
+          background: var(--primary-color);
+          box-shadow: 0 0 0 4px rgba(var(--primary-color-rgb), 0.1);
+        }
+      }
+    }
+
+    .p-inputtext,
+    .p-calendar,
+    .p-inputmask {
+      &:enabled:focus {
+        box-shadow: 0 0 0 2px rgba(var(--primary-color-rgb), 0.1);
+      }
+    }
+
+    .p-button {
+      &:not(.p-button-icon-only) {
+        padding: 0.75rem 1.5rem;
+      }
+      
+      &.p-button-sm {
+        padding: 0.5rem;
+      }
+    }
+
+    .required-field::after {
+      content: " *";
+      color: var(--red-500);
+    }
+  }
+</style>
