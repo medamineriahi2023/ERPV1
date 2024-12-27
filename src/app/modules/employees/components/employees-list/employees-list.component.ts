@@ -55,33 +55,74 @@ import { User } from '../../../../core/interfaces/user.interface';
         </div>
 
         <!-- Filters Section -->
-        <div class="bg-white rounded-xl shadow-sm p-4 mb-6">
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div class="relative">
-              <span class="p-input-icon-left w-full">
-                <i class="pi pi-search"></i>
-                <input type="text" pInputText class="w-full" 
-                       placeholder="Rechercher un employé..."
-                       (input)="filterEmployees($event)">
-              </span>
-            </div>
-            <div>
-              <p-dropdown [options]="departments" 
-                         placeholder="Filtrer par département"
-                         styleClass="w-full"
-                         (onChange)="filterByDepartment($event)">
-              </p-dropdown>
-            </div>
-            <div>
-              <p-dropdown [options]="[
-                           {label: 'Tous les statuts', value: ''},
-                           {label: 'Actif', value: 'active'},
-                           {label: 'Inactif', value: 'inactive'}
-                         ]" 
-                         placeholder="Filtrer par statut"
-                         styleClass="w-full"
-                         (onChange)="filterByStatus($event)">
-              </p-dropdown>
+        <div class="bg-white rounded-xl shadow-sm">
+          <div class="border-b border-gray-100 bg-gray-50/50 px-6 py-4">
+            <h3 class="text-lg font-semibold text-gray-800">Filtres</h3>
+          </div>
+          
+          <div class="p-6">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <!-- Search Input -->
+              <div class="relative">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Rechercher</label>
+                <div class="relative">
+                  <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <i class="pi pi-search text-gray-400"></i>
+                  </div>
+                  <input type="text" 
+                         pInputText 
+                         class="block w-full pl-10 pr-4 py-2.5 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
+                         placeholder="Nom, email, département..."
+                         (input)="filterEmployees($event)">
+                </div>
+              </div>
+
+              <!-- Department Filter -->
+              <div class="relative">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Département</label>
+                <p-dropdown [options]="departments"
+                          placeholder="Tous les départements"
+                          styleClass="w-full !border-gray-200 !rounded-lg !shadow-none"
+                          [style]="{'height': '42px'}"
+                          [panelStyle]="{'z-index': '9999'}"
+                          appendTo="body"
+                          (onChange)="filterByDepartment($event)">
+                  <ng-template let-dept pTemplate="item">
+                    <div class="flex items-center py-1">
+                      <i class="pi pi-briefcase mr-2 text-gray-500"></i>
+                      <span>{{dept.label}}</span>
+                    </div>
+                  </ng-template>
+                </p-dropdown>
+              </div>
+
+              <!-- Status Filter -->
+              <div class="relative">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Statut</label>
+                <p-dropdown [options]="[
+                             {label: 'Tous les statuts', value: ''},
+                             {label: 'Actif', value: 'active'},
+                             {label: 'Inactif', value: 'inactive'}
+                           ]"
+                          placeholder="Tous les statuts"
+                          styleClass="w-full !border-gray-200 !rounded-lg !shadow-none"
+                          [style]="{'height': '42px'}"
+                          [panelStyle]="{'z-index': '9999'}"
+                          appendTo="body"
+                          (onChange)="filterByStatus($event)">
+                  <ng-template let-status pTemplate="item">
+                    <div class="flex items-center py-1">
+                      <span class="w-2 h-2 rounded-full mr-2"
+                            [ngClass]="{
+                              'bg-green-500': status.value === 'active',
+                              'bg-red-500': status.value === 'inactive',
+                              'bg-gray-300': !status.value
+                            }"></span>
+                      <span>{{status.label}}</span>
+                    </div>
+                  </ng-template>
+                </p-dropdown>
+              </div>
             </div>
           </div>
         </div>

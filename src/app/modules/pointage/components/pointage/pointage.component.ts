@@ -6,6 +6,7 @@ import { ButtonModule } from 'primeng/button';
 import { CalendarModule } from 'primeng/calendar';
 import { TableModule } from 'primeng/table';
 import { ToastModule } from 'primeng/toast';
+import { ChartModule } from 'primeng/chart';
 import { MessageService } from 'primeng/api';
 import { PointageService } from '../../../../core/services/pointage.service';
 import { AuthService } from '../../../../core/services/auth.service';
@@ -23,7 +24,8 @@ import { startWith } from 'rxjs/operators';
     ButtonModule,
     CalendarModule,
     TableModule,
-    ToastModule
+    ToastModule,
+    ChartModule
   ],
   providers: [MessageService],
   templateUrl: './pointage.component.html',
@@ -44,11 +46,140 @@ export class PointageComponent implements OnInit, OnDestroy {
   private clockSubscription?: Subscription;
   private refreshInterval?: Subscription;
 
+  attendanceChartData: any;
+  attendanceChartOptions: any;
+  punctualityChartData: any;
+  punctualityChartOptions: any;
+  weeklyHoursChartData: any;
+  weeklyHoursChartOptions: any;
+  monthlyTrendsChartData: any;
+  monthlyTrendsChartOptions: any;
+
+  totalWorkDays: number = 0;
+  averageWorkHours: number = 0;
+  lateArrivalCount: number = 0;
+  onTimeArrivalCount: number = 0;
+  totalBreakTime: number = 0;
+  averageBreakTime: number = 0;
+
   constructor(
     private pointageService: PointageService,
     private authService: AuthService,
     private messageService: MessageService
-  ) {}
+  ) {
+    this.initializeCharts();
+  }
+
+  private initializeCharts() {
+    this.attendanceChartData = {
+      labels: ['Présent', 'Retard', 'Absent', 'Congé'],
+      datasets: [{
+        data: [0, 0, 0, 0],
+        backgroundColor: ['#4CAF50', '#FFC107', '#F44336', '#2196F3']
+      }]
+    };
+    this.attendanceChartOptions = {
+      plugins: {
+        legend: {
+          position: 'bottom'
+        },
+        title: {
+          display: true,
+          text: 'Distribution des Présences'
+        }
+      },
+      responsive: true,
+      maintainAspectRatio: false
+    };
+
+    this.punctualityChartData = {
+      labels: Array.from({length: 30}, (_, i) => i + 1),
+      datasets: [{
+        label: 'Heure d\'arrivée',
+        data: [],
+        borderColor: '#2196F3',
+        tension: 0.4
+      }]
+    };
+    this.punctualityChartOptions = {
+      plugins: {
+        legend: {
+          position: 'bottom'
+        },
+        title: {
+          display: true,
+          text: 'Tendance de Ponctualité'
+        }
+      },
+      scales: {
+        y: {
+          min: 7,
+          max: 10,
+          title: {
+            display: true,
+            text: 'Heure d\'arrivée'
+          }
+        }
+      },
+      responsive: true,
+      maintainAspectRatio: false
+    };
+
+    this.weeklyHoursChartData = {
+      labels: ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven'],
+      datasets: [{
+        label: 'Heures Travaillées',
+        data: [0, 0, 0, 0, 0],
+        backgroundColor: '#4CAF50'
+      }]
+    };
+    this.weeklyHoursChartOptions = {
+      plugins: {
+        legend: {
+          position: 'bottom'
+        },
+        title: {
+          display: true,
+          text: 'Heures Travaillées par Jour'
+        }
+      },
+      scales: {
+        y: {
+          beginAtZero: true,
+          title: {
+            display: true,
+            text: 'Heures'
+          }
+        }
+      },
+      responsive: true,
+      maintainAspectRatio: false
+    };
+
+    this.monthlyTrendsChartData = {
+      labels: ['Semaine 1', 'Semaine 2', 'Semaine 3', 'Semaine 4'],
+      datasets: [{
+        label: 'Heures Totales',
+        data: [0, 0, 0, 0],
+        borderColor: '#9C27B0',
+        tension: 0.4,
+        fill: false
+      }]
+    };
+    this.monthlyTrendsChartOptions = {
+      plugins: {
+        legend: {
+          position: 'bottom'
+        },
+        title: {
+          display: true,
+          text: 'Tendances Mensuelles'
+        }
+      },
+      responsive: true,
+      maintainAspectRatio: false
+    };
+  }
 
   ngOnInit() {
     this.currentUser = this.authService.getCurrentUser();
@@ -56,7 +187,6 @@ export class PointageComponent implements OnInit, OnDestroy {
     this.loadTodayEntry();
     this.loadMonthlyHistory();
     
-    // Rafraîchir les données toutes les minutes
     this.refreshInterval = interval(60000).subscribe(() => {
       this.loadTodayEntry();
       this.loadMonthlyHistory();
@@ -84,18 +214,15 @@ export class PointageComponent implements OnInit, OnDestroy {
     const userId = this.currentUser?.id;
     if (!userId) return;
 
-    // Vérifie d'abord s'il y a une session active
     this.pointageService.getActiveSession(userId).subscribe({
       next: (activeSession) => {
         if (activeSession) {
-          // Si une session active est trouvée, utilise celle-ci
           this.currentEntry = activeSession;
           this.checkInTime = activeSession.checkIn;
           this.checkOutTime = activeSession.checkOut || null;
           this.lunchStartTime = activeSession.lunchStart || null;
           this.lunchEndTime = activeSession.lunchEnd || null;
         } else {
-          // Sinon, vérifie s'il y a une session terminée pour aujourd'hui
           const today = new Date();
           this.pointageService.getTimeEntry(userId, today).subscribe({
             next: (entry) => {
@@ -107,7 +234,6 @@ export class PointageComponent implements OnInit, OnDestroy {
                 this.lunchEndTime = entry.lunchEnd || null;
                 this.selectedDateDetails = entry;
               } else {
-                // Aucune session pour aujourd'hui
                 this.resetSession();
               }
             },
@@ -142,16 +268,14 @@ export class PointageComponent implements OnInit, OnDestroy {
     const userId = this.currentUser.id;
 
     if (!this.checkInTime) {
-      // Vérifier s'il existe déjà une session active
       this.pointageService.getActiveSession(userId).subscribe({
         next: (activeSession) => {
           if (activeSession) {
             this.showMessage('error', 'Une session est déjà active pour aujourd\'hui');
-            this.loadTodayEntry(); // Recharger la session existante
+            this.loadTodayEntry(); 
             return;
           }
 
-          // Si pas de session active, créer une nouvelle
           this.pointageService.checkIn(userId).subscribe({
             next: (entry) => {
               this.currentEntry = entry;
@@ -159,27 +283,32 @@ export class PointageComponent implements OnInit, OnDestroy {
               this.showMessage('success', 'Arrivée enregistrée');
               this.loadMonthlyHistory();
             },
-            error: (error) => {
+            error: (error: Error) => {
               console.error('Erreur lors de l\'enregistrement de l\'arrivée:', error);
               this.showMessage('error', 'Erreur lors de l\'enregistrement de l\'arrivée');
             }
           });
         },
-        error: (error) => {
+        error: (error: Error) => {
           console.error('Erreur lors de la vérification de la session:', error);
           this.showMessage('error', 'Erreur lors de la vérification de la session');
         }
       });
     } else if (this.currentEntry?.id && !this.checkOutTime) {
-      // Check out
+      // First checkout to record the departure time
       this.pointageService.checkOut(this.currentEntry.id).subscribe({
-        next: (entry) => {
+        next: (entry: TimeEntry) => {
           this.currentEntry = entry;
           this.checkOutTime = entry.checkOut || null;
-          this.showMessage('success', 'Départ enregistré');
+          
+          // Calculate total hours
+          const totalHours = this.calculateWorkingHours(entry);
+          
+          // Update the display with total hours
+          this.showMessage('success', `Départ enregistré. Total: ${totalHours.toFixed(2)} heures`);
           this.loadMonthlyHistory();
         },
-        error: (error) => {
+        error: (error: Error) => {
           console.error('Erreur lors de l\'enregistrement du départ:', error);
           this.showMessage('error', 'Erreur lors de l\'enregistrement du départ');
         }
@@ -187,11 +316,34 @@ export class PointageComponent implements OnInit, OnDestroy {
     }
   }
 
+  private calculateWorkingHours(entry: TimeEntry): number {
+    if (!entry.checkIn || !entry.checkOut) return 0;
+
+    const checkIn = new Date(entry.checkIn);
+    const checkOut = new Date(entry.checkOut);
+    
+    // Calculate total duration in milliseconds
+    let totalDuration = checkOut.getTime() - checkIn.getTime();
+    
+    // Subtract lunch break if taken
+    if (entry.lunchStart && entry.lunchEnd) {
+      const lunchStart = new Date(entry.lunchStart);
+      const lunchEnd = new Date(entry.lunchEnd);
+      const lunchDuration = lunchEnd.getTime() - lunchStart.getTime();
+      totalDuration -= lunchDuration;
+    }
+    
+    // Convert to hours (milliseconds to hours)
+    const hours = totalDuration / (1000 * 60 * 60);
+    
+    // Round to 2 decimal places
+    return Math.round(hours * 100) / 100;
+  }
+
   toggleLunchBreak() {
     if (!this.currentEntry?.id || this.checkOutTime) return;
 
     if (!this.lunchStartTime) {
-      // Start lunch
       this.pointageService.startLunch(this.currentEntry.id).subscribe({
         next: (entry) => {
           this.currentEntry = entry;
@@ -205,7 +357,6 @@ export class PointageComponent implements OnInit, OnDestroy {
         }
       });
     } else if (!this.lunchEndTime) {
-      // End lunch
       this.pointageService.endLunch(this.currentEntry.id).subscribe({
         next: (entry) => {
           this.currentEntry = entry;
@@ -222,9 +373,9 @@ export class PointageComponent implements OnInit, OnDestroy {
   }
 
   isActionDisabled(): boolean {
-    if (!this.checkInTime) return false; // Permet l'arrivée
-    if (this.checkOutTime) return true; // Empêche toute action après le départ
-    return false; // Permet le départ
+    if (!this.checkInTime) return false; 
+    if (this.checkOutTime) return true; 
+    return false; 
   }
 
   onDateSelect(date: Date) {
@@ -252,12 +403,87 @@ export class PointageComponent implements OnInit, OnDestroy {
     ).subscribe({
       next: (entries) => {
         this.monthlyHistory = entries;
+        this.updateStatistics();
       },
       error: (error) => {
         console.error('Erreur lors du chargement de l\'historique:', error);
         this.showMessage('error', 'Erreur lors du chargement de l\'historique');
       }
     });
+  }
+
+  private updateStatistics() {
+    if (!this.monthlyHistory.length) return;
+
+    const now = new Date();
+    this.pointageService.getMonthlyStats(
+      this.currentUser!.id,
+      now.getMonth(),
+      now.getFullYear()
+    ).subscribe(stats => {
+      this.totalWorkDays = stats.totalDays;
+      this.lateArrivalCount = stats.lateDays;
+      this.onTimeArrivalCount = stats.presentDays;
+      this.averageWorkHours = stats.averageHours;
+      this.averageBreakTime = stats.averageBreakTime;
+      this.updateCharts();
+    });
+  }
+
+  private updateCharts() {
+    if (!this.currentUser) return;
+
+    const now = new Date();
+    const month = now.getMonth();
+    const year = now.getFullYear();
+
+    // Update attendance chart
+    this.pointageService.getMonthlyStats(this.currentUser.id, month, year)
+      .subscribe(stats => {
+        this.attendanceChartData.datasets[0].data = [
+          stats.presentDays,
+          stats.lateDays,
+          stats.absentDays,
+          this.monthlyHistory.filter(e => ['leave', 'holiday'].includes(e.status || '')).length
+        ];
+      });
+
+    // Update punctuality chart
+    const punctualityData = this.monthlyHistory.map(entry => {
+      if (!entry.checkIn) return null;
+      const [hours, minutes] = entry.checkIn.split(':').map(Number);
+      return hours + minutes / 60;
+    }).filter(time => time !== null);
+    
+    this.punctualityChartData.datasets[0].data = punctualityData;
+
+    // Update weekly hours chart
+    this.pointageService.getWeeklyStats(this.currentUser.id)
+      .subscribe(stats => {
+        const weeklyData = Array(5).fill(0);
+        this.monthlyHistory.forEach(entry => {
+          const entryDate = new Date(entry.date);
+          if (entryDate >= new Date(now.setDate(now.getDate() - now.getDay()))) {
+            const dayIndex = entryDate.getDay() - 1;
+            if (dayIndex >= 0 && dayIndex < 5) {
+              weeklyData[dayIndex] = entry.totalHours || 0;
+            }
+          }
+        });
+        this.weeklyHoursChartData.datasets[0].data = weeklyData;
+      });
+
+    // Update monthly trends
+    const weeklyHours = [0, 0, 0, 0];
+    this.monthlyHistory.forEach(entry => {
+      const entryDate = new Date(entry.date);
+      const weekNumber = Math.floor((entryDate.getDate() - 1) / 7);
+      if (weekNumber < 4) {
+        weeklyHours[weekNumber] += entry.totalHours || 0;
+      }
+    });
+    
+    this.monthlyTrendsChartData.datasets[0].data = weeklyHours;
   }
 
   getStatusLabel(status: string): string {

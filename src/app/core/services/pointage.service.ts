@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { map, switchMap } from 'rxjs/operators';
 import { TimeEntry } from '../interfaces/user.interface';
 import { environment } from '../../../environments/environment';
 
@@ -170,6 +170,141 @@ export class PointageService {
   }
 
   private calculateTotalHours(entryId: number, checkOutTime: Date): number {
-    return 8; // À améliorer avec un vrai calcul
+    let totalHours = 0;
+    this.http.get<TimeEntry>(`${this.apiUrl}/${entryId}`).subscribe({
+      next: (entry) => {
+        if (!entry || !entry.checkIn) return;
+
+        const checkInTime = new Date(`2000-01-01T${entry.checkIn}`);
+        const checkOutTimeFormatted = new Date(`2000-01-01T${this.formatTime(checkOutTime)}`);
+        
+        // Calculate total milliseconds
+        let totalMilliseconds = checkOutTimeFormatted.getTime() - checkInTime.getTime();
+
+        // Subtract lunch break if it exists
+        if (entry.lunchStart && entry.lunchEnd) {
+          const lunchStart = new Date(`2000-01-01T${entry.lunchStart}`);
+          const lunchEnd = new Date(`2000-01-01T${entry.lunchEnd}`);
+          const lunchDuration = lunchEnd.getTime() - lunchStart.getTime();
+          totalMilliseconds -= lunchDuration;
+        }
+
+        // Convert to hours
+        totalHours = totalMilliseconds / (1000 * 60 * 60);
+      },
+      error: (error) => {
+        console.error('Error calculating total hours:', error);
+      }
+    });
+
+    return Math.round(totalHours * 100) / 100; // Round to 2 decimal places
+  }
+
+  private getWorkStatus(entry: TimeEntry): string {
+    if (!entry.checkIn) return 'absent';
+    
+    const checkInTime = new Date(`2000-01-01T${entry.checkIn}`);
+    const workStartTime = new Date(`2000-01-01T09:00:00`); // 9 AM
+    
+    if (checkInTime > workStartTime) {
+      return 'late';
+    }
+    
+    return 'present';
+  }
+
+  updateEntryStatus(entryId: number): Observable<TimeEntry> {
+    return this.http.get<TimeEntry>(`${this.apiUrl}/${entryId}`).pipe(
+      switchMap(entry => {
+        const status = this.getWorkStatus(entry);
+        return this.http.patch<TimeEntry>(`${this.apiUrl}/${entryId}`, {
+          status,
+          isLate: status === 'late'
+        });
+      }),
+      map(response => ({
+        ...response,
+        date: response.date ? new Date(response.date) : new Date()
+      }))
+    );
+  }
+
+  getWeeklyStats(userId: number): Observable<any> {
+    const today = new Date();
+    const weekStart = new Date(today.setDate(today.getDate() - today.getDay()));
+    const weekEnd = new Date(today.setDate(today.getDate() + 6));
+
+    return this.http.get<TimeEntry[]>(
+      `${this.apiUrl}?userId=${userId}&date_gte=${weekStart.toISOString()}&date_lte=${weekEnd.toISOString()}`
+    ).pipe(
+      map(entries => {
+        const stats = {
+          totalHours: 0,
+          averageHours: 0,
+          daysPresent: 0,
+          daysLate: 0,
+          averageArrivalTime: 0
+        };
+
+        if (entries.length === 0) return stats;
+
+        let totalArrivalMinutes = 0;
+        entries.forEach(entry => {
+          if (entry.totalHours) stats.totalHours += entry.totalHours;
+          if (entry.status === 'present') stats.daysPresent++;
+          if (entry.status === 'late') stats.daysLate++;
+          
+          if (entry.checkIn) {
+            const [hours, minutes] = entry.checkIn.split(':').map(Number);
+            totalArrivalMinutes += hours * 60 + minutes;
+          }
+        });
+
+        stats.averageHours = stats.totalHours / entries.length;
+        stats.averageArrivalTime = totalArrivalMinutes / entries.length;
+
+        return stats;
+      })
+    );
+  }
+
+  getMonthlyStats(userId: number, month: number, year: number): Observable<any> {
+    return this.getMonthlyEntries(userId, month, year).pipe(
+      map(entries => {
+        const stats = {
+          totalDays: entries.length,
+          presentDays: 0,
+          lateDays: 0,
+          absentDays: 0,
+          totalHours: 0,
+          averageHours: 0,
+          averageBreakTime: 0
+        };
+
+        let totalBreakMinutes = 0;
+        let entriesWithBreak = 0;
+
+        entries.forEach(entry => {
+          if (entry.status === 'present') stats.presentDays++;
+          else if (entry.status === 'late') stats.lateDays++;
+          else if (entry.status === 'absent') stats.absentDays++;
+
+          if (entry.totalHours) stats.totalHours += entry.totalHours;
+
+          if (entry.lunchStart && entry.lunchEnd) {
+            const lunchStart = new Date(`2000-01-01T${entry.lunchStart}`);
+            const lunchEnd = new Date(`2000-01-01T${entry.lunchEnd}`);
+            const breakMinutes = (lunchEnd.getTime() - lunchStart.getTime()) / (1000 * 60);
+            totalBreakMinutes += breakMinutes;
+            entriesWithBreak++;
+          }
+        });
+
+        stats.averageHours = stats.totalHours / (stats.presentDays + stats.lateDays);
+        stats.averageBreakTime = entriesWithBreak > 0 ? totalBreakMinutes / entriesWithBreak : 0;
+
+        return stats;
+      })
+    );
   }
 }

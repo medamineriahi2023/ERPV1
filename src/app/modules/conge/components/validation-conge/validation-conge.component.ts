@@ -48,6 +48,8 @@ export class ValidationCongeComponent implements OnInit {
   selectedConge?: CongeWithEmployee;
   showApprovalDialog = false;
   approverComment = '';
+  currentUser: any;
+  managedEmployees: number[] = [];
 
   typeOptions = [
     { label: 'Congé payé', value: 'CONGE_PAYE' },
@@ -71,22 +73,58 @@ export class ValidationCongeComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.loadConges();
+    this.getCurrentUserAndEmployees();
+  }
+
+  private async getCurrentUserAndEmployees() {
+    try {
+      // Get current user and their managed employees
+      this.currentUser = await this.authService.getCurrentUser();
+      const managedEmployees = await this.authService.getManagedEmployees();
+      this.managedEmployees = managedEmployees.map(emp => emp.id);
+      
+      // Load leave requests only after we have the managed employees list
+      await this.loadConges();
+    } catch (error) {
+      console.error('Error getting current user or managed employees:', error);
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Erreur',
+        detail: 'Erreur lors du chargement des informations utilisateur',
+        life: 3000
+      });
+    }
   }
 
   async loadConges() {
     this.loading = true;
     try {
-      const conges = await firstValueFrom(this.congeService.getCongeRequests());
-      const employeeIds = [...new Set(conges.map(c => c.employeeId))];
+      // Get all leave requests
+      const allConges = await firstValueFrom(this.congeService.getCongeRequests());
+      
+      // Filter requests to only include those from managed employees
+      const filteredConges = allConges.filter(conge => 
+        this.managedEmployees.includes(conge.employeeId)
+      );
+
+      // Get unique employee IDs from the filtered requests
+      const employeeIds = [...new Set(filteredConges.map(c => c.employeeId))];
+      
+      // Fetch employee details
       const employees = await Promise.all(
         employeeIds.map(id => firstValueFrom(this.employeeService.getEmployee(id)))
       );
 
-      this.conges = conges.map(conge => ({
+      // Combine leave requests with employee details
+      this.conges = filteredConges.map(conge => ({
         ...conge,
         employee: employees.find(e => e?.id === conge.employeeId)
       }));
+
+      // Sort by date, with most recent first
+      this.conges.sort((a, b) => 
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      );
     } catch (error) {
       console.error('Error loading conges:', error);
       this.messageService.add({
