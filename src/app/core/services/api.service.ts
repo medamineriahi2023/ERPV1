@@ -12,7 +12,7 @@ import { Position } from '../interfaces/position.interface';
   providedIn: 'root'
 })
 export class ApiService {
-  private readonly API_URL = 'http://localhost:3000';
+  private readonly API_URL = 'http://172.174.209.57:3000';
 
   constructor(private http: HttpClient) {}
 
