@@ -171,11 +171,6 @@ export class SidebarComponent implements OnInit {
   private getManagerMenuItems(): MenuItem[] {
     return [
       {
-        label: 'Tableau de bord',
-        icon: 'pi pi-home',
-        routerLink: '/dashboard'
-      },
-      {
         label: 'Gestion RH',
         icon: 'pi pi-users',
         items: [
@@ -212,17 +207,17 @@ export class SidebarComponent implements OnInit {
             visible: true // Always show for managers
           }
         ]
-      },
-      {
-        label: 'Projets',
-        icon: 'pi pi-briefcase',
-        routerLink: ['/projects']
-      },
-      {
-        label: 'Évaluation',
-        icon: 'pi pi-chart-bar',
-        routerLink: ['/performance-review']
       }
+      // {
+      //   label: 'Projets',
+      //   icon: 'pi pi-briefcase',
+      //   routerLink: ['/projects']
+      // },
+      // {
+      //   label: 'Évaluation',
+      //   icon: 'pi pi-chart-bar',
+      //   routerLink: ['/performance-review']
+      // }
     ];
   }
 
