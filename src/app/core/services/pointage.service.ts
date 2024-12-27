@@ -1,217 +1,175 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { TimeEntry } from '../interfaces/user.interface';
-import { AuthService } from './auth.service';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class PointageService {
-  private readonly POINTAGE_KEY = 'timeEntries';
-  private timeEntriesSubject: BehaviorSubject<TimeEntry[]>;
+  private apiUrl = `${environment.apiUrl}/time-entries`;
 
-  constructor(private authService: AuthService) {
-    const storedEntries = localStorage.getItem(this.POINTAGE_KEY);
-    this.timeEntriesSubject = new BehaviorSubject<TimeEntry[]>(
-      storedEntries ? JSON.parse(storedEntries) : []
+  constructor(private http: HttpClient) {}
+
+  getActiveSession(userId: number): Observable<TimeEntry | null> {
+    const today = new Date();
+    const startOfDay = new Date(today.getFullYear(), today.getMonth(), today.getDate()).toISOString();
+    const endOfDay = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 23, 59, 59).toISOString();
+
+    return this.http.get<TimeEntry[]>(
+      `${this.apiUrl}?userId=${userId}&date_gte=${startOfDay}&date_lte=${endOfDay}&checkOut=null`
+    ).pipe(
+      map(entries => {
+        if (entries.length === 0) return null;
+        const entry = entries[0];
+        return {
+          ...entry,
+          date: entry.date ? new Date(entry.date) : new Date()
+        };
+      })
     );
   }
 
-  getTimeEntry(userId: number, date: Date = new Date()): TimeEntry | undefined {
-    const targetDate = new Date(date);
-    return this.timeEntriesSubject.value.find(entry => {
-      const entryDate = new Date(entry.date);
-      return entry.userId === userId &&
-        entryDate.getDate() === targetDate.getDate() &&
-        entryDate.getMonth() === targetDate.getMonth() &&
-        entryDate.getFullYear() === targetDate.getFullYear();
-    });
+  getTimeEntry(userId: number, date: Date = new Date()): Observable<TimeEntry | null> {
+    const startOfDay = new Date(date.getFullYear(), date.getMonth(), date.getDate()).toISOString();
+    const endOfDay = new Date(date.getFullYear(), date.getMonth(), date.getDate(), 23, 59, 59).toISOString();
+
+    return this.http.get<TimeEntry[]>(
+      `${this.apiUrl}?userId=${userId}&date_gte=${startOfDay}&date_lte=${endOfDay}`
+    ).pipe(
+      map(entries => {
+        if (entries.length === 0) return null;
+        const entry = entries[0];
+        return {
+          ...entry,
+          date: entry.date ? new Date(entry.date) : new Date()
+        };
+      })
+    );
   }
 
-  getMonthlyEntries(userId: number, month: number, year: number): TimeEntry[] {
-    return this.timeEntriesSubject.value.filter(entry => {
-      const entryDate = new Date(entry.date);
-      return entry.userId === userId &&
-        entryDate.getMonth() === month &&
-        entryDate.getFullYear() === year;
-    });
+  getMonthlyEntries(userId: number, month: number, year: number): Observable<TimeEntry[]> {
+    const startDate = new Date(year, month, 1);
+    const endDate = new Date(year, month + 1, 0, 23, 59, 59);
+    
+    return this.http.get<TimeEntry[]>(
+      `${this.apiUrl}?userId=${userId}&date_gte=${startDate.toISOString()}&date_lte=${endDate.toISOString()}&_sort=date&_order=desc`
+    ).pipe(
+      map(entries => entries.map(entry => ({
+        ...entry,
+        date: entry.date ? new Date(entry.date) : new Date()
+      })))
+    );
   }
 
-  checkIn(userId: number): TimeEntry {
-    const existingEntry = this.getTimeEntry(userId);
-    if (existingEntry) {
-      throw new Error('Already checked in for today');
-    }
+  getTeamEntries(userIds: number[]): Observable<TimeEntry[]> {
+    const today = new Date();
+    const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1).toISOString();
+    const endOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0, 23, 59, 59).toISOString();
 
+    // Construire la requête pour tous les utilisateurs
+    const userQuery = userIds.map(id => `userId=${id}`).join('&');
+    
+    return this.http.get<TimeEntry[]>(
+      `${this.apiUrl}?${userQuery}&date_gte=${startOfMonth}&date_lte=${endOfMonth}&_sort=date&_order=desc`
+    ).pipe(
+      map(entries => entries.map(entry => ({
+        ...entry,
+        date: entry.date ? new Date(entry.date) : new Date()
+      })))
+    );
+  }
+
+  getTeamActiveEntries(userIds: number[]): Observable<TimeEntry[]> {
+    const today = new Date();
+    const startOfDay = new Date(today.getFullYear(), today.getMonth(), today.getDate()).toISOString();
+    const endOfDay = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 23, 59, 59).toISOString();
+
+    // Construire la requête pour tous les utilisateurs
+    const userQuery = userIds.map(id => `userId=${id}`).join('&');
+    
+    return this.http.get<TimeEntry[]>(
+      `${this.apiUrl}?${userQuery}&date_gte=${startOfDay}&date_lte=${endOfDay}`
+    ).pipe(
+      map(entries => entries.map(entry => ({
+        ...entry,
+        date: entry.date ? new Date(entry.date) : new Date()
+      })))
+    );
+  }
+
+  checkIn(userId: number): Observable<TimeEntry> {
     const now = new Date();
-    const newEntry: TimeEntry = {
-      id: this.generateId(),
+    const workStartTime = new Date();
+    workStartTime.setHours(9, 0, 0, 0);
+    
+    const entry = {
       userId,
       date: now,
       checkIn: this.formatTime(now),
-      checkOut: '',
+      checkOut: null,
+      lunchStart: null,
+      lunchEnd: null,
       totalHours: 0,
-      status: 'incomplete'
-    };
+      status: now > workStartTime ? 'late' : 'present',
+      isLate: now > workStartTime
+    } as TimeEntry;
 
-    const updatedEntries = [...this.timeEntriesSubject.value, newEntry];
-    this.saveEntries(updatedEntries);
-    return newEntry;
+    return this.http.post<TimeEntry>(this.apiUrl, {
+      ...entry,
+      date: entry.date.toISOString()
+    }).pipe(
+      map(response => ({
+        ...response,
+        date: response.date ? new Date(response.date) : new Date()
+      }))
+    );
   }
 
-  checkOut(userId: number): TimeEntry {
-    const entry = this.getTimeEntry(userId);
-    if (!entry) {
-      throw new Error('No check-in found for today');
-    }
-
+  checkOut(entryId: number): Observable<TimeEntry> {
     const now = new Date();
-    const checkOutTime = this.formatTime(now);
-    
-    const updatedEntry: TimeEntry = {
-      ...entry,
-      checkOut: checkOutTime,
-      totalHours: this.calculateTotalHours(entry.checkIn, checkOutTime, entry.lunchStart, entry.lunchEnd),
-      status: 'complete'
-    };
-
-    this.updateEntry(updatedEntry);
-    return updatedEntry;
+    return this.http.patch<TimeEntry>(`${this.apiUrl}/${entryId}`, {
+      checkOut: this.formatTime(now),
+      totalHours: this.calculateTotalHours(entryId, now)
+    }).pipe(
+      map(response => ({
+        ...response,
+        date: response.date ? new Date(response.date) : new Date()
+      }))
+    );
   }
 
-  startLunch(userId: number): TimeEntry {
-    const entry = this.getTimeEntry(userId);
-    if (!entry) {
-      throw new Error('No check-in found for today');
-    }
-
-    if (entry.lunchStart) {
-      throw new Error('Lunch break already started');
-    }
-
+  startLunch(entryId: number): Observable<TimeEntry> {
     const now = new Date();
-    const updatedEntry: TimeEntry = {
-      ...entry,
+    return this.http.patch<TimeEntry>(`${this.apiUrl}/${entryId}`, {
       lunchStart: this.formatTime(now)
-    };
-
-    this.updateEntry(updatedEntry);
-    return updatedEntry;
+    }).pipe(
+      map(response => ({
+        ...response,
+        date: response.date ? new Date(response.date) : new Date()
+      }))
+    );
   }
 
-  endLunch(userId: number): TimeEntry {
-    const entry = this.getTimeEntry(userId);
-    if (!entry) {
-      throw new Error('No check-in found for today');
-    }
-
-    if (!entry.lunchStart) {
-      throw new Error('Lunch break not started');
-    }
-
+  endLunch(entryId: number): Observable<TimeEntry> {
     const now = new Date();
-    const updatedEntry: TimeEntry = {
-      ...entry,
+    return this.http.patch<TimeEntry>(`${this.apiUrl}/${entryId}`, {
       lunchEnd: this.formatTime(now)
-    };
-
-    this.updateEntry(updatedEntry);
-    return updatedEntry;
-  }
-
-  getUserEntries(userId: number): Observable<TimeEntry[]> {
-    return this.timeEntriesSubject.asObservable();
-  }
-
-  getTeamEntries(managerId: number): TimeEntry[] {
-    const manager = this.authService.getCurrentUser();
-    if (!manager || !manager.managedEmployees) return [];
-
-    return this.timeEntriesSubject.value.filter(entry =>
-      manager.managedEmployees.includes(entry.userId)
+    }).pipe(
+      map(response => ({
+        ...response,
+        date: response.date ? new Date(response.date) : new Date()
+      }))
     );
-  }
-
-  getMonthlyStats(userId: number, month: number, year: number): {
-    totalDays: number;
-    totalHours: number;
-    averageHours: number;
-    lateArrivals: number;
-  } {
-    const entries = this.getMonthlyEntries(userId, month, year)
-      .filter(entry => entry.status === 'complete');
-
-    const totalHours = entries.reduce((sum, entry) => sum + entry.totalHours, 0);
-
-    return {
-      totalDays: entries.length,
-      totalHours,
-      averageHours: entries.length ? totalHours / entries.length : 0,
-      lateArrivals: entries.filter(entry => this.isLateArrival(entry.checkIn)).length
-    };
-  }
-
-  private getTodayEntry(userId: number): TimeEntry | undefined {
-    const today = new Date();
-    return this.timeEntriesSubject.value.find(entry => {
-      const entryDate = new Date(entry.date);
-      return entry.userId === userId &&
-        entryDate.getDate() === today.getDate() &&
-        entryDate.getMonth() === today.getMonth() &&
-        entryDate.getFullYear() === today.getFullYear();
-    });
-  }
-
-  private updateEntry(updatedEntry: TimeEntry): void {
-    const currentEntries = this.timeEntriesSubject.value;
-    const updatedEntries = currentEntries.map(entry =>
-      entry.id === updatedEntry.id ? updatedEntry : entry
-    );
-    this.saveEntries(updatedEntries);
-  }
-
-  private calculateTotalHours(checkIn: string, checkOut: string, lunchStart?: string, lunchEnd?: string): number {
-    const startTime = this.parseTime(checkIn);
-    const endTime = this.parseTime(checkOut);
-    let lunchDuration = 0;
-
-    if (lunchStart && lunchEnd) {
-      const lunchStartTime = this.parseTime(lunchStart);
-      const lunchEndTime = this.parseTime(lunchEnd);
-      lunchDuration = (lunchEndTime - lunchStartTime) / (1000 * 60 * 60);
-    }
-
-    const totalHours = (endTime - startTime) / (1000 * 60 * 60) - lunchDuration;
-    return Math.round(totalHours * 100) / 100;
   }
 
   private formatTime(date: Date): string {
     return date.toTimeString().split(' ')[0];
   }
 
-  private parseTime(timeString: string): number {
-    const [hours, minutes, seconds] = timeString.split(':').map(Number);
-    const date = new Date();
-    date.setHours(hours, minutes, seconds);
-    return date.getTime();
-  }
-
-  private isLateArrival(checkIn: string): boolean {
-    const [hours, minutes] = checkIn.split(':').map(Number);
-    const user = this.authService.getCurrentUser();
-    if (!user || !user.workSchedule) return false;
-
-    const [scheduleHours, scheduleMinutes] = user.workSchedule.startTime.split(':').map(Number);
-    return hours > scheduleHours || (hours === scheduleHours && minutes > scheduleMinutes + 15);
-  }
-
-  private generateId(): number {
-    const entries = this.timeEntriesSubject.value;
-    return entries.length ? Math.max(...entries.map(e => e.id)) + 1 : 1;
-  }
-
-  private saveEntries(entries: TimeEntry[]): void {
-    localStorage.setItem(this.POINTAGE_KEY, JSON.stringify(entries));
-    this.timeEntriesSubject.next(entries);
+  private calculateTotalHours(entryId: number, checkOutTime: Date): number {
+    return 8; // À améliorer avec un vrai calcul
   }
 }

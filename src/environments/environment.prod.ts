@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  apiUrl: 'http://172.174.209.57:3000/' // Change this to your production API URL when deploying
+  apiUrl: 'https://fc97-197-15-227-108.ngrok-free.app' // Change this to your production API URL when deploying
 };

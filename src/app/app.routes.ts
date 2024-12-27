@@ -51,6 +51,10 @@ export const routes: Routes = [
         path: 'pointage',
         loadComponent: () => import('./modules/pointage/components/pointage/pointage.component')
           .then(m => m.PointageComponent)
+      },{
+        path: 'pointage/team',
+        loadComponent: () => import('./modules/pointage/components/team-pointage/team-pointage.component')
+            .then(m => m.TeamPointageComponent)
       },
 
       // Default route

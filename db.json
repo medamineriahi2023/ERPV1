@@ -248,24 +248,114 @@
       "createdAt": "2024-01-25"
     }
   ],
-  "timeEntries": [
+  "time-entries": [
     {
       "id": 1,
-      "employeeId": 2,
-      "date": "2024-01-02",
-      "checkIn": "09:00",
-      "checkOut": "17:30",
-      "totalHours": 8.5,
-      "status": "approved"
+      "userId": 1,
+      "date": "2024-01-27",
+      "checkIn": "08:30:00",
+      "checkOut": "17:30:00",
+      "lunchStart": "12:00:00",
+      "lunchEnd": "13:00:00",
+      "totalHours": 8,
+      "status": "present",
+      "isLate": false
     },
     {
       "id": 2,
-      "employeeId": 3,
-      "date": "2024-01-02",
-      "checkIn": "08:45",
-      "checkOut": "17:15",
-      "totalHours": 8.5,
-      "status": "approved"
+      "userId": 2,
+      "date": "2024-01-27",
+      "checkIn": "08:30:00",
+      "checkOut": "17:30:00",
+      "lunchStart": "12:00:00",
+      "lunchEnd": "13:00:00",
+      "totalHours": 8,
+      "status": "present",
+      "isLate": false
+    },
+    {
+      "id": 3,
+      "userId": 4,
+      "date": "2024-01-27",
+      "checkIn": "08:30:00",
+      "checkOut": "17:30:00",
+      "lunchStart": "12:00:00",
+      "lunchEnd": "13:00:00",
+      "totalHours": 8,
+      "status": "present",
+      "isLate": false
+    },
+    {
+      "id": 4,
+      "userId": 5,
+      "date": "2024-01-27",
+      "checkIn": "08:30:00",
+      "checkOut": "17:30:00",
+      "lunchStart": "12:00:00",
+      "lunchEnd": "13:00:00",
+      "totalHours": 8,
+      "status": "present",
+      "isLate": false
+    },
+    {
+      "id": 5,
+      "userId": 6,
+      "date": "2024-01-27",
+      "checkIn": "08:30:00",
+      "checkOut": "17:30:00",
+      "lunchStart": "12:00:00",
+      "lunchEnd": "13:00:00",
+      "totalHours": 8,
+      "status": "present",
+      "isLate": false
+    },
+    {
+      "id": 6,
+      "userId": 7,
+      "date": "2024-01-27",
+      "checkIn": "08:30:00",
+      "checkOut": "17:30:00",
+      "lunchStart": "12:00:00",
+      "lunchEnd": "13:00:00",
+      "totalHours": 8,
+      "status": "present",
+      "isLate": false
+    },
+    {
+      "userId": 4,
+      "date": "2024-12-27T15:58:15.872Z",
+      "checkIn": "16:58:15",
+      "checkOut": "16:58:22",
+      "lunchStart": null,
+      "lunchEnd": null,
+      "totalHours": 0,
+      "status": "late",
+      "isLate": true,
+      "id": 10
+    },
+    {
+      "userId": 4,
+      "date": "2024-12-27T16:00:29.668Z",
+      "checkIn": "17:00:29",
+      "checkOut": "17:00:45",
+      "lunchStart": "17:00:39",
+      "lunchEnd": "17:00:43",
+      "totalHours": 0,
+      "status": "late",
+      "isLate": true,
+      "id": 12
+    },
+    {
+      "userId": 5,
+      "date": "2024-12-27T16:39:01.891Z",
+      "checkIn": "17:39:01",
+      "checkOut": null,
+      "lunchStart": "17:43:32",
+      "lunchEnd": null,
+      "totalHours": 0,
+      "status": "late",
+      "isLate": true,
+      "id": 13
     }
   ],
   "performanceReviews": [
@@ -456,17 +546,18 @@
         "value": "NORMAL",
         "icon": "pi pi-clock"
       },
-      "reason": "sqdfsdqfdsqfsdqfdsqfdsqfdsqfdsqfdsqf",
-      "status": "EN_ATTENTE",
+      "reason": "sqdfsdqfdsqfsdqfdsqfdsqfdsqfdsqf",
+      "status": "REFUSE",
       "duration": 2,
       "createdAt": "2024-12-27T01:54:52.816Z",
-      "updatedAt": "2024-12-27T01:54:52.816Z",
+      "updatedAt": "2024-12-27T05:20:43.935Z",
       "impactOnTraining": false,
       "attachments": [
         "profile-pic (2).png",
         "profile-pic (2).png"
       ],
-      "id": 7
+      "id": 7,
+      "approverComment": ""
     }
   ]
 }

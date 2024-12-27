@@ -1,0 +1,212 @@
+<div class="min-h-screen bg-gray-50/50 p-6">
+  <!-- Header -->
+  <div class="mb-8">
+    <h1 class="text-2xl font-bold text-gray-800">Suivi de Pointage d'Équipe</h1>
+    <p class="text-gray-600 mt-1">Gérez et suivez la présence de votre équipe</p>
+  </div>
+
+  <!-- Stats Cards -->
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+    <!-- Present Today -->
+    <div class="bg-white rounded-xl shadow-sm p-6">
+      <div class="flex items-center justify-between mb-4">
+        <div class="bg-green-50 rounded-lg p-3">
+          <i class="pi pi-users text-green-500 text-xl"></i>
+        </div>
+        <span class="text-sm font-medium text-green-500 bg-green-50 px-2.5 py-0.5 rounded-full">
+          Présents
+        </span>
+      </div>
+      <h3 class="text-2xl font-bold text-gray-700 mb-2">{{getPresentCount()}}</h3>
+      <p class="text-gray-500 text-sm">Employés présents aujourd'hui</p>
+    </div>
+
+    <!-- Absent Today -->
+    <div class="bg-white rounded-xl shadow-sm p-6">
+      <div class="flex items-center justify-between mb-4">
+        <div class="bg-red-50 rounded-lg p-3">
+          <i class="pi pi-user-minus text-red-500 text-xl"></i>
+        </div>
+        <span class="text-sm font-medium text-red-500 bg-red-50 px-2.5 py-0.5 rounded-full">
+          Absents
+        </span>
+      </div>
+      <h3 class="text-2xl font-bold text-gray-700 mb-2">{{getAbsentCount()}}</h3>
+      <p class="text-gray-500 text-sm">Employés absents aujourd'hui</p>
+    </div>
+
+    <!-- Late Today -->
+    <div class="bg-white rounded-xl shadow-sm p-6">
+      <div class="flex items-center justify-between mb-4">
+        <div class="bg-orange-50 rounded-lg p-3">
+          <i class="pi pi-clock text-orange-500 text-xl"></i>
+        </div>
+        <span class="text-sm font-medium text-orange-500 bg-orange-50 px-2.5 py-0.5 rounded-full">
+          En retard
+        </span>
+      </div>
+      <h3 class="text-2xl font-bold text-gray-700 mb-2">{{getLateCount()}}</h3>
+      <p class="text-gray-500 text-sm">Employés en retard aujourd'hui</p>
+    </div>
+
+    <!-- On Leave -->
+    <div class="bg-white rounded-xl shadow-sm p-6">
+      <div class="flex items-center justify-between mb-4">
+        <div class="bg-blue-50 rounded-lg p-3">
+          <i class="pi pi-calendar text-blue-500 text-xl"></i>
+        </div>
+        <span class="text-sm font-medium text-blue-500 bg-blue-50 px-2.5 py-0.5 rounded-full">
+          En congé
+        </span>
+      </div>
+      <h3 class="text-2xl font-bold text-gray-700 mb-2">{{getLeaveCount()}}</h3>
+      <p class="text-gray-500 text-sm">Employés en congé aujourd'hui</p>
+    </div>
+  </div>
+
+  <!-- Filters -->
+  <div class="bg-white rounded-xl shadow-sm p-4 mb-6">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div class="relative">
+        <span class="p-input-icon-left w-full">
+          <i class="pi pi-search"></i>
+          <input type="text" pInputText class="w-full" 
+                 placeholder="Rechercher un employé..."
+                 [(ngModel)]="searchTerm"
+                 (input)="filterEntries()">
+        </span>
+      </div>
+      <div>
+        <p-dropdown [options]="statusOptions" 
+                   [(ngModel)]="selectedStatus"
+                   placeholder="Filtrer par statut"
+                   styleClass="w-full"
+                   (onChange)="filterEntries()">
+        </p-dropdown>
+      </div>
+      <div>
+        <p-calendar [(ngModel)]="selectedDate" 
+                   [showIcon]="true"
+                   placeholder="Sélectionner une date"
+                   styleClass="w-full"
+                   (onSelect)="onDateSelect($event)">
+        </p-calendar>
+      </div>
+    </div>
+  </div>
+
+  <!-- Team Members List -->
+  <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+    <div class="p-6 border-b border-gray-200">
+      <h3 class="text-lg font-semibold text-gray-800">Membres de l'équipe</h3>
+    </div>
+    
+    <div class="grid grid-cols-1 divide-y divide-gray-200">
+      <div *ngFor="let entry of filteredEntries" 
+           class="p-6 hover:bg-gray-50 transition-colors duration-150">
+        <div class="flex items-center justify-between">
+          <!-- Employee Info -->
+          <div class="flex items-center space-x-4">
+            <div class="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden">
+              <span class="text-xl font-medium text-gray-600">
+                {{entry.userId}}
+              </span>
+            </div>
+            <div>
+              <h4 class="text-lg font-medium text-gray-900">{{getEmployeeFullName(entry)}}</h4>
+              <p class="text-sm text-gray-500">{{entry.date | date:'fullDate'}}</p>
+            </div>
+          </div>
+
+          <!-- Today's Status -->
+          <div class="flex items-center space-x-6">
+            <div class="text-right">
+              <div class="text-sm text-gray-500">Arrivée</div>
+              <div class="font-medium" [class.text-red-500]="entry.isLate">
+                {{entry.checkIn || '--:--'}}
+              </div>
+            </div>
+            <div class="text-right">
+              <div class="text-sm text-gray-500">Départ</div>
+              <div class="font-medium">{{entry.checkOut || '--:--'}}</div>
+            </div>
+            <div class="text-right">
+              <div class="text-sm text-gray-500">Total</div>
+              <div class="font-medium">{{entry.totalHours || 0}}h</div>
+            </div>
+            <div>
+              <span [class]="getStatusBadgeClass(entry.status)">
+                {{getStatusLabel(entry.status)}}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Time Details -->
+        <div class="mt-4 grid grid-cols-3 gap-4">
+          <div class="bg-gray-50 rounded-lg p-3">
+            <div class="text-sm text-gray-500">Pause début</div>
+            <div class="font-medium text-orange-600">{{entry.lunchStart || '--:--'}}</div>
+          </div>
+          <div class="bg-gray-50 rounded-lg p-3">
+            <div class="text-sm text-gray-500">Pause fin</div>
+            <div class="font-medium text-green-600">{{entry.lunchEnd || '--:--'}}</div>
+          </div>
+          <div class="bg-gray-50 rounded-lg p-3">
+            <div class="text-sm text-gray-500">Status</div>
+            <div class="font-medium" [ngClass]="{'text-red-600': entry.isLate, 'text-green-600': !entry.isLate}">
+              {{entry.isLate ? 'En retard' : 'À l\'heure'}}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Monthly History -->
+  <div class="mt-6">
+    <div class="bg-white rounded-xl shadow-sm p-6">
+      <h3 class="text-lg font-semibold text-gray-800 mb-4">Historique mensuel</h3>
+
+      <p-table [value]="monthlyHistory"
+               [paginator]="true"
+               [rows]="10"
+               [showCurrentPageReport]="true"
+               responsiveLayout="scroll"
+               [rowsPerPageOptions]="[10,25,50]"
+               styleClass="p-datatable-sm"
+               currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries">
+
+        <ng-template pTemplate="header">
+          <tr class="bg-gray-50">
+            <th class="text-gray-700">Employé</th>
+            <th class="text-gray-700">Date</th>
+            <th class="text-gray-700">Arrivée</th>
+            <th class="text-gray-700">Pause déjeuner</th>
+            <th class="text-gray-700">Départ</th>
+            <th class="text-gray-700">Total heures</th>
+            <th class="text-gray-700">Status</th>
+          </tr>
+        </ng-template>
+
+        <ng-template pTemplate="body" let-entry>
+          <tr class="hover:bg-gray-50">
+            <td>{{getEmployeeFullName(entry)}}</td>
+            <td>{{entry.date | date:'fullDate'}}</td>
+            <td [class.text-red-500]="entry.isLate">{{entry.checkIn || '--:--'}}</td>
+            <td>{{entry.lunchStart || '--:--'}} - {{entry.lunchEnd || '--:--'}}</td>
+            <td>{{entry.checkOut || '--:--'}}</td>
+            <td class="font-medium">{{entry.totalHours || 0}} heures</td>
+            <td>
+              <span [class]="getStatusBadgeClass(entry.status)">
+                {{getStatusLabel(entry.status)}}
+              </span>
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+  </div>
+</div>
+
+<p-toast></p-toast>

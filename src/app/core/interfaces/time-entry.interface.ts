@@ -1,10 +1,11 @@
 export interface TimeEntry {
-  id: number;
+  id?: number;
   employeeId: number;
   date: string;
-  checkIn: string;
-  checkOut: string;
-  totalHours: number;
+  time: string;
+  type: 'ARRIVAL' | 'DEPARTURE' | 'BREAK_START' | 'BREAK_END';
   status: 'pending' | 'approved' | 'rejected';
   comments?: string;
 }
+
+export type TimeEntryType = 'ARRIVAL' | 'DEPARTURE' | 'BREAK_START' | 'BREAK_END';

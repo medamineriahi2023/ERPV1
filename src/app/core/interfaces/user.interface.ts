@@ -38,15 +38,16 @@ export interface LoginRequest {
 }
 
 export interface TimeEntry {
-  id: number;
+  id?: number;
   userId: number;
   date: Date;
   checkIn: string;
-  checkOut: string;
-  lunchStart?: string;
-  lunchEnd?: string;
+  checkOut?: string | null;
+  lunchStart?: string | null;
+  lunchEnd?: string | null;
   totalHours: number;
-  status: 'complete' | 'incomplete';
+  status: 'present' | 'absent' | 'leave' | 'holiday' | 'late';
+  isLate?: boolean;
 }
 
 export interface LeaveRequest {
