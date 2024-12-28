@@ -129,11 +129,24 @@ export class PointageService {
   }
 
   checkOut(entryId: number): Observable<TimeEntry> {
-    const now = new Date();
-    return this.http.patch<TimeEntry>(`${this.apiUrl}/${entryId}`, {
-      checkOut: this.formatTime(now),
-      totalHours: this.calculateTotalHours(entryId, now)
-    }).pipe(
+    return this.http.get<TimeEntry>(`${this.apiUrl}/${entryId}`).pipe(
+      switchMap(entry => {
+        const now = new Date();
+        const checkOutTime = this.formatTime(now);
+        
+        // Update entry with checkout time
+        entry.checkOut = checkOutTime;
+        
+        // Calculate total hours
+        const updatedEntry = { ...entry, checkOut: checkOutTime };
+        const totalHours = this.calculateWorkingHours(updatedEntry);
+
+        // Update entry in database
+        return this.http.patch<TimeEntry>(`${this.apiUrl}/${entryId}`, {
+          checkOut: checkOutTime,
+          totalHours: totalHours
+        });
+      }),
       map(response => ({
         ...response,
         date: response.date ? new Date(response.date) : new Date()
@@ -169,35 +182,35 @@ export class PointageService {
     return date.toTimeString().split(' ')[0];
   }
 
-  private calculateTotalHours(entryId: number, checkOutTime: Date): number {
-    let totalHours = 0;
-    this.http.get<TimeEntry>(`${this.apiUrl}/${entryId}`).subscribe({
-      next: (entry) => {
-        if (!entry || !entry.checkIn) return;
+  private calculateWorkingHours(entry: TimeEntry): number {
+    if (!entry.checkIn || !entry.checkOut) return 0;
 
-        const checkInTime = new Date(`2000-01-01T${entry.checkIn}`);
-        const checkOutTimeFormatted = new Date(`2000-01-01T${this.formatTime(checkOutTime)}`);
-        
-        // Calculate total milliseconds
-        let totalMilliseconds = checkOutTimeFormatted.getTime() - checkInTime.getTime();
+    // Convert time strings to Date objects for the same day (to avoid date issues)
+    const baseDate = '2000-01-01T';
+    const checkIn = new Date(baseDate + entry.checkIn);
+    const checkOut = new Date(baseDate + entry.checkOut);
+    
+    // Calculate total duration in milliseconds
+    let totalMilliseconds = checkOut.getTime() - checkIn.getTime();
+    
+    // If total milliseconds is negative or zero, return 0
+    if (totalMilliseconds <= 0) return 0;
 
-        // Subtract lunch break if it exists
-        if (entry.lunchStart && entry.lunchEnd) {
-          const lunchStart = new Date(`2000-01-01T${entry.lunchStart}`);
-          const lunchEnd = new Date(`2000-01-01T${entry.lunchEnd}`);
-          const lunchDuration = lunchEnd.getTime() - lunchStart.getTime();
-          totalMilliseconds -= lunchDuration;
-        }
-
-        // Convert to hours
-        totalHours = totalMilliseconds / (1000 * 60 * 60);
-      },
-      error: (error) => {
-        console.error('Error calculating total hours:', error);
+    // Subtract lunch break if taken
+    if (entry.lunchStart && entry.lunchEnd) {
+      const lunchStart = new Date(baseDate + entry.lunchStart);
+      const lunchEnd = new Date(baseDate + entry.lunchEnd);
+      
+      // Verify lunch break times are valid
+      if (lunchEnd.getTime() > lunchStart.getTime()) {
+        const lunchDuration = lunchEnd.getTime() - lunchStart.getTime();
+        totalMilliseconds -= lunchDuration;
       }
-    });
-
-    return Math.round(totalHours * 100) / 100; // Round to 2 decimal places
+    }
+    
+    // Convert to hours and round to 2 decimal places
+    const hours = totalMilliseconds / (1000 * 60 * 60);
+    return Math.round(hours * 100) / 100;
   }
 
   private getWorkStatus(entry: TimeEntry): string {
@@ -212,23 +225,6 @@ export class PointageService {
     
     return 'present';
   }
-
-  updateEntryStatus(entryId: number): Observable<TimeEntry> {
-    return this.http.get<TimeEntry>(`${this.apiUrl}/${entryId}`).pipe(
-      switchMap(entry => {
-        const status = this.getWorkStatus(entry);
-        return this.http.patch<TimeEntry>(`${this.apiUrl}/${entryId}`, {
-          status,
-          isLate: status === 'late'
-        });
-      }),
-      map(response => ({
-        ...response,
-        date: response.date ? new Date(response.date) : new Date()
-      }))
-    );
-  }
-
   getWeeklyStats(userId: number): Observable<any> {
     const today = new Date();
     const weekStart = new Date(today.setDate(today.getDate() - today.getDay()));

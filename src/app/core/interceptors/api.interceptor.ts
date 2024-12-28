@@ -1,7 +1,7 @@
 import { HttpInterceptorFn, HttpHandlerFn } from '@angular/common/http';
 
 const OLD_API_URL = 'http://localhost:3000';
-const NEW_API_URL = 'https://fc97-197-15-227-108.ngrok-free.app';
+const NEW_API_URL = 'https://e985-197-15-18-165.ngrok-free.app';
 
 export const apiInterceptor: HttpInterceptorFn = (req, next: HttpHandlerFn) => {
   // Add ngrok header to skip browser warning

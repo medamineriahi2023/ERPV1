@@ -1,3 +1,5 @@
+// noinspection JSUnusedGlobalSymbols
+
 import { Component, OnInit } from '@angular/core';
 import { CongeService, CongeRequest } from '../../../../shared/services/conge.service';
 import { AuthService } from '../../../../core/services/auth.service';
@@ -15,11 +17,14 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { InputTextModule } from 'primeng/inputtext';
 import { EmployeeService, Employee } from '../../../../shared/services/employee.service';
 import { firstValueFrom } from 'rxjs';
+import {Ripple} from "primeng/ripple";
+import {InputTextarea} from "primeng/inputtextarea";
 
 export interface CongeWithEmployee extends CongeRequest {
   employee?: Employee;
 }
 
+// noinspection JSUnusedGlobalSymbols
 @Component({
   selector: 'app-validation-conge',
   templateUrl: './validation-conge.component.html',
@@ -37,7 +42,9 @@ export interface CongeWithEmployee extends CongeRequest {
     DatePipe,
     ToastModule,
     ConfirmDialogModule,
-    InputTextModule
+    InputTextModule,
+    Ripple,
+    InputTextarea
   ],
   providers: [MessageService]
 })
@@ -175,10 +182,6 @@ export class ValidationCongeComponent implements OnInit {
     });
   }
 
-  rejectConge(conge: CongeWithEmployee) {
-    this.selectedConge = conge;
-    this.showApprovalDialog = true;
-  }
 
   confirmRejection() {
     if (!this.selectedConge) return;
@@ -218,18 +221,6 @@ export class ValidationCongeComponent implements OnInit {
     this.approverComment = '';
   }
 
-  getStatusClass(status: string): string {
-    switch (status) {
-      case 'APPROUVE':
-        return 'status-approved';
-      case 'REFUSE':
-        return 'status-rejected';
-      case 'EN_ATTENTE':
-        return 'status-pending';
-      default:
-        return '';
-    }
-  }
 
   getStatusLabel(status: string): string {
     switch (status) {
@@ -272,13 +263,7 @@ export class ValidationCongeComponent implements OnInit {
     }
   }
 
-  getUrgencyLabel(urgencyLevel: string): string {
-    return urgencyLevel === 'URGENT' ? 'Urgent' : 'Normal';
-  }
 
-  getUrgencySeverity(urgencyLevel: string): 'danger' | 'info' {
-    return urgencyLevel === 'URGENT' ? 'danger' : 'info';
-  }
 
   calculateDaysUntilStart(startDate: string): number {
     const start = new Date(startDate);

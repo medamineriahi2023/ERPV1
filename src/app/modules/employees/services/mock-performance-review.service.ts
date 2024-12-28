@@ -58,10 +58,6 @@ export class MockPerformanceReviewService {
     }
   ];
 
-  getManagedEmployees(managerId: number): Observable<Employee[]> {
-    return of(this.mockEmployees).pipe(delay(500));
-  }
-
   getEligibleEmployees(managerId: number): Observable<Employee[]> {
     const sixMonthsAgo = new Date();
     sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);

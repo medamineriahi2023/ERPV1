@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import {Component, OnInit, OnDestroy, AfterViewInit} from '@angular/core';
 import { TimeEntry, User } from '@app/core/interfaces/user.interface';
 import { AuthService } from '@app/core/services/auth.service';
 import { PointageService } from '@app/core/services/pointage.service';
@@ -52,8 +52,7 @@ type ChartType = 'weekly' | 'status' | 'punctuality';
   ],
   providers: [MessageService]
 })
-export class TeamPointageComponent implements OnInit, OnDestroy {
-  today: Date = new Date();
+export class TeamPointageComponent implements OnInit, AfterViewInit, OnDestroy {
   currentTime: Date = new Date();
   selectedDate: Date = new Date();
   teamEntries: TimeEntryWithUser[] = [];
@@ -127,6 +126,11 @@ export class TeamPointageComponent implements OnInit, OnDestroy {
     }
   };
 
+  // Nouvelles propriétés pour les graphiques
+  private punctualityTrendChart: Chart | null = null;
+  private absenceForecastChart: Chart | null = null;
+  private workingHoursChart: Chart | null = null;
+
   constructor(
       private pointageService: PointageService,
       private authService: AuthService,
@@ -136,12 +140,11 @@ export class TeamPointageComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.currentUser = this.authService.getCurrentUser();
-    if (this.currentUser) {
-      this.loadMonthlyEntries();
-      if (this.currentUser.role === 'manager' && this.currentUser.managedEmployees) {
-        this.loadTeamEntries();
-      }
-    }
+
+    this.initializeCharts();
+    this.initializePunctualityTrendChart();
+    this.initializeAbsenceForecastChart();
+    this.initializeWorkingHoursChart();
   }
 
   ngOnDestroy() {
@@ -152,6 +155,15 @@ export class TeamPointageComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
     // Destroy charts
     Object.values(this.charts).forEach(chart => chart.destroy());
+    if (this.punctualityTrendChart) {
+      this.punctualityTrendChart.destroy();
+    }
+    if (this.absenceForecastChart) {
+      this.absenceForecastChart.destroy();
+    }
+    if (this.workingHoursChart) {
+      this.workingHoursChart.destroy();
+    }
   }
 
   private initializeCharts() {
@@ -181,6 +193,275 @@ export class TeamPointageComponent implements OnInit, OnDestroy {
         data: this.punctualityTrendData,
         options: this.chartOptions
       });
+    }
+  }
+
+  private initializePunctualityTrendChart(): void {
+    const canvas = document.getElementById('punctualityTrendChart') as HTMLCanvasElement;
+    if (!canvas) return;
+
+    const months = ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Jun', 'Jul', 'Aoû', 'Sep', 'Oct', 'Nov', 'Déc'];
+    const currentMonth = new Date().getMonth();
+    const lastSixMonths = months.slice(currentMonth - 5, currentMonth + 1);
+
+    this.punctualityTrendChart = new Chart(canvas, {
+      type: 'line',
+      data: {
+        labels: lastSixMonths,
+        datasets: [{
+          label: 'Taux de Ponctualité',
+          data: this.calculatePunctualityTrend(),
+          borderColor: '#8b5cf6',
+          backgroundColor: 'rgba(139, 92, 246, 0.1)',
+          tension: 0.4,
+          fill: true
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { position: 'top' },
+          tooltip: {
+            mode: 'index',
+            intersect: false,
+          }
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            max: 100,
+            ticks: {
+              callback: (value) => `${value}%`
+            }
+          }
+        }
+      }
+    });
+  }
+
+  private initializeAbsenceForecastChart(): void {
+    const canvas = document.getElementById('absenceForecastChart') as HTMLCanvasElement;
+    if (!canvas) return;
+
+    const nextWeekDays = this.getNextWeekDays();
+    const forecastData = this.calculateAbsenceForecast();
+
+    this.absenceForecastChart = new Chart(canvas, {
+      type: 'bar',
+      data: {
+        labels: nextWeekDays,
+        datasets: [{
+          label: 'Absences Prévues',
+          data: forecastData,
+          backgroundColor: 'rgba(99, 102, 241, 0.5)',
+          borderColor: '#6366f1',
+          borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: 'top',
+          }
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: {
+              stepSize: 1
+            }
+          }
+        }
+      }
+    });
+  }
+
+  private initializeWorkingHoursChart(): void {
+    const canvas = document.getElementById('workingHoursChart') as HTMLCanvasElement;
+    if (!canvas) return;
+
+    const { labels, actualHours, expectedHours } = this.calculateWorkingHours();
+
+    this.workingHoursChart = new Chart(canvas, {
+      type: 'bar',
+      data: {
+        labels: labels,
+        datasets: [
+          {
+            label: 'Heures Effectives',
+            data: actualHours,
+            backgroundColor: 'rgba(20, 184, 166, 0.7)',
+            borderColor: '#14b8a6',
+            borderWidth: 1
+          },
+          {
+            label: 'Heures Prévues',
+            data: expectedHours,
+            backgroundColor: 'rgba(20, 184, 166, 0.2)',
+            borderColor: '#14b8a6',
+            borderWidth: 2,
+            type: 'line' as const
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: 'top',
+          }
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            title: {
+              display: true,
+              text: 'Heures'
+            }
+          }
+        }
+      }
+    });
+  }
+
+  private calculatePunctualityTrend(): number[] {
+    // Simuler des données pour l'exemple
+    return [85, 88, 82, 90, 87, 92];
+  }
+
+  private getNextWeekDays(): string[] {
+    const days = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven'];
+    return days;
+  }
+
+  private calculateAbsenceForecast(): number[] {
+    // Simuler des prévisions pour l'exemple
+    return [2, 3, 1, 2, 4];
+  }
+
+  private calculateWorkingHours(): { labels: string[], actualHours: number[], expectedHours: number[] } {
+    // Obtenir les employés et leurs heures
+    const employees = this.teamEntries.map(entry => entry.user?.firstName || 'Inconnu');
+    const actualHours = this.teamEntries.map(entry => entry.totalHours || 0);
+    const expectedHours = this.teamEntries.map(() => 8); // 8 heures standard par jour
+
+    return {
+      labels: employees,
+      actualHours,
+      expectedHours
+    };
+  }
+
+  async loadMonthlyEntries() {
+    this.loading = true;
+    try {
+      // Get managed employees
+      const managedEmployees = await this.authService.getManagedEmployees();
+
+      if (!managedEmployees.length) {
+        this.messageService.add({
+          severity: 'warn',
+          summary: 'Attention',
+          detail: 'Vous n\'avez pas d\'employés sous votre responsabilité'
+        });
+        this.monthlyEntries = [];
+        return;
+      }
+
+      const today = new Date();
+      // Fetch entries only for managed employees
+      const entriesPromises = managedEmployees.map(employee =>
+          firstValueFrom(this.pointageService.getMonthlyEntries(
+              employee.id,
+              today.getMonth(),
+              today.getFullYear()
+          ))
+      );
+
+      const allEntries = await Promise.all(entriesPromises);
+      const flatEntries = allEntries.flat();
+
+      console.log('Raw entries from API:', flatEntries);
+
+      // Create TimeEntryWithUser objects
+      const entriesWithUser = flatEntries.map((entry: TimeEntry) => {
+        const user = managedEmployees.find(emp => emp.id === entry.userId);
+        if (!user) {
+          console.log('No user found for entry:', entry);
+          return null;
+        }
+
+        // Traitement des heures de pause déjeuner
+        let lunchStart = entry.lunchStart;
+        let lunchEnd = entry.lunchEnd;
+
+        // Si les heures sont au format ISO, les convertir en format HH:mm
+        if (lunchStart && /^\d{4}-\d{2}-\d{2}T/.test(lunchStart)) {
+          const date = new Date(lunchStart);
+          lunchStart = `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
+        }
+        if (lunchEnd && /^\d{4}-\d{2}-\d{2}T/.test(lunchEnd)) {
+          const date = new Date(lunchEnd);
+          lunchEnd = `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
+        }
+
+        const timeEntry: TimeEntryWithUser = {
+          id: entry.id,
+          userId: entry.userId,
+          date: new Date(entry.date),
+          checkIn: entry.checkIn,
+          checkOut: entry.checkOut,
+          lunchStart: lunchStart,
+          lunchEnd: lunchEnd,
+          totalHours: entry.totalHours || 0,
+          isLate: entry.isLate,
+          minutesLate: this.calculateMinutesLate(entry),
+          status: entry.status,
+          user: {
+            id: user.id,
+            username: user.username,
+            email: user.email,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            name: user.name,
+            role: user.role,
+            photoUrl: user.photoUrl,
+            department: user.department,
+            position: user.position,
+            managerId: user.managerId,
+            managedEmployees: user.managedEmployees,
+            hireDate: user.hireDate,
+            leaveBalance: user.leaveBalance,
+            workSchedule: user.workSchedule,
+            rating: user.rating,
+            status: user.status,
+            contractType: user.contractType
+          }
+        };
+
+        console.log('Processed entry:', timeEntry);
+        return timeEntry;
+      });
+
+      this.monthlyEntries = entriesWithUser.filter((entry): entry is TimeEntryWithUser => entry !== null);
+      this.monthlyEntries.sort((a, b) => b.date.getTime() - a.date.getTime());
+
+      console.log('Final monthlyEntries:', this.monthlyEntries);
+
+      this.updateChartData();
+    } catch (error) {
+      console.error('Error loading monthly entries:', error);
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Erreur',
+        detail: 'Impossible de charger l\'historique mensuel'
+      });
+    } finally {
+      this.loading = false;
     }
   }
 
@@ -220,98 +501,6 @@ export class TeamPointageComponent implements OnInit, OnDestroy {
         });
   }
 
-  async loadMonthlyEntries() {
-    try {
-      this.loading = true;
-
-      // Get managed employees
-      const managedEmployees = await this.authService.getManagedEmployees();
-
-      if (!managedEmployees.length) {
-        this.messageService.add({
-          severity: 'warn',
-          summary: 'Attention',
-          detail: 'Vous n\'avez pas d\'employés sous votre responsabilité'
-        });
-        this.monthlyEntries = [];
-        return;
-      }
-
-      const today = new Date();
-      // Fetch entries only for managed employees
-      const entriesPromises = managedEmployees.map(employee =>
-          firstValueFrom(this.pointageService.getMonthlyEntries(
-              employee.id,
-              today.getMonth(),
-              today.getFullYear()
-          ))
-      );
-
-      const allEntries = await Promise.all(entriesPromises);
-      const flatEntries = allEntries.flat();
-
-      // Create TimeEntryWithUser objects
-      const entriesWithUser = flatEntries.map((entry: TimeEntry) => {
-        const user = managedEmployees.find(emp => emp.id === entry.userId);
-        if (!user) return null;
-
-        // Convert dates to proper format
-        const timeEntry: TimeEntryWithUser = {
-          id: entry.id,
-          userId: entry.userId,
-          date: new Date(entry.date),
-          checkIn: this.formatTimeToString(entry.checkIn),
-          checkOut: this.formatTimeToString(entry.checkOut),
-          lunchStart: this.formatTimeToString(entry.lunchStart),
-          lunchEnd: this.formatTimeToString(entry.lunchEnd),
-          totalHours: entry.totalHours,
-          isLate: entry.isLate,
-          minutesLate: this.calculateMinutesLate(entry),
-          status: entry.status,
-          user: {
-            id: user.id,
-            username: user.username,
-            email: user.email,
-            firstName: user.firstName,
-            lastName: user.lastName,
-            name: user.name,
-            role: user.role,
-            photoUrl: user.photoUrl,
-            department: user.department,
-            position: user.position,
-            managerId: user.managerId,
-            managedEmployees: user.managedEmployees,
-            hireDate: user.hireDate,
-            leaveBalance: user.leaveBalance,
-            workSchedule: user.workSchedule,
-            rating: user.rating,
-            status: user.status,
-            contractType: user.contractType
-          }
-        };
-
-        return timeEntry;
-      });
-
-      this.monthlyEntries = entriesWithUser.filter((entry): entry is TimeEntryWithUser => entry !== null);
-
-      // Sort entries by date in descending order
-      this.monthlyEntries.sort((a, b) => b.date.getTime() - a.date.getTime());
-
-      // Update charts
-      this.updateChartData();
-    } catch (error) {
-      console.error('Error loading monthly entries:', error);
-      this.messageService.add({
-        severity: 'error',
-        summary: 'Erreur',
-        detail: 'Impossible de charger l\'historique mensuel'
-      });
-    } finally {
-      this.loading = false;
-    }
-  }
-
   private calculateMinutesLate(entry: TimeEntry): number | undefined {
     if (!entry.isLate || !entry.checkIn) return undefined;
 
@@ -319,14 +508,6 @@ export class TeamPointageComponent implements OnInit, OnDestroy {
     const expectedTime = new Date(`1970-01-01T09:00:00`); // Assuming 9 AM is the start time
 
     return Math.floor((checkInTime.getTime() - expectedTime.getTime()) / 60000);
-  }
-
-  determineStatus(entry: TimeEntryWithUser): 'present' | 'absent' | 'late' | 'leave' | 'holiday' {
-    if (!entry.checkIn) return 'absent';
-    if (entry.isLate) return 'late';
-    if (entry.leaveStatus === 'approved') return 'leave';
-    if (this.isHoliday(new Date(entry.date))) return 'holiday';
-    return 'present';
   }
 
   isHoliday(date: Date): boolean {
@@ -361,7 +542,6 @@ export class TeamPointageComponent implements OnInit, OnDestroy {
       this.charts.punctuality.update();
     }
 
-    // Update status chart data
     const statusData = {
       labels: ['Présent', 'En retard', 'Absent', 'En congé'],
       datasets: [{
@@ -387,7 +567,27 @@ export class TeamPointageComponent implements OnInit, OnDestroy {
   }
 
   getAbsentCount(): number {
-    return this.teamEntries.filter(e => e.status === 'absent').length;
+    // Si l'heure de début n'est pas encore passée, personne n'est absent
+    if (!this.isWorkStarted()) {
+      return 0;
+    }
+
+    // Filtrer les entrées d'aujourd'hui sans pointage
+    return this.teamEntries.filter(entry => {
+      // Vérifier si l'entrée est pour aujourd'hui
+      const entryDate = new Date(entry.date);
+      const isEntryToday = this.isToday(entryDate);
+
+      // Un employé est absent si :
+      // - C'est une entrée d'aujourd'hui
+      // - Il n'a pas de pointage d'entrée
+      // - Ce n'est pas un jour férié
+      // - Ce n'est pas un congé validé
+      return isEntryToday && 
+             !entry.checkIn && 
+             entry.status !== 'holiday' && 
+             entry.status !== 'leave';
+    }).length;
   }
 
   getLateCount(): number {
@@ -427,7 +627,6 @@ export class TeamPointageComponent implements OnInit, OnDestroy {
     this.pointageService.getTeamActiveEntries(this.currentUser.managedEmployees)
         .subscribe({
           next: (entries) => {
-            // Créer un tableau de requêtes pour obtenir les détails de chaque utilisateur
             const userRequests = entries.map(entry =>
                 this.apiService.getUserById(entry.userId).pipe(
                     map(user => {
@@ -435,18 +634,16 @@ export class TeamPointageComponent implements OnInit, OnDestroy {
                       const timeEntry: TimeEntryWithUser = {
                         ...entry,
                         user: userWithoutPassword,
-                        checkIn: entry.checkIn || undefined,
-                        checkOut: entry.checkOut?.toString() || undefined,
-                        lunchStart: entry.lunchStart?.toString() || undefined,
-                        lunchEnd: entry.lunchEnd?.toString() || undefined,
-                        totalHours: entry.totalHours || 0
+                        checkIn: entry.checkIn,
+                        checkOut: entry.checkOut?.toString(),
+                        lunchStart: entry.lunchStart?.toString(),
+                        lunchEnd: entry.lunchEnd?.toString(),
+                        totalHours: entry.totalHours
                       };
                       return timeEntry;
                     })
                 )
             );
-
-            // Exécuter toutes les requêtes en parallèle
             forkJoin(userRequests).subscribe({
               next: (entriesWithUsers) => {
                 this.teamEntries = entriesWithUsers;
@@ -507,37 +704,129 @@ export class TeamPointageComponent implements OnInit, OnDestroy {
     });
   }
 
-  getStatusLabel(status: string): string {
-    const statusMap: { [key: string]: string } = {
-      'present': 'Présent',
-      'absent': 'Absent',
-      'late': 'En retard',
-      'leave': 'En congé',
-      'holiday': 'Jour férié'
-    };
-    return statusMap[status] || status;
-  }
+  // Méthodes utilitaires pour la gestion du temps
+  private convertToTimeString(time: string | null | undefined): string | null {
+    if (!time) return null;
 
-  getStatusBadgeClass(status: string): string {
-    const baseClasses = 'px-3 py-1 rounded-full text-sm font-medium';
-    switch (status) {
-      case 'present':
-        return `${baseClasses} bg-green-100 text-green-800`;
-      case 'absent':
-        return `${baseClasses} bg-red-100 text-red-800`;
-      case 'late':
-        return `${baseClasses} bg-orange-100 text-orange-800`;
-      case 'leave':
-      case 'holiday':
-        return `${baseClasses} bg-blue-100 text-blue-800`;
-      default:
-        return `${baseClasses} bg-gray-100 text-gray-800`;
+    try {
+      // Si c'est déjà au format HH:mm ou HH:mm:ss
+      if (/^\d{2}:\d{2}(:\d{2})?$/.test(time)) {
+        return time.substring(0, 5);
+      }
+
+      // Si c'est une date ISO
+      if (/^\d{4}-\d{2}-\d{2}T/.test(time)) {
+        const date = new Date(time);
+        if (!isNaN(date.getTime())) {
+          return `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
+        }
+      }
+
+      return null;
+    } catch (error) {
+      console.error('Error converting time:', error, 'Input:', time);
+      return null;
     }
   }
 
-  getEmployeeFullName(entry: TimeEntryWithUser): string {
-    if (!entry.user) return `Employé #${entry.userId}`;
-    return `${entry.user.firstName} ${entry.user.lastName}`;
+  private calculateDuration(startTime: string | null, endTime: string | null): number | null {
+    if (!startTime || !endTime) return null;
+
+    try {
+      // Convertir les heures en minutes depuis minuit
+      const [startHour, startMinute] = startTime.split(':').map(Number);
+      const [endHour, endMinute] = endTime.split(':').map(Number);
+      
+      let startMinutes = startHour * 60 + startMinute;
+      let endMinutes = endHour * 60 + endMinute;
+      
+      // Si l'heure de fin est avant l'heure de début, on considère que c'est le jour suivant
+      if (endMinutes < startMinutes) {
+        endMinutes += 24 * 60; // Ajouter 24 heures
+      }
+      
+      const duration = endMinutes - startMinutes;
+      return duration > 0 ? duration : null;
+    } catch (error) {
+      console.error('Error calculating duration:', error);
+      return null;
+    }
+  }
+
+  private getExpectedWorkMinutes(entry: TimeEntryWithUser): number {
+    // Par défaut : 8 heures de travail
+    const DEFAULT_WORK_HOURS = 8 * 60; // en minutes
+    
+    if (!entry.user?.workSchedule) {
+      return DEFAULT_WORK_HOURS;
+    }
+
+    const { startTime, endTime, lunchBreakDuration } = entry.user.workSchedule;
+    
+    if (!startTime || !endTime) {
+      return DEFAULT_WORK_HOURS;
+    }
+
+    try {
+      const workDuration = this.calculateDuration(startTime, endTime);
+      if (workDuration === null) return DEFAULT_WORK_HOURS;
+      
+      // Soustraire la pause déjeuner si définie
+      return workDuration - (lunchBreakDuration || 60);
+    } catch {
+      return DEFAULT_WORK_HOURS;
+    }
+  }
+
+  private getWorkStatus(entry: TimeEntryWithUser): string {
+    if (!entry.checkIn) return 'Non pointé';
+    if (!entry.checkOut) return 'En cours';
+    
+    const duration = this.calculateDuration(entry.checkIn, entry.checkOut);
+    if (duration === null) return 'Erreur';
+
+    // Soustraire la pause déjeuner si elle existe
+    let actualWorkDuration = duration;
+    if (entry.lunchStart && entry.lunchEnd) {
+      const lunchDuration = this.calculateDuration(entry.lunchStart, entry.lunchEnd);
+      if (lunchDuration !== null) {
+        actualWorkDuration -= lunchDuration;
+      }
+    }
+
+    const expectedMinutes = this.getExpectedWorkMinutes(entry);
+    
+    // Calculer le pourcentage du temps travaillé
+    const completionPercentage = (actualWorkDuration / expectedMinutes) * 100;
+
+    if (completionPercentage >= 100) return 'Terminé';
+    if (completionPercentage >= 90) return 'Presque terminé';
+    if (completionPercentage >= 50) return 'Mi-temps';
+    return 'Incomplet';
+  }
+
+  formatWorkDuration(entry: TimeEntryWithUser): string {
+    if (!entry.checkIn || !entry.checkOut) return '-';
+
+    const duration = this.calculateDuration(entry.checkIn, entry.checkOut);
+    if (duration === null) return '-';
+
+    // Soustraire la pause déjeuner si elle existe
+    let actualWorkDuration = duration;
+    if (entry.lunchStart && entry.lunchEnd) {
+      const lunchDuration = this.calculateDuration(entry.lunchStart, entry.lunchEnd);
+      if (lunchDuration !== null) {
+        actualWorkDuration -= lunchDuration;
+      }
+    }
+
+    const hours = Math.floor(actualWorkDuration / 60);
+    const minutes = actualWorkDuration % 60;
+    const status = this.getWorkStatus(entry);
+    const expectedMinutes = this.getExpectedWorkMinutes(entry);
+    const expectedHours = Math.floor(expectedMinutes / 60);
+
+    return `${hours}h${minutes > 0 ? minutes + 'm' : ''} / ${expectedHours}h (${status})`;
   }
 
   private showMessage(severity: string, detail: string) {
@@ -609,10 +898,6 @@ export class TeamPointageComponent implements OnInit, OnDestroy {
     this.filterEntries();
   }
 
-  formatTime(time: string | undefined | null): string {
-    return time || '-';
-  }
-
   formatDate(date: Date | undefined): string {
     if (!date) return '-';
     try {
@@ -629,11 +914,6 @@ export class TeamPointageComponent implements OnInit, OnDestroy {
       console.error('Error formatting date:', error);
       return '-';
     }
-  }
-
-  formatLunchTime(entry: TimeEntryWithUser): string {
-    if (!entry.lunchStart || !entry.lunchEnd) return '-';
-    return `${entry.lunchStart} - ${entry.lunchEnd}`;
   }
 
   formatTimeToString(time: any): string | undefined {
@@ -656,5 +936,125 @@ export class TeamPointageComponent implements OnInit, OnDestroy {
       console.error('Error processing time:', error);
       return undefined;
     }
+  }
+
+  getStatusLabel(status: string): string {
+    const statusMap: { [key: string]: string } = {
+      'present': 'Présent',
+      'absent': 'Absent',
+      'late': 'En retard',
+      'leave': 'En congé',
+      'holiday': 'Jour férié'
+    };
+    return statusMap[status] || status;
+  }
+
+  getStatusBadgeClass(status: string): string {
+    const baseClasses = 'px-3 py-1 rounded-full text-sm font-medium';
+    switch (status) {
+      case 'present':
+        return `${baseClasses} bg-green-100 text-green-800`;
+      case 'absent':
+        return `${baseClasses} bg-red-100 text-red-800`;
+      case 'late':
+        return `${baseClasses} bg-orange-100 text-orange-800`;
+      case 'leave':
+      case 'holiday':
+        return `${baseClasses} bg-blue-100 text-blue-800`;
+      default:
+        return `${baseClasses} bg-gray-100 text-gray-800`;
+    }
+  }
+
+  getEmployeeFullName(entry: TimeEntryWithUser): string {
+    if (!entry.user) return `Employé #${entry.userId}`;
+    return `${entry.user.firstName} ${entry.user.lastName}`;
+  }
+
+  ngAfterViewInit(): void {
+    if (this.currentUser) {
+      this.loadMonthlyEntries();
+      if (this.currentUser.role === 'manager' && this.currentUser.managedEmployees) {
+        this.loadTeamEntries();
+      }
+    }
+  }
+
+  formatTime(time: string | undefined | null): string {
+    if (!time) return '--:--';
+    
+    try {
+      // Si c'est déjà au format HH:mm ou HH:mm:ss
+      if (/^\d{2}:\d{2}(:\d{2})?$/.test(time)) {
+        return time.substring(0, 5); // Retourne seulement HH:mm
+      }
+      
+      // Si c'est une date ISO
+      if (/^\d{4}-\d{2}-\d{2}T/.test(time)) {
+        const date = new Date(time);
+        if (!isNaN(date.getTime())) {
+          return `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
+        }
+      }
+      
+      return '--:--';
+    } catch (error) {
+      console.error('Error formatting time:', error, 'Input:', time);
+      return '--:--';
+    }
+  }
+
+  formatLunchTime(entry: TimeEntryWithUser): string {
+    try {
+      if (!entry.lunchStart && !entry.lunchEnd) return '--:--';
+
+      const startTime = this.formatTime(entry.lunchStart);
+      const endTime = this.formatTime(entry.lunchEnd);
+
+      // Si on a seulement l'heure de début
+      if (entry.lunchStart && !entry.lunchEnd) {
+        return `${startTime} - En cours`;
+      }
+
+      // Si on a seulement l'heure de fin (cas peu probable)
+      if (!entry.lunchStart && entry.lunchEnd) {
+        return `??? - ${endTime}`;
+      }
+
+      // Si on a les deux heures
+      const duration = this.calculateDuration(entry.lunchStart, entry.lunchEnd);
+      const expectedDuration = entry.user?.workSchedule?.lunchBreakDuration || 60;
+      
+      let status = '';
+      if (duration !== null) {
+        if (duration > expectedDuration) {
+          status = ' ⚠️ Dépassement';
+        } else if (duration < expectedDuration) {
+          status = ' ⚠️ Pause courte';
+        }
+      }
+
+      return `${startTime} - ${endTime} (${duration || 0} min)${status}`;
+    } catch (error) {
+      console.error('Error formatting lunch time:', error, 'Entry:', entry);
+      return '--:--';
+    }
+  }
+
+  private readonly WORK_START_HOUR = 9;
+  private readonly WORK_START_MINUTES = 0;
+
+  private isToday(date: Date): boolean {
+    const today = new Date();
+    return date.getDate() === today.getDate() &&
+           date.getMonth() === today.getMonth() &&
+           date.getFullYear() === today.getFullYear();
+  }
+
+  private isWorkStarted(): boolean {
+    const now = new Date();
+    const workStart = new Date();
+    workStart.setHours(this.WORK_START_HOUR, this.WORK_START_MINUTES, 0, 0);
+    return now >= workStart;
   }
 }

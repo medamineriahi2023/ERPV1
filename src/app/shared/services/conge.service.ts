@@ -1,3 +1,5 @@
+// noinspection JSUnusedGlobalSymbols
+
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
@@ -43,11 +45,12 @@ export interface CongeBalance {
   upcomingRequests: number;
 }
 
+// noinspection JSUnusedGlobalSymbols
 @Injectable({
   providedIn: 'root'
 })
 export class CongeService {
-  private apiUrl = 'http://localhost:3000/conges';
+  private apiUrl = 'https://e985-197-15-18-165.ngrok-free.app/conges';
 
   constructor(private http: HttpClient) {}
 

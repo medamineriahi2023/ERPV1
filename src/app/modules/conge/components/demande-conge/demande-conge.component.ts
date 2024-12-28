@@ -273,12 +273,6 @@ export class DemandeCongeComponent implements OnInit {
     });
   }
 
-  onFileRemove(file: any) {
-    const index = this.uploadedFiles.indexOf(file);
-    if (index !== -1) {
-      this.uploadedFiles.splice(index, 1);
-    }
-  }
 
   onSubmit() {
     if (this.leaveForm.valid) {
@@ -340,15 +334,6 @@ export class DemandeCongeComponent implements OnInit {
     }
   }
 
-  getTypeIcon(type: string): string {
-    const option = this.typeOptions.find(opt => opt.value === type);
-    return option?.icon || 'pi pi-calendar';
-  }
-
-  getTypeColor(type: string): string {
-    const option = this.typeOptions.find(opt => opt.value === type);
-    return option?.color || '#6B7280';
-  }
 
   getStatusColor(status: string): string {
     switch (status) {

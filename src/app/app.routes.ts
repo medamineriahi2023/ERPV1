@@ -48,6 +48,11 @@ export const routes: Routes = [
             .then(m => m.HistoriqueCongeComponent)
       },
       {
+        path: 'pointage/history',
+        loadComponent: () => import('./modules/pointage/components/historique/historique.component')
+            .then(m => m.HistoriqueComponent)
+      },
+      {
         path: 'pointage',
         loadComponent: () => import('./modules/pointage/components/pointage/pointage.component')
           .then(m => m.PointageComponent)

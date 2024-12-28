@@ -319,64 +319,17 @@
                     </ng-template>
 
                     <ng-template pTemplate="body" let-entry>
-                        <tr>
-                            <td class="text-left">
-                                <div class="flex items-center gap-3">
-                                    <div class="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white font-medium">
-                                        {{entry.user?.firstName?.charAt(0) || '?'}}
-                                    </div>
-                                    <div>
-                                        <div class="font-medium text-gray-900">
-                                            {{getEmployeeFullName(entry)}}
-                                        </div>
-                                        <div class="text-sm text-gray-500">
-                                            {{entry.user?.position || 'Non défini'}}
-                                        </div>
-                                    </div>
-                                </div>
-                            </td>
-                            <td class="text-center">{{formatDate(entry.date)}}</td>
-                            <td class="text-center">
-                                <ng-container *ngIf="entry.checkIn; else dash">
-                                    {{formatTime(entry.checkIn)}}
-                                    <span *ngIf="entry.isLate" class="text-red-500 text-xs ml-1">
-                    ({{entry.minutesLate}} min)
-                  </span>
-                                </ng-container>
-                                <ng-template #dash>-</ng-template>
-                            </td>
-                            <td class="text-center">
-                                <ng-container *ngIf="entry.checkOut; else dash">
-                                    {{formatTime(entry.checkOut)}}
-                                </ng-container>
-                                <ng-template #dash>-</ng-template>
-                            </td>
-                            <td class="text-center">
-                                <ng-container *ngIf="entry.lunchStart || entry.lunchEnd">
-                                    {{formatLunchTime(entry)}}
-                                </ng-container>
-                                <ng-template #noLunch>-</ng-template>
-                            </td>
-                            <td class="text-center">{{entry.totalHours | number:'1.1-1'}}h</td>
-                            <td class="text-center">
-                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
-                      [ngClass]="{
-                        'bg-green-100 text-green-800': entry.status === 'present',
-                        'bg-red-100 text-red-800': entry.status === 'absent',
-                        'bg-yellow-100 text-yellow-800': entry.status === 'late',
-                        'bg-blue-100 text-blue-800': entry.status === 'leave',
-                        'bg-purple-100 text-purple-800': entry.status === 'holiday'
-                      }">
-                  <i class="pi mr-1 text-xs"
-                     [ngClass]="{
-                       'pi-check-circle': entry.status === 'present',
-                       'pi-times-circle': entry.status === 'absent',
-                       'pi-clock': entry.status === 'late',
-                       'pi-calendar': entry.status === 'leave',
-                       'pi-star': entry.status === 'holiday'
-                     }"></i>
-                    {{getStatusLabel(entry.status)}}
-                </span>
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-4 py-2">{{ formatDate(entry.date) }}</td>
+                            <td class="px-4 py-2">{{ getEmployeeFullName(entry) }}</td>
+                            <td class="px-4 py-2">{{ formatTime(entry.checkIn) }}</td>
+                            <td class="px-4 py-2">{{ formatTime(entry.checkOut) }}</td>
+                            <td class="px-4 py-2">{{ formatLunchTime(entry) }}</td>
+                            <td class="px-4 py-2">{{ formatWorkDuration(entry) }}</td>
+                            <td class="px-4 py-2">
+                                <span [class]="getStatusBadgeClass(entry.status)">
+                                    {{ getStatusLabel(entry.status) }}
+                                </span>
                             </td>
                         </tr>
                     </ng-template>

@@ -1,0 +1,247 @@
+<div class="min-h-screen bg-gray-50/50">
+  <!-- En-tête -->
+  <div class="p-6">
+    <h1 class="text-2xl font-bold text-gray-800 mb-2">Mon Historique de Pointage</h1>
+    <p class="text-gray-600">Consultez votre historique de présence et vos statistiques</p>
+  </div>
+
+  <!-- Filtres et contrôles -->
+  <div class="px-6 mb-6">
+    <div class="bg-white rounded-xl shadow-sm p-4">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <!-- Sélection du mois -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">Mois</label>
+          <p-dropdown
+            [options]="months"
+            [(ngModel)]="currentMonth"
+            (onChange)="onMonthChange()"
+            styleClass="w-full"
+          ></p-dropdown>
+        </div>
+
+        <!-- Sélection de l'année -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">Année</label>
+          <p-dropdown
+            [options]="years"
+            [(ngModel)]="currentYear"
+            (onChange)="onYearChange()"
+            styleClass="w-full"
+          ></p-dropdown>
+        </div>
+
+        <!-- Sélection de la vue -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">Vue</label>
+          <div class="flex gap-2">
+            <button
+              pButton
+              [class.p-button-outlined]="activeView !== 'calendar'"
+              (click)="onViewChange('calendar')"
+              icon="pi pi-calendar"
+              label="Calendrier"
+            ></button>
+            <button
+              pButton
+              [class.p-button-outlined]="activeView !== 'list'"
+              (click)="onViewChange('list')"
+              icon="pi pi-list"
+              label="Liste"
+            ></button>
+            <button
+              pButton
+              [class.p-button-outlined]="activeView !== 'stats'"
+              (click)="onViewChange('stats')"
+              icon="pi pi-chart-bar"
+              label="Stats"
+            ></button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Statistiques rapides -->
+  <div class="px-6 mb-6" *ngIf="monthlyData">
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <!-- Jours travaillés -->
+      <p-card styleClass="text-center">
+        <div class="text-3xl font-bold text-gray-800 mb-2">
+          {{monthlyData.stats.presentDays}}/{{monthlyData.stats.totalWorkDays}}
+        </div>
+        <div class="text-sm text-gray-600">Jours travaillés</div>
+      </p-card>
+
+      <!-- Retards -->
+      <p-card styleClass="text-center">
+        <div class="text-3xl font-bold text-orange-600 mb-2">
+          {{monthlyData.stats.lateCount}}
+        </div>
+        <div class="text-sm text-gray-600">Retards</div>
+      </p-card>
+
+      <!-- Taux de ponctualité -->
+      <p-card styleClass="text-center">
+        <div class="text-3xl font-bold text-green-600 mb-2">
+          {{monthlyData.stats.punctualityRate | number:'1.0-0'}}%
+        </div>
+        <div class="text-sm text-gray-600">Ponctualité</div>
+      </p-card>
+
+      <!-- Heures totales -->
+      <p-card styleClass="text-center">
+        <div class="text-3xl font-bold text-blue-600 mb-2">
+          {{monthlyData.stats.totalHours | number:'1.0-1'}}h
+        </div>
+        <div class="text-sm text-gray-600">Heures totales</div>
+      </p-card>
+    </div>
+  </div>
+
+  <!-- Vue Calendrier -->
+  <div class="px-6 mb-6" *ngIf="activeView === 'calendar' && calendarDays.length">
+    <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+      <!-- En-tête du calendrier -->
+      <div class="grid grid-cols-7 bg-gray-50 border-b">
+        <div class="p-2 text-center font-medium text-gray-600" *ngFor="let day of ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim']">
+          {{day}}
+        </div>
+      </div>
+
+      <!-- Corps du calendrier -->
+      <div class="grid grid-cols-7">
+        <div
+          *ngFor="let day of calendarDays"
+          [class]="'p-2 border-b border-r min-h-[100px] ' +
+            (day.isCurrentMonth ? 'bg-white' : 'bg-gray-50') +
+            (day.isToday ? ' ring-2 ring-blue-500 ring-inset' : '')"
+        >
+          <!-- Date -->
+          <div class="text-sm font-medium" [class.text-gray-400]="!day.isCurrentMonth">
+            {{day.date | date:'d'}}
+          </div>
+
+          <!-- Statut -->
+          <div *ngIf="day.status" class="mt-1">
+            <span [class]="'inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ' + getStatusClass(day.status)">
+              {{getStatusIcon(day.status)}}
+            </span>
+          </div>
+
+          <!-- Heures -->
+          <div *ngIf="day.entry" class="mt-1 text-xs text-gray-600">
+            {{day.entry.checkIn || '--:--'}}
+            <br>
+            {{day.entry.checkOut || '--:--'}}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Vue Liste -->
+  <div class="px-6 mb-6" *ngIf="activeView === 'list' && monthlyData">
+    <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+      <p-table
+        [value]="monthlyData.entries"
+        [paginator]="true"
+        [rows]="10"
+        [showCurrentPageReport]="true"
+        styleClass="p-datatable-striped"
+      >
+        <ng-template pTemplate="header">
+          <tr>
+            <th>Date</th>
+            <th>Arrivée</th>
+            <th>Départ</th>
+            <th>Pause déjeuner</th>
+            <th>Durée</th>
+            <th>Statut</th>
+          </tr>
+        </ng-template>
+
+        <ng-template pTemplate="body" let-entry>
+          <tr>
+            <td>{{entry.date | date:'dd/MM/yyyy'}}</td>
+            <td>{{entry.checkIn || '--:--'}}</td>
+            <td>{{entry.checkOut || '--:--'}}</td>
+            <td>
+              <ng-container *ngIf="entry.lunchStart && entry.lunchEnd">
+                {{entry.lunchStart}} - {{entry.lunchEnd}}
+              </ng-container>
+              <ng-container *ngIf="!entry.lunchStart || !entry.lunchEnd">
+                --:--
+              </ng-container>
+            </td>
+            <td>{{formatDuration(entry.duration)}}</td>
+            <td>
+              <span [class]="'inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ' + getStatusClass(entry.status)">
+                {{getStatusIcon(entry.status)}}
+                {{entry.status === 'present' ? 'Présent' :
+                  entry.status === 'late' ? 'En retard' :
+                  entry.status === 'absent' ? 'Absent' :
+                  entry.status === 'leave' ? 'Congé' : ''}}
+              </span>
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+  </div>
+
+  <!-- Vue Statistiques -->
+  <div class="px-6 mb-6" *ngIf="activeView === 'stats' && monthlyData">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <!-- Graphique de ponctualité -->
+      <div class="col-12 md:col-6">
+        <div class="card">
+          <h5>Répartition du temps</h5>
+          <p-chart 
+            type="bar" 
+            [data]="punctualityChartData.data" 
+            [options]="punctualityChartData.options"
+            height="300px">
+          </p-chart>
+        </div>
+      </div>
+
+      <!-- Graphique des heures travaillées -->
+      <div class="bg-white rounded-xl shadow-sm p-6">
+        <h3 class="text-lg font-semibold text-gray-800 mb-4">Heures travaillées</h3>
+        <p-chart type="line" [data]="workingHoursChartData" height="300px"></p-chart>
+      </div>
+
+      <!-- Statistiques détaillées -->
+      <div class="bg-white rounded-xl shadow-sm p-6 md:col-span-2">
+        <h3 class="text-lg font-semibold text-gray-800 mb-4">Statistiques détaillées</h3>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div class="p-4 bg-gray-50 rounded-lg">
+            <div class="text-sm text-gray-600">Moyenne d'arrivée</div>
+            <div class="text-xl font-semibold text-gray-800">
+              {{monthlyData.stats.averageArrivalTime}}
+            </div>
+          </div>
+          <div class="p-4 bg-gray-50 rounded-lg">
+            <div class="text-sm text-gray-600">Moyenne de départ</div>
+            <div class="text-xl font-semibold text-gray-800">
+              {{monthlyData.stats.averageDepartureTime}}
+            </div>
+          </div>
+          <div class="p-4 bg-gray-50 rounded-lg">
+            <div class="text-sm text-gray-600">Jours de congé</div>
+            <div class="text-xl font-semibold text-gray-800">
+              {{monthlyData.stats.leaveCount}}
+            </div>
+          </div>
+          <div class="p-4 bg-gray-50 rounded-lg">
+            <div class="text-sm text-gray-600">Taux de présence</div>
+            <div class="text-xl font-semibold text-gray-800">
+              {{(monthlyData.stats.presentDays / monthlyData.stats.totalWorkDays * 100) | number:'1.0-0'}}%
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

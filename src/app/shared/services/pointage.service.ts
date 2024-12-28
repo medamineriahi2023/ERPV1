@@ -97,12 +97,6 @@ export class PointageService {
     return newPointage;
   }
 
-  // Obtenir l'historique des pointages
-  getHistoriquePointages(dateDebut: Date, dateFin: Date): Observable<PointageRecord[]> {
-    return of(this.mockData.pointages);
-  }
-
-  // Obtenir le résumé des heures de travail
   getWorkingHoursSummary(employeeId: number, startDate: Date, endDate: Date): Observable<WorkingHoursSummary> {
     return of({
       totalHours: 40,

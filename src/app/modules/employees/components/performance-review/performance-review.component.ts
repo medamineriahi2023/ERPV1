@@ -155,44 +155,6 @@ export class PerformanceReviewComponent implements OnInit {
     );
   }
 
-  onEmployeeSelect(employee: Employee) {
-    this.selectedEmployee.set(employee);
-    this.reviewService.isEligibleForReview(employee.id).subscribe({
-      next: (isEligible) => {
-        if (isEligible) {
-          this.initializeReviewForm();
-          this.showReviewForm.set(true);
-        } else {
-          this.messageService.add({
-            severity: 'warn',
-            summary: 'Non éligible',
-            detail: 'Cet employé a déjà été évalué dans les 6 derniers mois'
-          });
-        }
-      }
-    });
-  }
-
-  viewHistory(employee: Employee) {
-    this.selectedEmployee.set(employee);
-    this.loading.set(true);
-    
-    this.reviewService.getEmployeeReviews(employee.id).subscribe({
-      next: (reviews) => {
-        this.employeeReviews.set(reviews);
-        this.showHistory.set(true);
-        this.loading.set(false);
-      },
-      error: () => {
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Erreur',
-          detail: 'Impossible de charger l\'historique des évaluations'
-        });
-        this.loading.set(false);
-      }
-    });
-  }
 
   private initializeReviewForm() {
     this.metricsArray.clear();

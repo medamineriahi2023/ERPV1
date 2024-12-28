@@ -20,7 +20,7 @@ import { Employee } from '@app/shared/services/employee.service';
 
 export interface TimelineEvent {
   status: string;
-  date: string;
+  date: Date;
   icon: string;
   color: string;
   description: string;
@@ -78,35 +78,7 @@ export class EmployeeDetailComponent implements OnInit {
         throw new Error('Employee not found');
       }
       
-      // Convert User to Employee type with all required properties
-      this.employee = {
-        ...user,
-        id: user.id,
-        firstName: user.name.split(' ')[0] || '',
-        lastName: user.name.split(' ')[1] || '',
-        email: user.email,
-        phone: '',
-        birthDate: '',
-        address: '',
-        position: user.position || '',
-        department: user.department || '',
-        joinDate: user.hireDate?.toString() || new Date().toISOString(),
-        status: this.convertStatus(user.status),
-        contractType: user.contractType || 'CDI',
-        avatar: user.photoUrl || '',
-        skills: [],
-        salary: {
-          base: 0,
-          bonus: 0,
-          lastReview: new Date().toISOString()
-        },
-        performanceRating: 0,
-        role: this.convertRole(user.role),
-        username: user.username,
-        password: 'default-password', // We should never expose this
-        managerId: null,
-        managedEmployees: user.managedEmployees || []
-      };
+      this.initializeEmployee(user);
       
       this.initializeTimeline();
     } catch (error) {
@@ -120,6 +92,39 @@ export class EmployeeDetailComponent implements OnInit {
     } finally {
       this.loading = false;
     }
+  }
+
+  private initializeEmployee(user: any): void {
+    this.employee = {
+      id: user.id,
+      firstName: user.firstName || '',
+      lastName: user.lastName || '',
+      email: user.email || '',
+      phone: user.phone || '',
+      birthDate: user.birthDate ? new Date(user.birthDate) : new Date(),
+      gender: user.gender || '',
+      address: user.address || '',
+      city: user.city || '',
+      country: user.country || '',
+      position: user.position || '',
+      department: user.department || '',
+      joinDate: user.hireDate ? new Date(user.hireDate) : new Date(),
+      salary: {
+        base: user.salary?.base || 0,
+        bonus: user.salary?.bonus || 0,
+        lastReview: user.salary?.lastReview ? new Date(user.salary.lastReview) : new Date()
+      },
+      status: this.convertStatus(user.status),
+      contractType: user.contractType || 'CDI',
+      skills: user.skills || [],
+      workSchedule: {
+        startTime: user.workSchedule?.startTime || '09:00',
+        endTime: user.workSchedule?.endTime || '17:00',
+        lunchBreakDuration: user.workSchedule?.lunchBreakDuration || 60
+      },
+      performanceRating: user.performanceRating || 0,
+      photoUrl: user.photoUrl || ''
+    };
   }
 
   private convertStatus(status?: string): 'ACTIVE' | 'INACTIVE' | 'ON_LEAVE' {
@@ -143,7 +148,7 @@ export class EmployeeDetailComponent implements OnInit {
     this.events = [
       {
         status: 'Embauche',
-        date: this.employee.joinDate,
+        date: new Date(this.employee.joinDate),
         icon: 'pi pi-user-plus',
         color: '#22C55E',
         description: `A rejoint l'entreprise en tant que ${this.employee.position}`

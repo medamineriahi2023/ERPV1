@@ -7,5 +7,3 @@ export interface TimeEntry {
   status: 'pending' | 'approved' | 'rejected';
   comments?: string;
 }
-
-export type TimeEntryType = 'ARRIVAL' | 'DEPARTURE' | 'BREAK_START' | 'BREAK_END';

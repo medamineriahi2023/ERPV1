@@ -25,5 +25,5 @@ import { MessageService, ConfirmationService } from 'primeng/api';
   providers: [MessageService, ConfirmationService]
 })
 export class AppComponent {
-  title = 'erp-hr';
+
 }

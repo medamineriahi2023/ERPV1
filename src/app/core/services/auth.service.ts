@@ -68,11 +68,6 @@ export class AuthService {
     return currentUser?.role === 'manager';
   }
 
-  isEmployee(): boolean {
-    const currentUser = this.getCurrentUser();
-    return currentUser?.role === 'employee';
-  }
-
   async getUserById(id: number): Promise<Omit<User, 'password'> | null> {
     try {
       const user = await firstValueFrom(this.apiService.getUserById(id));
@@ -96,51 +91,5 @@ export class AuthService {
     return users
       .filter(user => currentUser.managedEmployees.includes(user.id))
       .map(({ password, ...user }) => user);
-  }
-
-  async createUser(newUser: Omit<User, 'id'>): Promise<User> {
-    const users = await firstValueFrom(this.apiService.getUsers());
-    const maxId = Math.max(...users.map(u => u.id));
-    
-    const user: Omit<User, 'id'> = {
-      ...newUser,
-      managedEmployees: [],
-      hireDate: new Date(),
-      leaveBalance: {
-        annual: 25,
-        sick: 12
-      },
-      workSchedule: {
-        startTime: '09:00',
-        endTime: '17:00',
-        lunchBreakDuration: 60
-      },
-      status: 'active',
-      contractType: 'CDI'
-    };
-
-    // Create the user
-    const createdUser = await firstValueFrom(this.apiService.createUser(user));
-
-    // Update the manager's managedEmployees array if needed
-    if (createdUser.managerId) {
-      const manager = await firstValueFrom(this.apiService.getUserById(createdUser.managerId));
-      if (manager) {
-        const updatedManager = {
-          ...manager,
-          managedEmployees: [...manager.managedEmployees, createdUser.id]
-        };
-        await firstValueFrom(this.apiService.updateUser(manager.id, updatedManager));
-
-        // Update current user if needed
-        const currentUser = this.getCurrentUser();
-        if (currentUser && currentUser.id === manager.id) {
-          const { password, ...managerWithoutPassword } = updatedManager;
-          this.currentUserSubject.next(managerWithoutPassword);
-        }
-      }
-    }
-
-    return createdUser;
   }
 }

@@ -223,11 +223,11 @@ export class SidebarComponent implements OnInit {
 
   private getEmployeeMenuItems(): MenuItem[] {
     return [
-      {
-        label: 'Mon espace',
-        icon: 'pi pi-home',
-        routerLink: ['/dashboard']
-      },
+      // {
+      //   label: 'Mon espace',
+      //   icon: 'pi pi-home',
+      //   routerLink: ['/dashboard']
+      // },
       {
         label: 'Mes congés',
         icon: 'pi pi-calendar',
@@ -264,12 +264,12 @@ export class SidebarComponent implements OnInit {
             routerLink: ['/pointage/stats']
           }
         ]
-      },
-      {
-        label: 'Mes projets',
-        icon: 'pi pi-briefcase',
-        routerLink: ['/projects']
       }
+      // {
+      //   label: 'Mes projets',
+      //   icon: 'pi pi-briefcase',
+      //   routerLink: ['/projects']
+      // }
     ];
   }
 

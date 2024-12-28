@@ -59,7 +59,6 @@ export class PointageComponent implements OnInit, OnDestroy {
   averageWorkHours: number = 0;
   lateArrivalCount: number = 0;
   onTimeArrivalCount: number = 0;
-  totalBreakTime: number = 0;
   averageBreakTime: number = 0;
 
   constructor(
@@ -295,17 +294,17 @@ export class PointageComponent implements OnInit, OnDestroy {
         }
       });
     } else if (this.currentEntry?.id && !this.checkOutTime) {
-      // First checkout to record the departure time
       this.pointageService.checkOut(this.currentEntry.id).subscribe({
         next: (entry: TimeEntry) => {
           this.currentEntry = entry;
           this.checkOutTime = entry.checkOut || null;
           
-          // Calculate total hours
-          const totalHours = this.calculateWorkingHours(entry);
-          
-          // Update the display with total hours
-          this.showMessage('success', `Départ enregistré. Total: ${totalHours.toFixed(2)} heures`);
+          // Afficher le message avec les heures travaillées
+          const message = entry.totalHours > 0 
+            ? `Départ enregistré. Temps travaillé: ${entry.totalHours.toFixed(2)} heures`
+            : 'Départ enregistré';
+            
+          this.showMessage('success', message);
           this.loadMonthlyHistory();
         },
         error: (error: Error) => {
@@ -314,30 +313,6 @@ export class PointageComponent implements OnInit, OnDestroy {
         }
       });
     }
-  }
-
-  private calculateWorkingHours(entry: TimeEntry): number {
-    if (!entry.checkIn || !entry.checkOut) return 0;
-
-    const checkIn = new Date(entry.checkIn);
-    const checkOut = new Date(entry.checkOut);
-    
-    // Calculate total duration in milliseconds
-    let totalDuration = checkOut.getTime() - checkIn.getTime();
-    
-    // Subtract lunch break if taken
-    if (entry.lunchStart && entry.lunchEnd) {
-      const lunchStart = new Date(entry.lunchStart);
-      const lunchEnd = new Date(entry.lunchEnd);
-      const lunchDuration = lunchEnd.getTime() - lunchStart.getTime();
-      totalDuration -= lunchDuration;
-    }
-    
-    // Convert to hours (milliseconds to hours)
-    const hours = totalDuration / (1000 * 60 * 60);
-    
-    // Round to 2 decimal places
-    return Math.round(hours * 100) / 100;
   }
 
   toggleLunchBreak() {
@@ -349,9 +324,8 @@ export class PointageComponent implements OnInit, OnDestroy {
           this.currentEntry = entry;
           this.lunchStartTime = entry.lunchStart || null;
           this.showMessage('success', 'Début de pause déjeuner enregistré');
-          this.loadMonthlyHistory();
         },
-        error: (error) => {
+        error: (error: Error) => {
           console.error('Erreur lors de l\'enregistrement du début de pause:', error);
           this.showMessage('error', 'Erreur lors de l\'enregistrement du début de pause');
         }
@@ -362,9 +336,8 @@ export class PointageComponent implements OnInit, OnDestroy {
           this.currentEntry = entry;
           this.lunchEndTime = entry.lunchEnd || null;
           this.showMessage('success', 'Fin de pause déjeuner enregistrée');
-          this.loadMonthlyHistory();
         },
-        error: (error) => {
+        error: (error: Error) => {
           console.error('Erreur lors de l\'enregistrement de la fin de pause:', error);
           this.showMessage('error', 'Erreur lors de l\'enregistrement de la fin de pause');
         }

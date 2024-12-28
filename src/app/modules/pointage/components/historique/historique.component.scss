@@ -1,0 +1,35 @@
+:host ::ng-deep {
+  .p-card {
+    .p-card-content {
+      padding: 0;
+    }
+  }
+
+  .p-dropdown {
+    width: 100%;
+  }
+
+  .p-calendar {
+    width: 100%;
+  }
+
+  .p-button {
+    &.p-button-outlined:not(:hover) {
+      background-color: transparent;
+      color: var(--primary-color);
+      border-color: var(--primary-color);
+    }
+  }
+
+  .calendar-day {
+    min-height: 100px;
+    
+    &.today {
+      background-color: var(--primary-50);
+    }
+    
+    &:hover {
+      background-color: var(--surface-100);
+    }
+  }
+}

@@ -14,7 +14,10 @@
       "position": "IT Manager",
       "managerId": null,
       "managedEmployees": [
-        2
+        2,
+        3,
+        4,
+        5
       ],
       "hireDate": "2023-01-01",
       "leaveBalance": {
@@ -56,6 +59,87 @@
       "status": "active",
       "contractType": "CDI",
       "id": 2
+    },
+    {
+      "username": "aliriahi@gmail.com",
+      "email": "aliriahi@gmail.com",
+      "firstName": "ali",
+      "lastName": "riahi",
+      "name": "ali riahi",
+      "role": "employee",
+      "department": "Engineering",
+      "position": "Developpeur",
+      "managerId": 1,
+      "managedEmployees": [],
+      "hireDate": "2024-12-28T03:00:42.882Z",
+      "leaveBalance": {
+        "annual": 30,
+        "sick": 15
+      },
+      "workSchedule": {
+        "startTime": "09:00",
+        "endTime": "17:00",
+        "lunchBreakDuration": 60
+      },
+      "rating": 0,
+      "status": "active",
+      "contractType": "CDI",
+      "photoUrl": "assets/images/default-avatar.png",
+      "id": 3
+    },
+    {
+      "username": "riahimedaminer@gmail.com",
+      "email": "riahimedaminer@gmail.com",
+      "firstName": "Llewellyn",
+      "lastName": "Bahringer",
+      "name": "Llewellyn Bahringer",
+      "role": "employee",
+      "department": "Engineering",
+      "position": "Developpeur",
+      "managerId": 1,
+      "managedEmployees": [],
+      "hireDate": "2024-12-28T03:06:36.222Z",
+      "leaveBalance": {
+        "annual": 30,
+        "sick": 15
+      },
+      "workSchedule": {
+        "startTime": "09:00",
+        "endTime": "17:00",
+        "lunchBreakDuration": 60
+      },
+      "rating": 5,
+      "status": "active",
+      "contractType": "CDI",
+      "photoUrl": "assets/images/default-avatar.png",
+      "id": 4
+    },
+    {
+      "username": "riahimedaminer@gmail.com",
+      "email": "riahimedaminer@gmail.com",
+      "firstName": "Informatique",
+      "lastName": "de gestion",
+      "name": "Informatique de gestion",
+      "role": "employee",
+      "department": "Engineering",
+      "position": "Developpeur",
+      "managerId": 1,
+      "managedEmployees": [],
+      "hireDate": "2024-12-28T03:13:03.712Z",
+      "leaveBalance": {
+        "annual": 30,
+        "sick": 15
+      },
+      "workSchedule": {
+        "startTime": "09:00",
+        "endTime": "17:00",
+        "lunchBreakDuration": 60
+      },
+      "rating": 5,
+      "status": "active",
+      "contractType": "CDI",
+      "photoUrl": "assets/images/default-avatar.png",
+      "id": 5
     }
   ],
   "time-entries": [
@@ -63,13 +147,37 @@
       "userId": 2,
       "date": "2024-12-27T21:51:07.739Z",
       "checkIn": "22:51:07",
-      "checkOut": null,
+      "checkOut": "23:51:18",
       "lunchStart": null,
       "lunchEnd": null,
       "totalHours": 0,
       "status": "late",
       "isLate": true,
       "id": 1
+    },
+    {
+      "userId": 2,
+      "date": "2024-12-28T00:00:49.859Z",
+      "checkIn": "01:00:49",
+      "checkOut": "01:01:53",
+      "lunchStart": null,
+      "lunchEnd": null,
+      "totalHours": 0.02,
+      "status": "present",
+      "isLate": false,
+      "id": 2
+    },
+    {
+      "userId": 1,
+      "date": "2024-12-28T00:24:43.276Z",
+      "checkIn": "01:24:43",
+      "checkOut": "02:05:24",
+      "lunchStart": null,
+      "lunchEnd": null,
+      "totalHours": 0.68,
+      "status": "present",
+      "isLate": false,
+      "id": 3
     }
   ],
   "leave-requests": [],

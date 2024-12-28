@@ -41,14 +41,10 @@ export class EmployeeDashboardComponent implements OnInit {
   contractTypeChart: any;
   performanceChart: any;
 
-  showAddDialog = false;
-  selectedEmployee?: Employee;
-  showDetailDialog = false;
 
   constructor(
     private employeeService: EmployeeService,
     private messageService: MessageService,
-    private router: Router
   ) {}
 
   ngOnInit() {
@@ -171,106 +167,5 @@ export class EmployeeDashboardComponent implements OnInit {
       default:
         return status;
     }
-  }
-
-  getStatusClass(status: string): string {
-    switch (status) {
-      case 'ACTIVE':
-        return 'status-active';
-      case 'INACTIVE':
-        return 'status-inactive';
-      case 'ON_LEAVE':
-        return 'status-on-leave';
-      default:
-        return '';
-    }
-  }
-
-  onAddEmployee() {
-    this.showAddDialog = true;
-  }
-
-  createEmployee(employee: Partial<Employee>) {
-    const newEmployee: CreateEmployeeDto = {
-      firstName: employee.firstName || '',
-      lastName: employee.lastName || '',
-      email: employee.email || '',
-      phone: employee.phone || '',
-      birthDate: employee.birthDate ? new Date(employee.birthDate).toISOString() : new Date().toISOString(),
-      address: employee.address || '',
-      position: employee.position || '',
-      department: employee.department || '',
-      joinDate: employee.joinDate ? new Date(employee.joinDate).toISOString() : new Date().toISOString(),
-      status: employee.status as 'ACTIVE' | 'INACTIVE' | 'ON_LEAVE' || 'ACTIVE',
-      contractType: employee.contractType || 'CDI',
-      avatar: employee.avatar || 'assets/images/avatar-1.png',
-      skills: employee.skills || [],
-      salary: {
-        base: employee.salary?.base || 0,
-        bonus: employee.salary?.bonus || 0,
-        lastReview: new Date().toISOString()
-      },
-      performanceRating: employee.performanceRating || 0,
-      role: employee.role as 'manager' | 'employee' || 'employee',
-      username: employee.username || employee.email?.split('@')[0] || '',
-      password: '123456', // Default password
-      managerId: employee.managerId || null,
-      managedEmployees: employee.managedEmployees || []
-    };
-
-    this.employeeService.createEmployee(newEmployee).subscribe({
-      next: () => {
-        this.messageService.add({
-          severity: 'success',
-          summary: 'Succès',
-          detail: 'Employé ajouté avec succès',
-          life: 3000
-        });
-        this.loadEmployees();
-        this.showAddDialog = false;
-      },
-      error: (error) => {
-        console.error('Error creating employee:', error);
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Erreur',
-          detail: 'Erreur lors de l\'ajout de l\'employé',
-          life: 3000
-        });
-      }
-    });
-  }
-
-  viewEmployeeDetails(employee: Employee) {
-    this.router.navigate(['/employees', employee.id]);
-  }
-
-  exportToExcel() {
-    // Implement Excel export functionality
-    const data = this.employees.map(emp => ({
-      'Prénom': emp.firstName,
-      'Nom': emp.lastName,
-      'Email': emp.email,
-      'Téléphone': emp.phone,
-      'Poste': emp.position,
-      'Département': emp.department,
-      'Type de Contrat': emp.contractType,
-      'Statut': this.getStatusLabel(emp.status),
-      'Performance': emp.performanceRating
-    }));
-
-    // Use a library like xlsx to export data
-    // For now, we'll just show a success message
-    this.messageService.add({
-      severity: 'success',
-      summary: 'Export',
-      detail: 'Liste des employés exportée'
-    });
-  }
-
-  calculateAverageSalary(): number {
-    if (!this.employees.length) return 0;
-    const totalSalary = this.employees.reduce((sum, emp) => sum + (emp.salary?.base || 0), 0);
-    return totalSalary / this.employees.length;
   }
 }

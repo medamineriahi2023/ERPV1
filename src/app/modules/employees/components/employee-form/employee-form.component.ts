@@ -1,6 +1,8 @@
 import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { ReactiveFormsModule } from '@angular/forms';
+import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { DropdownModule } from 'primeng/dropdown';
 import { CalendarModule } from 'primeng/calendar';
@@ -11,13 +13,13 @@ import { RatingModule } from 'primeng/rating';
 import { ChipModule } from 'primeng/chip';
 import { PasswordModule } from 'primeng/password';
 import { FileUpload, FileUploadModule } from 'primeng/fileupload';
-import { ButtonModule } from 'primeng/button';
-import { MenuItem } from 'primeng/api';
+import { MenuItem, MessageService } from 'primeng/api';
 import { Employee } from '../../../../shared/services/employee.service';
-import { AuthService } from '../../../../core/services/auth.service';
 import { ApiService } from '../../../../core/services/api.service';
 import { Router } from '@angular/router';
 import { User } from '../../../../core/interfaces/user.interface';
+import { AuthService } from '../../../../core/services/auth.service';
+import { switchMap, tap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-employee-form',
@@ -37,7 +39,8 @@ import { User } from '../../../../core/interfaces/user.interface';
     PasswordModule,
     FileUploadModule
   ],
-  templateUrl: './employee-form.component.html'
+  templateUrl: './employee-form.component.html',
+  providers: [MessageService]
 })
 export class EmployeeFormComponent implements OnInit {
   @Input() employee?: Employee;
@@ -47,25 +50,14 @@ export class EmployeeFormComponent implements OnInit {
 
   employeeForm!: FormGroup;
   profileImageUrl: string = 'assets/images/default-avatar.png';
-  submitting = false;
-  currentStep = 0;
-  items: MenuItem[] = [
-    {
-      label: 'Informations Personnelles',
-      icon: 'pi pi-user'
-    },
-    {
-      label: 'Informations Professionnelles',
-      icon: 'pi pi-briefcase'
-    },
-    {
-      label: 'Informations Salariales',
-      icon: 'pi pi-money-bill'
-    }
-  ];
-  yearRange: string = '';
-  maxBirthDate: Date = new Date();
+  items!: MenuItem[];
+  activeIndex: number = 0;
+  currentStep: number = 0;
+  submitting: boolean = false;
   minJoinDate: Date = new Date();
+  yearRange: string;
+  maxBirthDate: Date;
+  hourFormat: string = "24";
   currentUser: User | null = null;
 
   departments = [
@@ -80,30 +72,29 @@ export class EmployeeFormComponent implements OnInit {
   contractTypes = [
     { label: 'CDI', value: 'CDI' },
     { label: 'CDD', value: 'CDD' },
-    { label: 'Stage', value: 'STAGE' },
-    { label: 'Intérim', value: 'INTERIM' }
+    { label: 'Stage', value: 'Intern' }
   ];
 
   statuses = [
-    { label: 'Actif', value: 'ACTIVE' },
-    { label: 'Inactif', value: 'INACTIVE' },
-    { label: 'En congé', value: 'ON_LEAVE' }
+    { label: 'Actif', value: 'active' },
+    { label: 'Inactif', value: 'inactive' },
+    { label: 'En congé', value: 'on_leave' }
   ];
 
   constructor(
     private fb: FormBuilder,
-    private authService: AuthService,
+    private messageService: MessageService,
+    private router: Router,
     private apiService: ApiService,
-    private router: Router
+    private authService: AuthService
   ) {
-    this.initForm();
-    this.initializeDateRanges();
-    this.authService.currentUser$.subscribe(user => {
-      this.currentUser = user;
-    });
+    this.initializeForm();
+    this.initializeSteps();
+    this.initializeDates();
+    this.currentUser = this.authService.getCurrentUser();
   }
 
-  private initializeDateRanges() {
+  private initializeDates() {
     const currentYear = new Date().getFullYear();
     this.yearRange = `${currentYear - 70}:${currentYear - 18}`;
     this.maxBirthDate = new Date();
@@ -112,15 +103,51 @@ export class EmployeeFormComponent implements OnInit {
     this.minJoinDate.setFullYear(currentYear - 5);
   }
 
-  uploadFile(event: any) {
-    const file = event.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (e: any) => {
-        this.profileImageUrl = e.target.result;
-      };
-      reader.readAsDataURL(file);
+  ngOnInit() {
+    if (this.employee) {
+      this.employeeForm.patchValue(this.employee);
+      this.profileImageUrl = this.employee.photoUrl || this.profileImageUrl;
     }
+  }
+
+  private initializeForm() {
+    this.employeeForm = this.fb.group({
+      firstName: ['', [Validators.required]],
+      lastName: ['', [Validators.required]],
+      email: ['', [Validators.required, Validators.email]],
+      username: ['', [Validators.required]],
+      phone: [''],
+      birthDate: [null],
+      gender: [''],
+      address: [''],
+      city: [''],
+      country: [''],
+      position: ['', [Validators.required]],
+      department: ['Engineering'],
+      joinDate: [new Date()],
+      salary: this.fb.group({
+        base: [0],
+        bonus: [0],
+        lastReview: [new Date()]
+      }),
+      status: ['active'],
+      contractType: ['CDI'],
+      skills: [[]],
+      workSchedule: this.fb.group({
+        startTime: ['09:00'],
+        endTime: ['17:00'],
+        lunchBreakDuration: [60]
+      }),
+      performanceRating: [0]
+    });
+  }
+
+  private initializeSteps() {
+    this.items = [
+      { label: 'Informations Personnelles' },
+      { label: 'Informations Professionnelles' },
+      { label: 'Salaire et Horaires' }
+    ];
   }
 
   getContractTypeIcon(type: string): string {
@@ -129,10 +156,8 @@ export class EmployeeFormComponent implements OnInit {
         return 'pi-check-circle';
       case 'CDD':
         return 'pi-clock';
-      case 'STAGE':
+      case 'Intern':
         return 'pi-book';
-      case 'INTERIM':
-        return 'pi-sync';
       default:
         return 'pi-question-circle';
     }
@@ -145,11 +170,11 @@ export class EmployeeFormComponent implements OnInit {
 
   getStatusClass(status: string): string {
     switch (status) {
-      case 'ACTIVE':
+      case 'active':
         return 'status-active';
-      case 'INACTIVE':
+      case 'inactive':
         return 'status-inactive';
-      case 'ON_LEAVE':
+      case 'on_leave':
         return 'status-leave';
       default:
         return '';
@@ -162,29 +187,97 @@ export class EmployeeFormComponent implements OnInit {
   }
 
   isStepValid(step: number): boolean {
-    const controls = this.employeeForm.controls;
-    switch (step) {
-      case 0:
-        return !!(controls['firstName']?.valid &&
-               controls['lastName']?.valid &&
-               controls['email']?.valid &&
-               controls['phone']?.valid &&
-               controls['birthDate']?.valid);
-      case 1:
-        return !!(controls['position']?.valid &&
-               controls['department']?.valid &&
-               controls['joinDate']?.valid &&
-               controls['contractType']?.valid &&
-               controls['status']?.valid);
-      case 2:
-        return true; // Always enable the button in the last step
-      default:
-        return false;
+    return true;
+  }
+
+  async onSubmit() {
+    console.log("submitting form");
+    try {
+      this.submitting = true;
+      const formData = this.employeeForm.value;
+      
+      const newUser: Omit<User, 'id'> = {
+        username: formData.email,
+        email: formData.email,
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        name: `${formData.firstName} ${formData.lastName}`,
+        role: 'employee',
+        department: formData.department,
+        position: formData.position,
+        managerId: this.currentUser?.id || null,
+        managedEmployees: [],
+        hireDate: formData.joinDate,
+        leaveBalance: {
+          annual: 30,
+          sick: 15
+        },
+        workSchedule: {
+          startTime: formData.workSchedule.startTime,
+          endTime: formData.workSchedule.endTime,
+          lunchBreakDuration: formData.workSchedule.lunchBreakDuration
+        },
+        rating: formData.performanceRating || 0,
+        status: formData.status || 'active',
+        contractType: formData.contractType || 'CDI',
+        photoUrl: this.profileImageUrl
+      };
+
+      this.apiService.createUser(newUser).pipe(
+        switchMap(createdUser => {
+          if (this.currentUser?.id) {
+            // D'abord obtenir l'utilisateur courant à jour
+            return this.apiService.getUserById(this.currentUser.id).pipe(
+              switchMap(currentUser => {
+                // Ajouter le nouvel ID à la liste existante
+                const updatedManagedEmployees = [...(currentUser.managedEmployees || []), createdUser.id];
+                // Mettre à jour l'utilisateur avec la nouvelle liste
+                return this.apiService.updateUser(this.currentUser.id, {
+                  managedEmployees: updatedManagedEmployees
+                });
+              })
+            );
+          }
+          return [];
+        })
+      ).subscribe({
+        next: () => {
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Succès',
+            detail: 'Employé ajouté avec succès'
+          });
+          this.router.navigate(['/employees']);
+        },
+        error: (error) => {
+          console.error('Erreur lors de la création de l\'employé:', error);
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Erreur',
+            detail: 'Une erreur est survenue lors de la création de l\'employé'
+          });
+        },
+        complete: () => {
+          this.submitting = false;
+        }
+      });
+    } catch (error) {
+      console.error('Erreur lors de la création de l\'employé:', error);
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Erreur',
+        detail: 'Une erreur est survenue lors de la création de l\'employé'
+      });
+      this.submitting = false;
     }
   }
 
+  onCancel() {
+    this.cancel.emit();
+  }
+
   nextStep() {
-    if (this.currentStep < 2 && this.isStepValid(this.currentStep)) {
+    if (this.currentStep < 2) {
       this.currentStep++;
     }
   }
@@ -195,152 +288,14 @@ export class EmployeeFormComponent implements OnInit {
     }
   }
 
-  ngOnInit() {
-    if (this.employee) {
-      this.employeeForm.patchValue(this.employee);
-      if (this.employee.avatar) {
-        this.profileImageUrl = this.employee.avatar;
-      }
-    }
-  }
-
-  private initForm() {
-    this.employeeForm = this.fb.group({
-      firstName: ['', [Validators.required, Validators.minLength(2)]],
-      lastName: ['', [Validators.required, Validators.minLength(2)]],
-      email: ['', [Validators.required, Validators.email]],
-      phone: ['', [Validators.required, Validators.pattern(/^\+216 \d{2}-\d{3}-\d{3}$/)]],
-      birthDate: [null, Validators.required],
-      address: [''],
-      username: ['', [Validators.required, Validators.minLength(4)]],
-      password: ['', [Validators.required, Validators.minLength(6)]],
-      position: ['', Validators.required],
-      department: ['', Validators.required],
-      joinDate: [new Date(), Validators.required],
-      status: ['ACTIVE', Validators.required],
-      skills: [''],
-      contractType: ['', Validators.required],
-      salary: this.fb.group({
-        base: [0],
-        bonus: [0]
-      }),
-      performanceRating: [0],
-      role: ['employee']
-    });
-  }
-
-  async onSubmit() {
-    if (this.employeeForm.valid || this.currentStep === 2) {
-      this.submitting = true;
-      try {
-        const formValue = this.employeeForm.value;
-        
-        // Format the dates
-        const hireDate = formValue.joinDate ? new Date(formValue.joinDate) : new Date();
-        
-        // Convert skills from string to array if needed
-        const skills = formValue.skills ? formValue.skills.split(',').map((s: string) => s.trim()).filter(Boolean) : [];
-        
-        // Prepare the employee data
-        const newEmployee: Omit<User, 'id'> = {
-          username: formValue.username,
-          password: formValue.password,
-          email: formValue.email,
-          firstName: formValue.firstName,
-          lastName: formValue.lastName,
-          name: `${formValue.firstName} ${formValue.lastName}`,
-          role: 'employee',
-          photoUrl: this.profileImageUrl,
-          department: formValue.department,
-          position: formValue.position,
-          managerId: this.currentUser?.id || null,
-          managedEmployees: [],
-          hireDate: hireDate,
-          leaveBalance: {
-            annual: 30,
-            sick: 15
-          },
-          workSchedule: {
-            startTime: "09:00",
-            endTime: "17:00",
-            lunchBreakDuration: 60
-          },
-          rating: formValue.performanceRating || 0,
-          status: 'active',
-          contractType: formValue.contractType
-        };
-
-        // Create the employee using the API service
-        const response = await this.apiService.createUser(newEmployee).toPromise();
-        
-        if (response) {
-          // Update the manager's managedEmployees array if there is a manager
-          if (this.currentUser?.id) {
-            const currentManagedEmployees = this.currentUser.managedEmployees || [];
-            const updatedManager = {
-              ...this.currentUser,
-              managedEmployees: [...currentManagedEmployees, response.id]
-            };
-            await this.apiService.updateUser(this.currentUser.id, updatedManager).toPromise();
-          }
-
-          // Show success message
-          console.log('Employee created successfully:', response);
-          
-          // Navigate back to employees list
-          this.router.navigate(['/employees']);
-        }
-      } catch (error) {
-        console.error('Error creating employee:', error);
-      } finally {
-        this.submitting = false;
-      }
-    } else {
-      // Mark all fields as touched to show validation errors
-      Object.keys(this.employeeForm.controls).forEach(key => {
-        const control = this.employeeForm.get(key);
-        control?.markAsTouched();
-      });
-    }
-  }
-
-  onCancel() {
-    this.cancel.emit();
-  }
-
-  onFileUpload(event: any) {
-    const file = event.files[0];
+  uploadFile(event: any) {
+    const file = event.target.files[0];
     if (file) {
       const reader = new FileReader();
       reader.onload = (e: any) => {
         this.profileImageUrl = e.target.result;
       };
       reader.readAsDataURL(file);
-      this.fileUpload.clear();
     }
-  }
-
-  isFieldInvalid(field: string): boolean {
-    const control = this.employeeForm.get(field);
-    return !!control && control.invalid && (control.dirty || control.touched);
-  }
-
-  getFieldError(field: string): string {
-    const control = this.employeeForm.get(field);
-    if (control?.errors) {
-      if (control.errors['required']) {
-        return 'Ce champ est requis';
-      }
-      if (control.errors['email']) {
-        return 'Email invalide';
-      }
-      if (control.errors['minlength']) {
-        return `Minimum ${control.errors['minlength'].requiredLength} caractères`;
-      }
-      if (control.errors['pattern']) {
-        return 'Format invalide';
-      }
-    }
-    return '';
   }
 }
