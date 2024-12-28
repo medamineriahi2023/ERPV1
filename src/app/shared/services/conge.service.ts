@@ -8,6 +8,7 @@ import { map, catchError, delay } from 'rxjs/operators';
 export interface CongeRequest {
   id: number;
   employeeId: number;
+  managerId: number;
   type: string | {
     label: string;
     value: string;

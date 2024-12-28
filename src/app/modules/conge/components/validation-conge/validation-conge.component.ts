@@ -1,5 +1,3 @@
-// noinspection JSUnusedGlobalSymbols
-
 import { Component, OnInit } from '@angular/core';
 import { CongeService, CongeRequest } from '../../../../shared/services/conge.service';
 import { AuthService } from '../../../../core/services/auth.service';
@@ -17,14 +15,22 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { InputTextModule } from 'primeng/inputtext';
 import { EmployeeService, Employee } from '../../../../shared/services/employee.service';
 import { firstValueFrom } from 'rxjs';
-import {Ripple} from "primeng/ripple";
-import {InputTextarea} from "primeng/inputtextarea";
+import { Ripple } from "primeng/ripple";
+import { InputTextarea } from "primeng/inputtextarea";
+
+interface User {
+  id: number;
+  managerId?: number;
+  email: string;
+  firstName: string;
+  lastName: string;
+  role: string;
+}
 
 export interface CongeWithEmployee extends CongeRequest {
   employee?: Employee;
 }
 
-// noinspection JSUnusedGlobalSymbols
 @Component({
   selector: 'app-validation-conge',
   templateUrl: './validation-conge.component.html',
@@ -55,8 +61,7 @@ export class ValidationCongeComponent implements OnInit {
   selectedConge?: CongeWithEmployee;
   showApprovalDialog = false;
   approverComment = '';
-  currentUser: any;
-  managedEmployees: number[] = [];
+  currentUser: User | null = null;
 
   typeOptions = [
     { label: 'Congé payé', value: 'CONGE_PAYE' },
@@ -79,69 +84,29 @@ export class ValidationCongeComponent implements OnInit {
     private authService: AuthService
   ) {}
 
-  ngOnInit() {
-    this.getCurrentUserAndEmployees();
-  }
-
-  private async getCurrentUserAndEmployees() {
+  async ngOnInit() {
     try {
-      // Get current user and their managed employees
-      this.currentUser = await this.authService.getCurrentUser();
-      const managedEmployees = await this.authService.getManagedEmployees();
-      this.managedEmployees = managedEmployees.map(emp => emp.id);
+      const user = await firstValueFrom(this.authService.currentUser$);
+      if (!user) {
+        throw new Error('No user logged in');
+      }
       
-      // Load leave requests only after we have the managed employees list
-      await this.loadConges();
+      const requests = await firstValueFrom(this.congeService.getCongeRequests());
+      this.conges = requests.filter(request => request.managerId === user.id);
+
+      for (const request of this.conges) {
+        const employee = await firstValueFrom(this.employeeService.getEmployee(request.employeeId));
+        if (employee) {
+          request.employee = employee;
+        }
+      }
     } catch (error) {
-      console.error('Error getting current user or managed employees:', error);
+      console.error('Error loading conge requests:', error);
       this.messageService.add({
         severity: 'error',
-        summary: 'Erreur',
-        detail: 'Erreur lors du chargement des informations utilisateur',
-        life: 3000
+        summary: 'Error',
+        detail: 'Failed to load leave requests'
       });
-    }
-  }
-
-  async loadConges() {
-    this.loading = true;
-    try {
-      // Get all leave requests
-      const allConges = await firstValueFrom(this.congeService.getCongeRequests());
-      
-      // Filter requests to only include those from managed employees
-      const filteredConges = allConges.filter(conge => 
-        this.managedEmployees.includes(conge.employeeId)
-      );
-
-      // Get unique employee IDs from the filtered requests
-      const employeeIds = [...new Set(filteredConges.map(c => c.employeeId))];
-      
-      // Fetch employee details
-      const employees = await Promise.all(
-        employeeIds.map(id => firstValueFrom(this.employeeService.getEmployee(id)))
-      );
-
-      // Combine leave requests with employee details
-      this.conges = filteredConges.map(conge => ({
-        ...conge,
-        employee: employees.find(e => e?.id === conge.employeeId)
-      }));
-
-      // Sort by date, with most recent first
-      this.conges.sort((a, b) => 
-        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-      );
-    } catch (error) {
-      console.error('Error loading conges:', error);
-      this.messageService.add({
-        severity: 'error',
-        summary: 'Erreur',
-        detail: 'Erreur lors du chargement des demandes',
-        life: 3000
-      });
-    } finally {
-      this.loading = false;
     }
   }
 
@@ -150,69 +115,76 @@ export class ValidationCongeComponent implements OnInit {
     this.showApprovalDialog = true;
   }
 
-  confirmApproval() {
+  async confirmApproval() {
     if (!this.selectedConge) return;
 
-    const updates: Partial<CongeRequest> = {
-      status: 'APPROUVE',
-      approverComment: this.approverComment,
-      updatedAt: new Date().toISOString()
-    };
-
-    this.congeService.updateCongeRequest(this.selectedConge.id, updates).subscribe({
-      next: () => {
-        this.messageService.add({
-          severity: 'success',
-          summary: 'Succès',
-          detail: 'Demande approuvée avec succès',
-          life: 3000
-        });
-        this.loadConges();
-        this.hideDialog();
-      },
-      error: (error) => {
-        console.error('Error approving conge:', error);
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Erreur',
-          detail: 'Erreur lors de l\'approbation',
-          life: 3000
-        });
+    try {
+      if (!this.currentUser?.id) {
+        throw new Error('Utilisateur non connecté');
       }
-    });
+
+      if (this.selectedConge.managerId !== this.currentUser.id) {
+        throw new Error('Non autorisé à approuver cette demande');
+      }
+
+      await firstValueFrom(this.congeService.updateCongeRequest(this.selectedConge.id, {
+        status: 'APPROUVE',
+        approverComment: this.approverComment,
+        updatedAt: new Date().toISOString()
+      }));
+
+      this.messageService.add({
+        severity: 'success',
+        summary: 'Succès',
+        detail: 'Demande de congé approuvée'
+      });
+
+      await this.ngOnInit();
+      this.hideDialog();
+    } catch (error) {
+      console.error('Error approving leave:', error);
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Erreur',
+        detail: 'Erreur lors de l\'approbation de la demande'
+      });
+    }
   }
 
-
-  confirmRejection() {
+  async confirmRejection() {
     if (!this.selectedConge) return;
 
-    const updates: Partial<CongeRequest> = {
-      status: 'REFUSE',
-      approverComment: this.approverComment,
-      updatedAt: new Date().toISOString()
-    };
-
-    this.congeService.updateCongeRequest(this.selectedConge.id, updates).subscribe({
-      next: () => {
-        this.messageService.add({
-          severity: 'success',
-          summary: 'Succès',
-          detail: 'Demande rejetée avec succès',
-          life: 3000
-        });
-        this.loadConges();
-        this.hideDialog();
-      },
-      error: (error) => {
-        console.error('Error rejecting conge:', error);
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Erreur',
-          detail: 'Erreur lors du rejet',
-          life: 3000
-        });
+    try {
+      if (!this.currentUser?.id) {
+        throw new Error('Utilisateur non connecté');
       }
-    });
+
+      if (this.selectedConge.managerId !== this.currentUser.id) {
+        throw new Error('Non autorisé à rejeter cette demande');
+      }
+
+      await firstValueFrom(this.congeService.updateCongeRequest(this.selectedConge.id, {
+        status: 'REFUSE',
+        approverComment: this.approverComment,
+        updatedAt: new Date().toISOString()
+      }));
+
+      this.messageService.add({
+        severity: 'success',
+        summary: 'Succès',
+        detail: 'Demande de congé refusée'
+      });
+
+      await this.ngOnInit();
+      this.hideDialog();
+    } catch (error) {
+      console.error('Error rejecting leave:', error);
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Erreur',
+        detail: 'Erreur lors du rejet de la demande'
+      });
+    }
   }
 
   hideDialog() {
@@ -221,67 +193,36 @@ export class ValidationCongeComponent implements OnInit {
     this.approverComment = '';
   }
 
-
   getStatusLabel(status: string): string {
     switch (status) {
+      case 'EN_ATTENTE':
+        return 'En attente';
       case 'APPROUVE':
         return 'Approuvé';
       case 'REFUSE':
         return 'Refusé';
-      case 'EN_ATTENTE':
-        return 'En attente';
       default:
         return status;
     }
   }
 
-  isUrgent(conge: CongeRequest): boolean {
-    const startDate = new Date(conge.startDate);
-    const today = new Date();
-    const diffTime = startDate.getTime() - today.getTime();
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    return diffDays <= 3 || conge.urgencyLevel === 'URGENT';
-  }
-
-  getTypeLabel(type: string): string {
-    const option = this.typeOptions.find(t => t.value === type);
-    return option ? option.label : type;
-  }
-
-  getTypeSeverity(type: string): 'success' | 'info' | 'warn' | 'danger' | undefined {
-    switch (type) {
-      case 'CONGE_PAYE':
-        return 'success';
-      case 'MALADIE':
-        return 'danger';
-      case 'SANS_SOLDE':
+  getStatusSeverity(status: string): 'success' | 'secondary' | 'info' | 'warn' | 'danger' | 'contrast' {
+    switch (status) {
+      case 'EN_ATTENTE':
         return 'warn';
-      case 'FORMATION':
-        return 'info';
+      case 'APPROUVE':
+        return 'success';
+      case 'REFUSE':
+        return 'danger';
       default:
-        return undefined;
+        return 'secondary';
     }
   }
-
-
 
   calculateDaysUntilStart(startDate: string): number {
     const start = new Date(startDate);
     const today = new Date();
     const diffTime = start.getTime() - today.getTime();
     return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-  }
-
-  getStatusSeverity(status: string): 'success' | 'info' | 'warn' | 'danger' | undefined {
-    switch (status) {
-      case 'APPROUVE':
-        return 'success';
-      case 'REFUSE':
-        return 'danger';
-      case 'EN_ATTENTE':
-        return 'warn';
-      default:
-        return undefined;
-    }
   }
 }

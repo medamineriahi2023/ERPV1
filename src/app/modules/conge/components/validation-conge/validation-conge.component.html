@@ -1,6 +1,5 @@
 <div class="min-h-screen bg-gray-50 py-8">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-
     <div class="mt-8">
       <div class="bg-white rounded-lg shadow-sm p-6">
         <!-- En-tête -->
@@ -39,32 +38,17 @@
           <ng-template pTemplate="header">
             <tr>
               <th>Employé</th>
-              <th>Type
-                <p-dropdown 
-                  [options]="typeOptions"
-                  placeholder="Tous les types"
-                  [showClear]="true"
-                  styleClass="p-column-filter">
-                </p-dropdown>
-              </th>
+              <th>Type</th>
               <th>Période</th>
               <th>Durée</th>
               <th>Raison</th>
-              <th>Urgence</th>
-              <th>Statut
-                <p-dropdown 
-                  [options]="statusOptions"
-                  placeholder="Tous les statuts"
-                  [showClear]="true"
-                  styleClass="p-column-filter">
-                </p-dropdown>
-              </th>
+              <th>Statut</th>
               <th>Actions</th>
             </tr>
           </ng-template>
 
           <ng-template pTemplate="body" let-conge>
-            <tr [ngClass]="{'bg-red-50': isUrgent(conge)}">
+            <tr>
               <td>
                 <div class="flex items-center gap-3">
                   <p-avatar 
@@ -85,10 +69,7 @@
               </td>
 
               <td>
-                <p-tag 
-                  [value]="getTypeLabel(conge.type)"
-                  [severity]="getTypeSeverity(conge.type)">
-                </p-tag>
+                <p-tag [value]="conge.type"></p-tag>
               </td>
 
               <td>
@@ -110,13 +91,6 @@
 
               <td>
                 <p-tag 
-                  [value]="conge.urgencyLevel === 'URGENT' ? 'Urgent' : 'Normal'"
-                  [severity]="conge.urgencyLevel === 'URGENT' ? 'danger' : 'secondary'">
-                </p-tag>
-              </td>
-
-              <td>
-                <p-tag 
                   [value]="getStatusLabel(conge.status)"
                   [severity]="getStatusSeverity(conge.status)">
                 </p-tag>
@@ -129,6 +103,7 @@
                     pRipple 
                     icon="pi pi-check" 
                     class="p-button-rounded p-button-success mr-2"
+                    [disabled]="conge.status !== 'EN_ATTENTE'"
                     (click)="approveConge(conge)">
                   </button>
                 </div>
@@ -138,7 +113,7 @@
 
           <ng-template pTemplate="emptymessage">
             <tr>
-              <td colspan="8" class="text-center p-4">
+              <td colspan="7" class="text-center p-4">
                 Aucune demande de congé trouvée
               </td>
             </tr>
@@ -196,4 +171,3 @@
 </p-dialog>
 
 <p-toast></p-toast>
-<p-confirmDialog></p-confirmDialog>

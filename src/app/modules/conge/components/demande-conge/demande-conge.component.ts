@@ -14,8 +14,17 @@ import { TagModule } from 'primeng/tag';
 import { MessageService } from 'primeng/api';
 import { CongeService, CongeRequest } from '../../../../shared/services/conge.service';
 import { AuthService } from '../../../../core/services/auth.service';
-import { firstValueFrom } from 'rxjs';
+import { firstValueFrom, map } from 'rxjs';
 import { Router } from '@angular/router';
+
+interface User {
+  id: number;
+  managerId?: number;
+  email: string;
+  firstName: string;
+  lastName: string;
+  role: string;
+}
 
 @Component({
   selector: 'app-demande-conge',
@@ -42,26 +51,22 @@ import { Router } from '@angular/router';
 export class DemandeCongeComponent implements OnInit {
   leaveForm: FormGroup;
   loading = false;
-  remainingDays = 0;
   uploadedFiles: any[] = [];
+  currentUser: User | null = null;
+  weekendDays: number = 0;
+  calculatedDays: number = 0;
 
-  // Statistics
+  // Statistiques
   leaveStats = {
     totalDays: 30,
     usedDays: 0,
-    remainingDays: 0,
+    remainingDays: 30,
     pendingDays: 0,
-    sickDays: 0
-  };
-
-  monthlyStats = {
-    labels: ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Jun', 'Jul', 'Aoû', 'Sep', 'Oct', 'Nov', 'Déc'],
-    values: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    sickDays: 15
   };
 
   recentLeaves: any[] = [];
   upcomingLeaves: any[] = [];
-  currentUser: any = null;
 
   typeOptions = [
     { label: 'Congé payé', value: 'CONGE_PAYE', icon: 'pi pi-calendar', color: '#22C55E' },
@@ -77,13 +82,10 @@ export class DemandeCongeComponent implements OnInit {
   ];
 
   minDate: Date = new Date();
-  calculatedDays: number = 0;
-  weekendDays: number = 0;
   publicHolidays: Date[] = [
     new Date('2024-01-01'), // Nouvel an
     new Date('2024-05-01'), // Fête du travail
     new Date('2024-07-14'), // Fête nationale
-    // Ajoutez d'autres jours fériés ici
   ];
 
   constructor(
@@ -98,242 +100,64 @@ export class DemandeCongeComponent implements OnInit {
       startDate: [null, Validators.required],
       endDate: [null, Validators.required],
       urgencyLevel: ['NORMAL', Validators.required],
-      reason: ['', [Validators.required, Validators.minLength(10)]],
-      replacementEmployee: [''],
-      impactOnTraining: [false],
-      attachments: [[]]
+      reason: ['', [Validators.required, Validators.minLength(10)]]
     });
-
-    // Listen to date changes
-    this.leaveForm.get('startDate')?.valueChanges.subscribe(() => {
-      this.calculateDuration();
-      this.adjustEndDateIfWeekend();
-    });
-    this.leaveForm.get('endDate')?.valueChanges.subscribe(() => {
-      this.calculateDuration();
-      this.adjustEndDateIfWeekend();
-    });
-  }
-
-  // Function to check if a date is a weekend
-  isWeekend(date: Date): boolean {
-    const day = date.getDay();
-    return day === 0 || day === 6; // 0 is Sunday, 6 is Saturday
-  }
-
-  // Function to check if a date is valid for selection
-  isDateDisabled = (date: Date): boolean => {
-    return this.isWeekend(date) || this.publicHolidays.some(holiday =>
-      holiday.getDate() === date.getDate() &&
-      holiday.getMonth() === date.getMonth() &&
-      holiday.getFullYear() === date.getFullYear()
-    );
-  }
-
-  // Function to get the next valid date
-  getNextValidDate(date: Date): Date {
-    const nextDate = new Date(date);
-    while (this.isDateDisabled(nextDate)) {
-      nextDate.setDate(nextDate.getDate() + 1);
-    }
-    return nextDate;
-  }
-
-  // Function to adjust end date if it falls on a weekend
-  private adjustEndDateIfWeekend() {
-    const endDate = this.leaveForm.get('endDate')?.value;
-    if (endDate && this.isDateDisabled(new Date(endDate))) {
-      const nextValidDate = this.getNextValidDate(new Date(endDate));
-      this.leaveForm.patchValue({ endDate: nextValidDate }, { emitEvent: false });
-    }
-  }
-
-  private calculateDuration() {
-    const startDate = this.leaveForm.get('startDate')?.value;
-    const endDate = this.leaveForm.get('endDate')?.value;
-
-    if (!startDate || !endDate) {
-      this.calculatedDays = 0;
-      this.weekendDays = 0;
-      return;
-    }
-
-    let duration = 0;
-    let weekends = 0;
-    let current = new Date(startDate);
-    const end = new Date(endDate);
-
-    while (current <= end) {
-      if (this.isDateDisabled(current)) {
-        weekends++;
-      } else {
-        duration++;
-      }
-      current.setDate(current.getDate() + 1);
-    }
-
-    this.calculatedDays = duration;
-    this.weekendDays = weekends;
   }
 
   async ngOnInit() {
-    await this.loadUserData();
-    await this.loadLeaveStatistics();
-    await this.loadLeaveHistory();
-    await this.loadRemainingDays();
-  }
-
-  private async loadUserData() {
     try {
-      const user = this.authService.getCurrentUser();
-      if (!user) return;
-      this.currentUser = user;
+      const currentUser = await firstValueFrom(this.authService.currentUser$);
+      if (!currentUser) {
+        throw new Error('No user logged in');
+      }
+      this.currentUser = currentUser;
+      await this.loadLeaveStats();
+      await this.loadLeaveHistory();
     } catch (error) {
-      console.error('Error loading user data:', error);
+      console.error('Error getting current user:', error);
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Erreur',
+        detail: 'Erreur lors de la récupération des informations utilisateur'
+      });
     }
   }
 
-  private async loadLeaveStatistics() {
-    try {
-      const currentUser = this.authService.getCurrentUser();
-      if (!currentUser) return;
-
-      const balance = await firstValueFrom(this.congeService.getCongeBalance(currentUser.id));
+  private async loadLeaveStats() {
+    if (this.currentUser?.id) {
+      const balance = await firstValueFrom(this.congeService.getCongeBalance(this.currentUser.id));
       this.leaveStats = {
         totalDays: balance.totalDays,
         usedDays: balance.usedDays,
         remainingDays: balance.remainingDays,
-        pendingDays: 0, // À implémenter avec le backend
+        pendingDays: 0,
         sickDays: balance.sickDays
       };
-
-      // Simuler des données mensuelles pour l'exemple
-      this.monthlyStats.values = [2, 0, 3, 1, 0, 5, 0, 0, 0, 0, 0, 0];
-    } catch (error) {
-      console.error('Error loading leave statistics:', error);
     }
   }
 
-  async loadLeaveHistory() {
-    try {
-      const currentUser = this.authService.getCurrentUser();
-      if (!currentUser) {
-        throw new Error('User not found');
-      }
-
+  private async loadLeaveHistory() {
+    if (this.currentUser?.id) {
       const allLeaves = await firstValueFrom(this.congeService.getCongeRequests());
-      const userLeaves = allLeaves.filter(leave => leave.employeeId === currentUser.id);
+      const userLeaves = allLeaves.filter(leave => leave.employeeId === this.currentUser?.id);
       const now = new Date();
 
       this.recentLeaves = userLeaves
-        .filter((leave: CongeRequest) => new Date(leave.endDate) < now)
-        .sort((a: CongeRequest, b: CongeRequest) => 
-          new Date(b.endDate).getTime() - new Date(a.endDate).getTime()
-        )
+        .filter(leave => new Date(leave.endDate) < now)
+        .sort((a, b) => new Date(b.endDate).getTime() - new Date(a.endDate).getTime())
         .slice(0, 5);
 
       this.upcomingLeaves = userLeaves
-        .filter((leave: CongeRequest) => new Date(leave.startDate) > now)
-        .sort((a: CongeRequest, b: CongeRequest) => 
-          new Date(a.startDate).getTime() - new Date(b.startDate).getTime()
-        )
+        .filter(leave => new Date(leave.startDate) > now)
+        .sort((a, b) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime())
         .slice(0, 5);
-
-    } catch (error) {
-      console.error('Error loading leave history:', error);
-      this.messageService.add({
-        severity: 'error',
-        summary: 'Erreur',
-        detail: 'Erreur lors du chargement de l\'historique',
-        life: 3000
-      });
     }
   }
 
-  private async loadRemainingDays() {
-    try {
-      const currentUser = this.authService.getCurrentUser();
-      if (!currentUser) return;
-
-      const balance = await firstValueFrom(this.congeService.getCongeBalance(currentUser.id));
-      this.remainingDays = balance.remainingDays;
-    } catch (error) {
-      console.error('Error loading remaining days:', error);
-    }
+  getTypeLabel(type: string): string {
+    const option = this.typeOptions.find(t => t.value === type);
+    return option ? option.label : type;
   }
-
-  onFileUpload(event: any) {
-    for (let file of event.files) {
-      this.uploadedFiles.push(file);
-    }
-    this.messageService.add({
-      severity: 'info',
-      summary: 'Fichier ajouté',
-      detail: 'Le fichier a été ajouté avec succès'
-    });
-  }
-
-
-  onSubmit() {
-    if (this.leaveForm.valid) {
-      const formValue = this.leaveForm.value;
-      const currentUser = this.authService.getCurrentUser();
-      
-      if (!currentUser) {
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Erreur',
-          detail: 'Utilisateur non connecté',
-          life: 3000
-        });
-        return;
-      }
-
-      const request: Partial<CongeRequest> = {
-        employeeId: currentUser.id,
-        type: formValue.type,
-        startDate: formValue.startDate.toISOString(),
-        endDate: formValue.endDate.toISOString(),
-        duration: this.calculatedDays,
-        reason: formValue.reason,
-        status: 'EN_ATTENTE',
-        urgencyLevel: formValue.urgencyLevel,
-        impactOnTraining: formValue.impactOnTraining,
-        attachments: this.uploadedFiles.map(file => file.name),
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString()
-      };
-
-      this.congeService.createCongeRequest(request).subscribe({
-        next: () => {
-          this.messageService.add({
-            severity: 'success',
-            summary: 'Succès',
-            detail: 'Demande de congé envoyée avec succès',
-            life: 3000
-          });
-          this.router.navigate(['/conges']);
-        },
-        error: (error) => {
-          console.error('Error submitting leave request:', error);
-          this.messageService.add({
-            severity: 'error',
-            summary: 'Erreur',
-            detail: 'Erreur lors de l\'envoi de la demande',
-            life: 3000
-          });
-        }
-      });
-    } else {
-      this.messageService.add({
-        severity: 'warn',
-        summary: 'Attention',
-        detail: 'Veuillez remplir tous les champs obligatoires',
-        life: 3000
-      });
-    }
-  }
-
 
   getStatusColor(status: string): string {
     switch (status) {
@@ -361,8 +185,80 @@ export class DemandeCongeComponent implements OnInit {
     }
   }
 
-  getTypeLabel(type: string): string {
-    const option = this.typeOptions.find(opt => opt.value === type);
-    return option?.label || type;
+  onFileUpload(event: any) {
+    for (let file of event.files) {
+      this.uploadedFiles.push(file);
+    }
+    this.messageService.add({
+      severity: 'info',
+      summary: 'Fichier ajouté',
+      detail: 'Le fichier a été ajouté avec succès'
+    });
+  }
+
+  async onSubmit() {
+    if (this.leaveForm.valid && this.currentUser) {
+      try {
+        this.loading = true;
+
+        if (!this.currentUser.managerId) {
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Erreur',
+            detail: 'Aucun manager assigné. Impossible de soumettre une demande de congé.'
+          });
+          return;
+        }
+
+        const formValue = this.leaveForm.value;
+        const startDate = new Date(formValue.startDate);
+        const endDate = new Date(formValue.endDate);
+
+        const request: Partial<CongeRequest> = {
+          employeeId: this.currentUser.id,
+          managerId: this.currentUser.managerId,
+          type: formValue.type,
+          startDate: startDate.toISOString(),
+          endDate: endDate.toISOString(),
+          duration: this.calculatedDays,
+          status: 'EN_ATTENTE',
+          reason: formValue.reason,
+          urgencyLevel: formValue.urgencyLevel,
+          attachments: this.uploadedFiles.map(file => file.name)
+        };
+
+        await firstValueFrom(this.congeService.createCongeRequest(request));
+        
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Succès',
+          detail: 'Demande de congé soumise avec succès'
+        });
+
+        this.router.navigate(['/conges']);
+      } catch (error) {
+        console.error('Error submitting leave request:', error);
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Erreur',
+          detail: 'Erreur lors de la soumission de la demande'
+        });
+      } finally {
+        this.loading = false;
+      }
+    } else {
+      Object.keys(this.leaveForm.controls).forEach(key => {
+        const control = this.leaveForm.get(key);
+        if (control?.invalid) {
+          control.markAsTouched();
+        }
+      });
+      
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Erreur',
+        detail: 'Veuillez remplir tous les champs obligatoires'
+      });
+    }
   }
 }

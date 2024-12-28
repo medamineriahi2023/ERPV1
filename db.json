@@ -183,5 +183,32 @@
   "leave-requests": [],
   "projects": [],
   "weekly-reports": [],
-  "notifications": []
+  "notifications": [],
+  "conges": [
+    {
+      "managerId": 1,
+      "employeeId": 2,
+      "type": {
+        "label": "Congé payé",
+        "value": "CONGE_PAYE",
+        "icon": "pi pi-calendar",
+        "color": "#22C55E"
+      },
+      "startDate": "2024-12-29T23:00:00.000Z",
+      "endDate": "2024-12-30T23:00:00.000Z",
+      "duration": 2,
+      "reason": "hhhyuiyhugfkyufytfryt",
+      "status": "EN_ATTENTE",
+      "urgencyLevel": {
+        "label": "Normal",
+        "value": "NORMAL",
+        "icon": "pi pi-clock"
+      },
+      "impactOnTraining": false,
+      "attachments": [],
+      "createdAt": "2024-12-28T13:50:48.444Z",
+      "updatedAt": "2024-12-28T13:50:48.444Z",
+      "id": 1
+    }
+  ]
 }
