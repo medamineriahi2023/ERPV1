@@ -52,14 +52,14 @@
               <td>
                 <div class="flex items-center gap-3">
                   <p-avatar 
-                    [label]="conge.employee?.firstName?.charAt(0) || '?'"
+                    [label]="conge.user?.firstName?.charAt(0) || '?'"
                     styleClass="mr-2"
                     [style]="{'background-color': '#2196F3', 'color': '#ffffff'}"
                     shape="circle">
                   </p-avatar>
                   <div>
                     <div class="font-medium">
-                      {{ conge.employee?.firstName }} {{ conge.employee?.lastName }}
+                      {{ conge.user?.firstName }} {{ conge.user?.lastName }}
                     </div>
                     <div class="text-sm text-gray-500">
                       {{ calculateDaysUntilStart(conge.startDate) }} jours avant début
@@ -69,7 +69,7 @@
               </td>
 
               <td>
-                <p-tag [value]="conge.type"></p-tag>
+                <p-tag [value]="conge.type?.label"></p-tag>
               </td>
 
               <td>
@@ -124,7 +124,7 @@
   </div>
 </div>
 
-<!-- Dialog de validation -->
+<!-- Dialog de détails et d'approbation -->
 <p-dialog 
   [(visible)]="showApprovalDialog"
   [modal]="true" 

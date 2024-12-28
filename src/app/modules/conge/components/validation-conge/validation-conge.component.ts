@@ -17,6 +17,7 @@ import { EmployeeService, Employee } from '../../../../shared/services/employee.
 import { firstValueFrom } from 'rxjs';
 import { Ripple } from "primeng/ripple";
 import { InputTextarea } from "primeng/inputtextarea";
+import {ApiService} from "@core/services/api.service";
 
 interface User {
   id: number;
@@ -28,7 +29,7 @@ interface User {
 }
 
 export interface CongeWithEmployee extends CongeRequest {
-  employee?: Employee;
+  user?: User;
 }
 
 @Component({
@@ -81,7 +82,9 @@ export class ValidationCongeComponent implements OnInit {
     private congeService: CongeService,
     private employeeService: EmployeeService,
     private messageService: MessageService,
-    private authService: AuthService
+    private authService: AuthService,
+    private apiService: ApiService
+
   ) {}
 
   async ngOnInit() {
@@ -95,9 +98,9 @@ export class ValidationCongeComponent implements OnInit {
       this.conges = requests.filter(request => request.managerId === user.id);
 
       for (const request of this.conges) {
-        const employee = await firstValueFrom(this.employeeService.getEmployee(request.employeeId));
+        const employee = await firstValueFrom(this.apiService.getUserById(request.employeeId));
         if (employee) {
-          request.employee = employee;
+          request.user = employee;
         }
       }
     } catch (error) {

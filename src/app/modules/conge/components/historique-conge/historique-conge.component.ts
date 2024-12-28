@@ -94,8 +94,8 @@ export class HistoriqueCongeComponent implements OnInit {
     }
   }
 
-  getTypeSeverity(type: string): TagSeverity {
-    return type === 'CONGE_PAYE' ? 'success' : 'info';
+  getTypeSeverity(type: any): TagSeverity {
+    return type.value === 'CONGE_PAYE' ? 'success' : 'info';
   }
 
   getUrgencySeverity(urgencyLevel: string | undefined): TagSeverity {
