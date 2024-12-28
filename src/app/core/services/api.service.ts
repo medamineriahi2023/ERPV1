@@ -12,7 +12,7 @@ import { Position } from '../interfaces/position.interface';
   providedIn: 'root'
 })
 export class ApiService {
-  private readonly API_URL = 'http://localhost:3000';
+  private readonly API_URL = 'https://d195-197-15-18-165.ngrok-free.app';
 
   constructor(private http: HttpClient) {}
 
