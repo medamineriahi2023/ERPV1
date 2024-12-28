@@ -92,7 +92,7 @@
           <div *ngFor="let leave of upcomingLeaves" 
                class="flex items-center p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
             <div class="flex-1">
-              <p class="text-sm font-medium text-gray-900">{{ getTypeLabel(leave.type) }}</p>
+              <p class="text-sm font-medium text-gray-900">{{ leave.type.label }}</p>
               <p class="text-sm text-gray-500">{{ leave.startDate | date:'shortDate' }} - {{ leave.endDate | date:'shortDate' }}</p>
             </div>
             <span [class]="'px-3 py-1 rounded-full text-xs font-medium ' + getStatusColor(leave.status)">

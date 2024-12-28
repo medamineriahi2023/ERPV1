@@ -178,6 +178,10 @@ export class PointageService {
     );
   }
 
+  updateTimeEntry(id: number, entry: Partial<TimeEntry>): Observable<TimeEntry> {
+    return this.http.patch<TimeEntry>(`${this.apiUrl}/${id}`, entry);
+  }
+
   private formatTime(date: Date): string {
     return date.toTimeString().split(' ')[0];
   }

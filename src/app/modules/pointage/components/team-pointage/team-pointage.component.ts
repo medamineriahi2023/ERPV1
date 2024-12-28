@@ -4,8 +4,8 @@ import { AuthService } from '@app/core/services/auth.service';
 import { PointageService } from '@app/core/services/pointage.service';
 import { ApiService } from '@app/core/services/api.service';
 import { MessageService } from 'primeng/api';
-import { interval, Subscription, forkJoin, firstValueFrom } from 'rxjs';
-import { startWith, map } from 'rxjs/operators';
+import { interval, Subscription, forkJoin, firstValueFrom, Subject } from 'rxjs';
+import { startWith, map, takeUntil } from 'rxjs/operators';
 import { TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
 import { CalendarModule } from 'primeng/calendar';
@@ -15,7 +15,6 @@ import { ToastModule } from 'primeng/toast';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Chart, ChartConfiguration, ChartData } from 'chart.js/auto';
-import { Subject } from 'rxjs';
 
 interface TimeEntryWithUser {
   id?: number;
@@ -106,7 +105,7 @@ export class TeamPointageComponent implements OnInit, AfterViewInit, OnDestroy {
     labels: ['Présents', 'Retards', 'Absents', 'En congé'],
     datasets: [{
       data: [0, 0, 0, 0],
-      backgroundColor: ['#22c55e', '#f97316', '#ef4444', '#3b82f6']
+      backgroundColor: ['#4CAF50', '#FFC107', '#F44336', '#2196F3']
     }]
   };
 
@@ -138,13 +137,12 @@ export class TeamPointageComponent implements OnInit, AfterViewInit, OnDestroy {
       private messageService: MessageService
   ) {}
 
-  ngOnInit() {
+  async ngOnInit() {
     this.currentUser = this.authService.getCurrentUser();
-
+    this.setupTimeUpdate();
+    await this.loadTeamEntries();
+    this.setupDataRefresh();
     this.initializeCharts();
-    this.initializePunctualityTrendChart();
-    this.initializeAbsenceForecastChart();
-    this.initializeWorkingHoursChart();
   }
 
   ngOnDestroy() {
@@ -196,167 +194,167 @@ export class TeamPointageComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  private initializePunctualityTrendChart(): void {
-    const canvas = document.getElementById('punctualityTrendChart') as HTMLCanvasElement;
-    if (!canvas) return;
-
-    const months = ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Jun', 'Jul', 'Aoû', 'Sep', 'Oct', 'Nov', 'Déc'];
-    const currentMonth = new Date().getMonth();
-    const lastSixMonths = months.slice(currentMonth - 5, currentMonth + 1);
-
-    this.punctualityTrendChart = new Chart(canvas, {
-      type: 'line',
-      data: {
-        labels: lastSixMonths,
-        datasets: [{
-          label: 'Taux de Ponctualité',
-          data: this.calculatePunctualityTrend(),
-          borderColor: '#8b5cf6',
-          backgroundColor: 'rgba(139, 92, 246, 0.1)',
-          tension: 0.4,
-          fill: true
-        }]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          legend: { position: 'top' },
-          tooltip: {
-            mode: 'index',
-            intersect: false,
-          }
-        },
-        scales: {
-          y: {
-            beginAtZero: true,
-            max: 100,
-            ticks: {
-              callback: (value) => `${value}%`
-            }
-          }
-        }
-      }
+  private setupTimeUpdate(): void {
+    interval(1000).pipe(
+      takeUntil(this.destroy$)
+    ).subscribe(() => {
+      this.currentTime = new Date();
+      this.checkAbsences();
     });
   }
 
-  private initializeAbsenceForecastChart(): void {
-    const canvas = document.getElementById('absenceForecastChart') as HTMLCanvasElement;
-    if (!canvas) return;
+  private setupDataRefresh(): void {
+    if (!this.currentUser?.managedEmployees?.length) return;
 
-    const nextWeekDays = this.getNextWeekDays();
-    const forecastData = this.calculateAbsenceForecast();
-
-    this.absenceForecastChart = new Chart(canvas, {
-      type: 'bar',
-      data: {
-        labels: nextWeekDays,
-        datasets: [{
-          label: 'Absences Prévues',
-          data: forecastData,
-          backgroundColor: 'rgba(99, 102, 241, 0.5)',
-          borderColor: '#6366f1',
-          borderWidth: 1
-        }]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          legend: {
-            position: 'top',
-          }
-        },
-        scales: {
-          y: {
-            beginAtZero: true,
-            ticks: {
-              stepSize: 1
-            }
-          }
-        }
-      }
+    this.refreshInterval = interval(60000).pipe(
+      startWith(0),
+      takeUntil(this.destroy$)
+    ).subscribe(async () => {
+      await this.loadTeamEntries();
     });
   }
 
-  private initializeWorkingHoursChart(): void {
-    const canvas = document.getElementById('workingHoursChart') as HTMLCanvasElement;
-    if (!canvas) return;
+  private async checkAbsences(): Promise<void> {
+    if (!this.teamEntries.length) return;
 
-    const { labels, actualHours, expectedHours } = this.calculateWorkingHours();
+    const currentTime = new Date();
+    let needsUpdate = false;
 
-    this.workingHoursChart = new Chart(canvas, {
-      type: 'bar',
-      data: {
-        labels: labels,
-        datasets: [
-          {
-            label: 'Heures Effectives',
-            data: actualHours,
-            backgroundColor: 'rgba(20, 184, 166, 0.7)',
-            borderColor: '#14b8a6',
-            borderWidth: 1
-          },
-          {
-            label: 'Heures Prévues',
-            data: expectedHours,
-            backgroundColor: 'rgba(20, 184, 166, 0.2)',
-            borderColor: '#14b8a6',
-            borderWidth: 2,
-            type: 'line' as const
-          }
-        ]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          legend: {
-            position: 'top',
-          }
-        },
-        scales: {
-          y: {
-            beginAtZero: true,
-            title: {
-              display: true,
-              text: 'Heures'
-            }
-          }
-        }
+    for (const entry of this.teamEntries) {
+      if (this.shouldBeMarkedAsAbsent(entry, currentTime)) {
+        await this.updateEntryStatus(entry);
+        needsUpdate = true;
       }
-    });
+    }
+
+    if (needsUpdate) {
+      await this.loadTeamEntries();
+    }
   }
 
-  private calculatePunctualityTrend(): number[] {
-    // Simuler des données pour l'exemple
-    return [85, 88, 82, 90, 87, 92];
+  private calculateMinutesLate(entry: TimeEntry): number | undefined {
+    if (!entry.isLate || !entry.checkIn) return undefined;
+
+    const checkInTime = new Date(`1970-01-01T${entry.checkIn}`);
+    const expectedTime = new Date(`1970-01-01T09:00:00`); // Assuming 9 AM is the start time
+
+    return Math.floor((checkInTime.getTime() - expectedTime.getTime()) / 60000);
   }
 
-  private getNextWeekDays(): string[] {
-    const days = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven'];
-    return days;
+  // Méthodes de comptage
+  getPresentCount(): number {
+    return this.teamEntries.filter(e => e.status === 'present').length;
   }
 
-  private calculateAbsenceForecast(): number[] {
-    // Simuler des prévisions pour l'exemple
-    return [2, 3, 1, 2, 4];
+  getAbsentCount(): number {
+    if (!this.isWorkStarted()) {
+      return 0;
+    }
+
+    return this.teamEntries.filter(entry => {
+      const entryDate = new Date(entry.date);
+      const isEntryToday = this.isToday(entryDate);
+
+      return isEntryToday && 
+             !entry.checkIn && 
+             entry.status !== 'holiday' && 
+             entry.status !== 'leave';
+    }).length;
   }
 
-  private calculateWorkingHours(): { labels: string[], actualHours: number[], expectedHours: number[] } {
-    // Obtenir les employés et leurs heures
-    const employees = this.teamEntries.map(entry => entry.user?.firstName || 'Inconnu');
-    const actualHours = this.teamEntries.map(entry => entry.totalHours || 0);
-    const expectedHours = this.teamEntries.map(() => 8); // 8 heures standard par jour
-
-    return {
-      labels: employees,
-      actualHours,
-      expectedHours
-    };
+  getLateCount(): number {
+    return this.teamEntries.filter(e => e.status === 'late').length;
   }
 
-  async loadMonthlyEntries() {
+  getLeaveCount(): number {
+    return this.teamEntries.filter(e => e.status === 'leave' || e.status === 'holiday').length;
+  }
+
+  // Méthodes de formatage et d'affichage
+  formatDate(date: Date | undefined): string {
+    if (!date) return '-';
+    try {
+      if (isNaN(date.getTime())) {
+        console.error('Invalid date object:', date);
+        return '-';
+      }
+      return date.toLocaleDateString('fr-FR', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric'
+      });
+    } catch (error) {
+      console.error('Error formatting date:', error);
+      return '-';
+    }
+  }
+
+  getStatusLabel(status: string): string {
+    return this.STATUS_LABELS[status as keyof typeof this.STATUS_LABELS] || status;
+  }
+
+  getStatusBadgeClass(status: string): string {
+    const baseClasses = 'px-3 py-1 rounded-full text-sm font-medium';
+    switch (status) {
+      case 'present':
+        return `${baseClasses} bg-green-100 text-green-800`;
+      case 'absent':
+        return `${baseClasses} bg-red-100 text-red-800`;
+      case 'late':
+        return `${baseClasses} bg-orange-100 text-orange-800`;
+      case 'leave':
+      case 'holiday':
+        return `${baseClasses} bg-blue-100 text-blue-800`;
+      default:
+        return `${baseClasses} bg-gray-100 text-gray-800`;
+    }
+  }
+
+  getStatusIcon(status: string): string {
+    switch (status) {
+      case 'present':
+        return 'pi-check-circle';
+      case 'absent':
+        return 'pi-times-circle';
+      case 'late':
+        return 'pi-clock';
+      case 'leave':
+        return 'pi-calendar';
+      case 'holiday':
+        return 'pi-star';
+      default:
+        return 'pi-filter';
+    }
+  }
+
+  getStatusColor(status: string): string {
+    return this.STATUS_COLORS[status as keyof typeof this.STATUS_COLORS] || this.STATUS_COLORS.default;
+  }
+
+  getEmployeeFullName(entry: TimeEntryWithUser): string {
+    if (!entry.user) return `Employé #${entry.userId}`;
+    return `${entry.user.firstName} ${entry.user.lastName}`;
+  }
+
+  // Constantes pour le formatage
+  private readonly STATUS_COLORS = {
+    present: '#22c55e',
+    absent: '#ef4444',
+    late: '#f97316',
+    leave: '#3b82f6',
+    holiday: '#6366f1',
+    default: '#64748b'
+  } as const;
+
+  private readonly STATUS_LABELS = {
+    present: 'Présent',
+    absent: 'Absent',
+    late: 'En retard',
+    leave: 'En congé',
+    holiday: 'Jour férié'
+  } as const;
+
+  private async loadMonthlyEntries() {
     this.loading = true;
     try {
       // Get managed employees
@@ -501,120 +499,7 @@ export class TeamPointageComponent implements OnInit, AfterViewInit, OnDestroy {
         });
   }
 
-  private calculateMinutesLate(entry: TimeEntry): number | undefined {
-    if (!entry.isLate || !entry.checkIn) return undefined;
-
-    const checkInTime = new Date(`1970-01-01T${entry.checkIn}`);
-    const expectedTime = new Date(`1970-01-01T09:00:00`); // Assuming 9 AM is the start time
-
-    return Math.floor((checkInTime.getTime() - expectedTime.getTime()) / 60000);
-  }
-
-  isHoliday(date: Date): boolean {
-    // Add your holiday logic here
-    // For example, check if the date is a weekend or a known holiday
-    return date.getDay() === 0 || date.getDay() === 6; // Weekend check
-  }
-
-  private updateChartData() {
-    if (!this.monthlyEntries.length) return;
-
-    const lateEntries = this.monthlyEntries.filter(entry => entry.isLate);
-    const presentEntries = this.monthlyEntries.filter(entry => entry.status === 'present');
-    const absentEntries = this.monthlyEntries.filter(entry => entry.status === 'absent');
-    const leaveEntries = this.monthlyEntries.filter(entry => entry.status === 'leave');
-
-    // Update punctuality chart data
-    const punctualityData = {
-      labels: ['0-15 min', '15-30 min', '30+ min'],
-      datasets: [{
-        data: [
-          lateEntries.filter(e => e.minutesLate && e.minutesLate <= 15).length,
-          lateEntries.filter(e => e.minutesLate && e.minutesLate > 15 && e.minutesLate <= 30).length,
-          lateEntries.filter(e => e.minutesLate && e.minutesLate > 30).length
-        ],
-        backgroundColor: ['#FFB1C1', '#FFD1C1', '#FFE1C1']
-      }]
-    };
-
-    if (this.charts.punctuality) {
-      this.charts.punctuality.data = punctualityData;
-      this.charts.punctuality.update();
-    }
-
-    const statusData = {
-      labels: ['Présent', 'En retard', 'Absent', 'En congé'],
-      datasets: [{
-        data: [
-          presentEntries.length,
-          lateEntries.length,
-          absentEntries.length,
-          leaveEntries.length
-        ],
-        backgroundColor: ['#4CAF50', '#FFC107', '#F44336', '#2196F3']
-      }]
-    };
-
-    if (this.charts.status) {
-      this.charts.status.data = statusData;
-      this.charts.status.update();
-    }
-  }
-
-  // Méthodes de calcul pour le template
-  getPresentCount(): number {
-    return this.teamEntries.filter(e => e.status === 'present').length;
-  }
-
-  getAbsentCount(): number {
-    // Si l'heure de début n'est pas encore passée, personne n'est absent
-    if (!this.isWorkStarted()) {
-      return 0;
-    }
-
-    // Filtrer les entrées d'aujourd'hui sans pointage
-    return this.teamEntries.filter(entry => {
-      // Vérifier si l'entrée est pour aujourd'hui
-      const entryDate = new Date(entry.date);
-      const isEntryToday = this.isToday(entryDate);
-
-      // Un employé est absent si :
-      // - C'est une entrée d'aujourd'hui
-      // - Il n'a pas de pointage d'entrée
-      // - Ce n'est pas un jour férié
-      // - Ce n'est pas un congé validé
-      return isEntryToday && 
-             !entry.checkIn && 
-             entry.status !== 'holiday' && 
-             entry.status !== 'leave';
-    }).length;
-  }
-
-  getLateCount(): number {
-    return this.teamEntries.filter(e => e.status === 'late').length;
-  }
-
-  getLeaveCount(): number {
-    return this.teamEntries.filter(e => e.status === 'leave' || e.status === 'holiday').length;
-  }
-
-  private setupTimeUpdate() {
-    interval(1000).subscribe(() => {
-      this.currentTime = new Date();
-    });
-  }
-
-  private setupDataRefresh() {
-    if (!this.currentUser?.managedEmployees?.length) return;
-
-    this.refreshInterval = interval(60000)
-        .pipe(startWith(0))
-        .subscribe(() => {
-          this.loadTeamEntries();
-        });
-  }
-
-  private loadTeamEntries() {
+  private async loadTeamEntries(): Promise<void> {
     if (!this.currentUser?.managedEmployees?.length) {
       this.messageService.add({
         severity: 'warn',
@@ -624,51 +509,47 @@ export class TeamPointageComponent implements OnInit, AfterViewInit, OnDestroy {
       return;
     }
 
-    this.pointageService.getTeamActiveEntries(this.currentUser.managedEmployees)
-        .subscribe({
-          next: (entries) => {
-            const userRequests = entries.map(entry =>
-                this.apiService.getUserById(entry.userId).pipe(
-                    map(user => {
-                      const { password, ...userWithoutPassword } = user;
-                      const timeEntry: TimeEntryWithUser = {
-                        ...entry,
-                        user: userWithoutPassword,
-                        checkIn: entry.checkIn,
-                        checkOut: entry.checkOut?.toString(),
-                        lunchStart: entry.lunchStart?.toString(),
-                        lunchEnd: entry.lunchEnd?.toString(),
-                        totalHours: entry.totalHours
-                      };
-                      return timeEntry;
-                    })
-                )
-            );
-            forkJoin(userRequests).subscribe({
-              next: (entriesWithUsers) => {
-                this.teamEntries = entriesWithUsers;
-                this.filteredEntries = entriesWithUsers;
-                this.filterEntries();
-              },
-              error: (error) => {
-                console.error('Erreur lors du chargement des détails des utilisateurs:', error);
-                this.messageService.add({
-                  severity: 'error',
-                  summary: 'Erreur',
-                  detail: 'Erreur lors du chargement des détails des utilisateurs'
-                });
-              }
-            });
-          },
-          error: (error) => {
-            console.error('Erreur lors du chargement des données de l\'équipe:', error);
-            this.messageService.add({
-              severity: 'error',
-              summary: 'Erreur',
-              detail: 'Erreur lors du chargement des données de l\'équipe'
-            });
-          }
-        });
+    try {
+      this.loading = true;
+      
+      // Charger les entrées de l'équipe
+      const entries = await firstValueFrom(this.pointageService.getTeamEntries(this.currentUser.managedEmployees));
+      
+      // Charger les informations des utilisateurs
+      const users = await firstValueFrom(this.apiService.getUsers());
+      
+      // Traiter chaque entrée
+      const processedEntries = await Promise.all(entries.map(async entry => {
+        const user = users.find(u => u.id === entry.userId);
+        if (!user) return null;
+
+        const timeEntry: TimeEntryWithUser = {
+          ...entry,
+          date: new Date(entry.date),
+          user: user,
+          totalHours: entry.totalHours || 0
+        };
+
+        // Vérifier et mettre à jour le statut si nécessaire
+        await this.updateEntryStatus(timeEntry);
+        
+        return timeEntry;
+      }));
+
+      this.teamEntries = processedEntries.filter((entry): entry is TimeEntryWithUser => entry !== null);
+      this.filterEntries();
+      this.updateChartData();
+
+    } catch (error) {
+      console.error('Error loading team entries:', error);
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Erreur',
+        detail: 'Impossible de charger les pointages de l\'équipe'
+      });
+    } finally {
+      this.loading = false;
+    }
   }
 
   onDateSelect(date: Date) {
@@ -687,24 +568,103 @@ export class TeamPointageComponent implements OnInit, AfterViewInit, OnDestroy {
     this.selectedDateDetails = selectedEntry || null;
   }
 
+  // Méthodes de filtrage et de recherche
   filterEntries() {
     this.filteredEntries = this.teamEntries.filter(entry => {
-      const matchesSearch = this.searchTerm ?
-          (entry.user ?
-                  `${entry.user.firstName} ${entry.user.lastName}`.toLowerCase().includes(this.searchTerm.toLowerCase()) :
-                  entry.userId.toString().includes(this.searchTerm.toLowerCase())
-          ) :
-          true;
-
-      const matchesStatus = this.selectedStatus ?
-          entry.status === this.selectedStatus :
-          true;
-
-      return matchesSearch && matchesStatus;
+      const matchesSearch = !this.searchTerm || 
+        entry.user && (
+          entry.user.firstName.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
+          entry.user.lastName.toLowerCase().includes(this.searchTerm.toLowerCase())
+        );
+      
+      const matchesStatus = !this.selectedStatus || entry.status === this.selectedStatus;
+      
+      const entryDate = new Date(entry.date);
+      const matchesDate = !this.selectedDate || this.isToday(entryDate);
+      
+      return matchesSearch && matchesStatus && matchesDate;
     });
   }
 
-  // Méthodes utilitaires pour la gestion du temps
+  // Méthodes de gestion des filtres
+  hasActiveFilters(): boolean {
+    return !!(this.searchTerm || this.selectedStatus || this.selectedDate);
+  }
+
+  clearSearch(): void {
+    this.searchTerm = '';
+    this.filterEntries();
+  }
+
+  clearStatus(): void {
+    this.selectedStatus = '';
+    this.filterEntries();
+  }
+
+  clearDate(): void {
+    this.selectedDate = new Date();
+    this.onDateSelect(this.selectedDate);
+  }
+
+  clearAllFilters(): void {
+    this.searchTerm = '';
+    this.selectedStatus = '';
+    this.selectedDate = new Date();
+    this.filterEntries();
+  }
+
+  // Méthodes utilitaires
+  isWorkStarted(): boolean {
+    const now = new Date();
+    const workStart = new Date();
+    workStart.setHours(this.WORK_START_HOUR, this.WORK_START_MINUTES, 0);
+    return now >= workStart;
+  }
+
+  isToday(date: Date): boolean {
+    const today = new Date();
+    return date.getDate() === today.getDate() &&
+           date.getMonth() === today.getMonth() &&
+           date.getFullYear() === today.getFullYear();
+  }
+
+  private shouldBeMarkedAsAbsent(entry: TimeEntryWithUser, currentTime: Date = new Date()): boolean {
+
+    // Si déjà marqué comme en congé ou jour férié, ne pas marquer comme absent
+    if (entry.status === 'leave' || entry.status === 'holiday') {
+      return false;
+    }
+
+    const workSchedule = entry.user?.workSchedule;
+    if (!workSchedule) {
+      return false;
+    }
+
+    // Convertir startTime du format "HH:mm" en Date
+    const [startHours, startMinutes] = workSchedule.startTime.split(':').map(Number);
+    const entryDate = new Date(entry.date);
+    const workStartTime = new Date(entryDate);
+    workStartTime.setHours(startHours, startMinutes, 0);
+
+    // Ajouter une marge de grâce (par exemple 30 minutes)
+    const graceTime = new Date(workStartTime);
+    graceTime.setMinutes(graceTime.getMinutes() + 30);
+
+    // Si on est après l'heure de début + grâce et qu'il n'y a pas de checkIn
+    return currentTime > graceTime && !entry.checkIn;
+  }
+
+  private async updateEntryStatus(entry: TimeEntryWithUser): Promise<void> {
+    if (this.shouldBeMarkedAsAbsent(entry)) {
+      // Mettre à jour le statut dans la base de données
+      await firstValueFrom(this.pointageService.updateTimeEntry(entry.id!, {
+        ...entry,
+        status: 'absent',
+        totalHours: 0
+      }));
+    }
+  }
+
   private convertToTimeString(time: string | null | undefined): string | null {
     if (!time) return null;
 
@@ -829,158 +789,89 @@ export class TeamPointageComponent implements OnInit, AfterViewInit, OnDestroy {
     return `${hours}h${minutes > 0 ? minutes + 'm' : ''} / ${expectedHours}h (${status})`;
   }
 
-  private showMessage(severity: string, detail: string) {
-    this.messageService.add({
-      severity,
-      summary: severity === 'error' ? 'Erreur' : 'Succès',
-      detail,
-      life: 3000
-    });
-  }
+  private updateChartData(): void {
+    if (!this.monthlyEntries.length) return;
 
-  getStatusIcon(status: string): string {
-    switch (status) {
-      case 'present':
-        return 'pi-check-circle';
-      case 'absent':
-        return 'pi-times-circle';
-      case 'late':
-        return 'pi-clock';
-      case 'leave':
-        return 'pi-calendar';
-      case 'holiday':
-        return 'pi-star';
-      default:
-        return 'pi-filter';
-    }
-  }
+    const lateEntries = this.monthlyEntries.filter(entry => entry.isLate);
+    const presentEntries = this.monthlyEntries.filter(entry => entry.status === 'present');
+    const absentEntries = this.monthlyEntries.filter(entry => entry.status === 'absent');
+    const leaveEntries = this.monthlyEntries.filter(entry => entry.status === 'leave');
 
-  getStatusColor(status: string): string {
-    switch (status) {
-      case 'present':
-        return '#22c55e';
-      case 'absent':
-        return '#ef4444';
-      case 'late':
-        return '#f97316';
-      case 'leave':
-        return '#3b82f6';
-      case 'holiday':
-        return '#6366f1';
-      default:
-        return '#64748b';
-    }
-  }
-
-  hasActiveFilters(): boolean {
-    return !!(this.searchTerm || this.selectedStatus || this.selectedDate);
-  }
-
-  clearSearch(): void {
-    this.searchTerm = '';
-    this.filterEntries();
-  }
-
-  clearStatus(): void {
-    this.selectedStatus = '';
-    this.filterEntries();
-  }
-
-  clearDate(): void {
-    this.selectedDate = new Date();
-    this.onDateSelect(this.selectedDate);
-  }
-
-  clearAllFilters(): void {
-    this.searchTerm = '';
-    this.selectedStatus = '';
-    this.selectedDate = new Date();
-    this.filterEntries();
-  }
-
-  formatDate(date: Date | undefined): string {
-    if (!date) return '-';
-    try {
-      if (isNaN(date.getTime())) {
-        console.error('Invalid date object:', date);
-        return '-';
-      }
-      return date.toLocaleDateString('fr-FR', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric'
-      });
-    } catch (error) {
-      console.error('Error formatting date:', error);
-      return '-';
-    }
-  }
-
-  formatTimeToString(time: any): string | undefined {
-    if (!time) return undefined;
-
-    try {
-      // If it's already in HH:mm format
-      if (typeof time === 'string' && /^\d{2}:\d{2}$/.test(time)) {
-        return time;
-      }
-
-      // If it's a timestamp or date string
-      const date = new Date(time);
-      if (!isNaN(date.getTime())) {
-        return `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
-      }
-
-      return undefined;
-    } catch (error) {
-      console.error('Error processing time:', error);
-      return undefined;
-    }
-  }
-
-  getStatusLabel(status: string): string {
-    const statusMap: { [key: string]: string } = {
-      'present': 'Présent',
-      'absent': 'Absent',
-      'late': 'En retard',
-      'leave': 'En congé',
-      'holiday': 'Jour férié'
+    // Update punctuality chart data
+    const punctualityData = {
+      labels: ['0-15 min', '15-30 min', '30+ min'],
+      datasets: [{
+        data: [
+          lateEntries.filter(e => e.minutesLate && e.minutesLate <= 15).length,
+          lateEntries.filter(e => e.minutesLate && e.minutesLate > 15 && e.minutesLate <= 30).length,
+          lateEntries.filter(e => e.minutesLate && e.minutesLate > 30).length
+        ],
+        backgroundColor: ['#FFB1C1', '#FFD1C1', '#FFE1C1']
+      }]
     };
-    return statusMap[status] || status;
-  }
 
-  getStatusBadgeClass(status: string): string {
-    const baseClasses = 'px-3 py-1 rounded-full text-sm font-medium';
-    switch (status) {
-      case 'present':
-        return `${baseClasses} bg-green-100 text-green-800`;
-      case 'absent':
-        return `${baseClasses} bg-red-100 text-red-800`;
-      case 'late':
-        return `${baseClasses} bg-orange-100 text-orange-800`;
-      case 'leave':
-      case 'holiday':
-        return `${baseClasses} bg-blue-100 text-blue-800`;
-      default:
-        return `${baseClasses} bg-gray-100 text-gray-800`;
+    if (this.charts.punctuality) {
+      this.charts.punctuality.data = punctualityData;
+      this.charts.punctuality.update();
+    }
+
+    // Update status distribution chart
+    const statusData = {
+      labels: ['Présent', 'En retard', 'Absent', 'En congé'],
+      datasets: [{
+        data: [
+          presentEntries.length,
+          lateEntries.length,
+          absentEntries.length,
+          leaveEntries.length
+        ],
+        backgroundColor: ['#4CAF50', '#FFC107', '#F44336', '#2196F3']
+      }]
+    };
+
+    if (this.charts.status) {
+      this.charts.status.data = statusData;
+      this.charts.status.update();
+    }
+
+    // Update weekly attendance chart
+    const weeklyData = {
+      labels: ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi'],
+      datasets: [
+        {
+          data: Array(5).fill(0).map((_, i) => 
+            this.monthlyEntries.filter(e => new Date(e.date).getDay() === i + 1 && e.status === 'present').length
+          ),
+          label: 'Présents',
+          borderColor: '#22c55e',
+          backgroundColor: 'rgba(34, 197, 94, 0.1)'
+        },
+        {
+          data: Array(5).fill(0).map((_, i) => 
+            this.monthlyEntries.filter(e => new Date(e.date).getDay() === i + 1 && e.status === 'late').length
+          ),
+          label: 'Retards',
+          borderColor: '#f97316',
+          backgroundColor: 'rgba(249, 115, 22, 0.1)'
+        },
+        {
+          data: Array(5).fill(0).map((_, i) => 
+            this.monthlyEntries.filter(e => new Date(e.date).getDay() === i + 1 && e.status === 'absent').length
+          ),
+          label: 'Absents',
+          borderColor: '#ef4444',
+          backgroundColor: 'rgba(239, 68, 68, 0.1)'
+        }
+      ]
+    };
+
+    if (this.charts.weekly) {
+      this.charts.weekly.data = weeklyData;
+      this.charts.weekly.update();
     }
   }
 
-  getEmployeeFullName(entry: TimeEntryWithUser): string {
-    if (!entry.user) return `Employé #${entry.userId}`;
-    return `${entry.user.firstName} ${entry.user.lastName}`;
-  }
-
-  ngAfterViewInit(): void {
-    if (this.currentUser) {
-      this.loadMonthlyEntries();
-      if (this.currentUser.role === 'manager' && this.currentUser.managedEmployees) {
-        this.loadTeamEntries();
-      }
-    }
-  }
-
-  formatTime(time: string | undefined | null): string {
+  formatTime(time: string | undefined): string {
     if (!time) return '--:--';
     
     try {
@@ -1041,20 +932,31 @@ export class TeamPointageComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
+  private showMessage(severity: string, detail: string) {
+    this.messageService.add({
+      severity,
+      summary: severity === 'error' ? 'Erreur' : 'Succès',
+      detail,
+      life: 3000
+    });
+  }
+
+  ngAfterViewInit(): void {
+    if (this.currentUser) {
+      this.loadMonthlyEntries();
+      if (this.currentUser.role === 'manager' && this.currentUser.managedEmployees) {
+        this.loadTeamEntries();
+      }
+    }
+  }
+
   private readonly WORK_START_HOUR = 9;
   private readonly WORK_START_MINUTES = 0;
 
-  private isToday(date: Date): boolean {
-    const today = new Date();
-    return date.getDate() === today.getDate() &&
-           date.getMonth() === today.getMonth() &&
-           date.getFullYear() === today.getFullYear();
-  }
+  private readonly WORK_END_HOUR = 17;
+  private readonly WORK_END_MINUTES = 0;
 
-  private isWorkStarted(): boolean {
-    const now = new Date();
-    const workStart = new Date();
-    workStart.setHours(this.WORK_START_HOUR, this.WORK_START_MINUTES, 0, 0);
-    return now >= workStart;
-  }
+  private readonly LUNCH_BREAK_DURATION = 60;
+
+  private readonly GRACE_TIME = 30;
 }

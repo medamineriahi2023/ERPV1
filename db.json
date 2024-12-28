@@ -17,7 +17,8 @@
         2,
         3,
         4,
-        5
+        5,
+        6
       ],
       "hireDate": "2023-01-01",
       "leaveBalance": {
@@ -140,29 +141,56 @@
       "contractType": "CDI",
       "photoUrl": "assets/images/default-avatar.png",
       "id": 5
+    },
+    {
+      "username": "mekniemna@gmail.com",
+      "email": "mekniemna@gmail.com",
+      "firstName": "Emna",
+      "lastName": "Mekni",
+      "name": "Emna Mekni",
+      "role": "employee",
+      "department": "Engineering",
+      "position": "Tech lead",
+      "managerId": 1,
+      "managedEmployees": [],
+      "hireDate": "2024-12-28T15:00:53.806Z",
+      "leaveBalance": {
+        "annual": 30,
+        "sick": 15
+      },
+      "workSchedule": {
+        "startTime": "09:00",
+        "endTime": "17:00",
+        "lunchBreakDuration": 60
+      },
+      "rating": 5,
+      "status": "active",
+      "contractType": "CDI",
+      "photoUrl": "assets/images/default-avatar.png",
+      "id": 6
     }
   ],
   "time-entries": [
     {
       "userId": 2,
       "date": "2024-12-27T21:51:07.739Z",
-      "checkIn": "22:51:07",
-      "checkOut": "23:51:18",
+      "checkIn": "09:00:00",
+      "checkOut": "17:00:00",
       "lunchStart": null,
       "lunchEnd": null,
-      "totalHours": 0,
-      "status": "late",
+      "totalHours": 8,
+      "status": "present",
       "isLate": true,
       "id": 1
     },
     {
       "userId": 2,
       "date": "2024-12-28T00:00:49.859Z",
-      "checkIn": "01:00:49",
-      "checkOut": "01:01:53",
+      "checkIn": "09:00:00",
+      "checkOut": "17:00:00",
       "lunchStart": null,
       "lunchEnd": null,
-      "totalHours": 0.02,
+      "totalHours": 8,
       "status": "present",
       "isLate": false,
       "id": 2
@@ -170,11 +198,11 @@
     {
       "userId": 1,
       "date": "2024-12-28T00:24:43.276Z",
-      "checkIn": "01:24:43",
-      "checkOut": "02:05:24",
+      "checkIn": "09:00:00",
+      "checkOut": "17:00:00",
       "lunchStart": null,
       "lunchEnd": null,
-      "totalHours": 0.68,
+      "totalHours": 8,
       "status": "present",
       "isLate": false,
       "id": 3
@@ -198,7 +226,7 @@
       "endDate": "2024-12-30T23:00:00.000Z",
       "duration": 2,
       "reason": "hhhyuiyhugfkyufytfryt",
-      "status": "EN_ATTENTE",
+      "status": "REFUSE",
       "urgencyLevel": {
         "label": "Normal",
         "value": "NORMAL",
@@ -207,8 +235,34 @@
       "impactOnTraining": false,
       "attachments": [],
       "createdAt": "2024-12-28T13:50:48.444Z",
-      "updatedAt": "2024-12-28T13:50:48.444Z",
-      "id": 1
+      "updatedAt": "2024-12-28T15:54:42.572Z",
+      "id": 1,
+      "approverComment": "sqdf"
+    },
+    {
+      "employeeId": 2,
+      "managerId": 1,
+      "type": {
+        "label": "Congé payé",
+        "value": "CONGE_PAYE",
+        "icon": "pi pi-calendar",
+        "color": "#22C55E"
+      },
+      "startDate": "2024-12-31T23:00:00.000Z",
+      "endDate": "2025-01-02T23:00:00.000Z",
+      "duration": 0,
+      "status": "APPROUVE",
+      "reason": "reztrezterztrezterzt",
+      "urgencyLevel": {
+        "label": "Normal",
+        "value": "NORMAL",
+        "icon": "pi pi-clock"
+      },
+      "attachments": [],
+      "createdAt": "2024-12-28T16:04:00.438Z",
+      "updatedAt": "2024-12-28T16:05:36.294Z",
+      "id": 2,
+      "approverComment": ""
     }
   ]
 }

@@ -90,6 +90,7 @@ export class ValidationCongeComponent implements OnInit {
   async ngOnInit() {
     try {
       const user = await firstValueFrom(this.authService.currentUser$);
+      this.currentUser = user;
       if (!user) {
         throw new Error('No user logged in');
       }
