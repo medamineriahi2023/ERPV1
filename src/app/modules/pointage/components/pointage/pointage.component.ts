@@ -192,20 +192,46 @@ export class PointageComponent implements OnInit, OnDestroy {
     };
   }
 
-  private async loadReferenceImage(correntUserImageUrl: string) {
-    this.referenceImage = new Image();
-    this.referenceImage.src = correntUserImageUrl ?? '/assets/images/default-profile.jpg';
-    await new Promise((resolve, reject) => {
-      this.referenceImage.onload = resolve;
-      this.referenceImage.onerror = reject;
-    }).catch(error => {
-      console.error('Error loading reference image:', error);
-      this.messageService.add({
-        severity: 'error',
-        summary: 'Erreur',
-        detail: 'Impossible de charger l\'image de référence'
+  private async loadReferenceImage(currentUserImageUrl: string) {
+    try {
+      this.referenceImage = new Image();
+      // Add crossOrigin attribute to handle CORS
+      this.referenceImage.crossOrigin = 'anonymous';
+      
+      // Create a promise to handle image loading
+      await new Promise((resolve, reject) => {
+        this.referenceImage!.onload = () => {
+          console.log('Reference image loaded successfully');
+          resolve(true);
+        };
+        
+        this.referenceImage!.onerror = (error) => {
+          console.error('Error loading reference image:', error);
+          reject(error);
+        };
+
+        // Set the source after adding event listeners
+        this.referenceImage!.src = currentUserImageUrl;
       });
-    });
+
+    } catch (error) {
+      console.error('Failed to load reference image:', error);
+      // Fallback to local image if external image fails
+      try {
+        this.referenceImage = new Image();
+        this.referenceImage.src = '/assets/images/default-profile.jpg';
+        await new Promise((resolve) => {
+          this.referenceImage!.onload = resolve;
+        });
+      } catch (fallbackError) {
+        console.error('Failed to load fallback image:', fallbackError);
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Erreur',
+          detail: 'Impossible de charger l\'image de référence'
+        });
+      }
+    }
   }
 
   ngOnInit() {
