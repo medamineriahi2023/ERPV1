@@ -100,7 +100,7 @@
       <!-- Jours travaillés -->
       <div class="bg-white rounded-xl shadow-sm p-4 text-center">
         <div class="text-3xl font-bold text-gray-800 mb-2">
-          {{monthlyStats.presentDays || 0}}/{{monthlyStats.workDays || 0}}
+          {{monthlyStats.presentDays}}/{{monthlyStats.workDays}}
         </div>
         <div class="text-sm text-gray-600">Jours travaillés</div>
       </div>
@@ -108,7 +108,7 @@
       <!-- Retards -->
       <div class="bg-white rounded-xl shadow-sm p-4 text-center">
         <div class="text-3xl font-bold text-orange-600 mb-2">
-          {{monthlyStats.lateCount || 0}}
+          {{monthlyStats.lateCount}}
         </div>
         <div class="text-sm text-gray-600">Retards</div>
       </div>
@@ -127,6 +127,41 @@
           {{monthlyStats.totalHours | number:'1.0-1'}}h
         </div>
         <div class="text-sm text-gray-600">Heures totales</div>
+      </div>
+    </div>
+
+    <!-- Deuxième ligne de statistiques -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mt-4">
+      <!-- Moyenne d'arrivée -->
+      <div class="bg-white rounded-xl shadow-sm p-4 text-center">
+        <div class="text-3xl font-bold text-indigo-600 mb-2">
+          {{monthlyStats.averageArrivalTime}}
+        </div>
+        <div class="text-sm text-gray-600">Moyenne d'arrivée</div>
+      </div>
+
+      <!-- Moyenne de départ -->
+      <div class="bg-white rounded-xl shadow-sm p-4 text-center">
+        <div class="text-3xl font-bold text-purple-600 mb-2">
+          {{monthlyStats.averageDepartureTime}}
+        </div>
+        <div class="text-sm text-gray-600">Moyenne de départ</div>
+      </div>
+
+      <!-- Taux de présence -->
+      <div class="bg-white rounded-xl shadow-sm p-4 text-center">
+        <div class="text-3xl font-bold text-teal-600 mb-2">
+          {{monthlyStats.attendanceRate | number:'1.0-0'}}%
+        </div>
+        <div class="text-sm text-gray-600">Taux de présence</div>
+      </div>
+
+      <!-- Jours de congé -->
+      <div class="bg-white rounded-xl shadow-sm p-4 text-center">
+        <div class="text-3xl font-bold text-pink-600 mb-2">
+          {{monthlyStats.leaveDays}}
+        </div>
+        <div class="text-sm text-gray-600">Jours de congé</div>
       </div>
     </div>
   </div>

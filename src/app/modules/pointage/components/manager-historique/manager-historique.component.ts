@@ -30,6 +30,10 @@ interface MonthlyStats {
   lateCount: number;
   punctualityRate: number;
   totalHours: number;
+  averageArrivalTime: string;
+  averageDepartureTime: string;
+  attendanceRate: number;
+  leaveDays: number;
 }
 
 @Component({
@@ -67,7 +71,11 @@ export class ManagerHistoriqueComponent implements OnInit {
     workDays: 0,
     lateCount: 0,
     punctualityRate: 0,
-    totalHours: 0
+    totalHours: 0,
+    averageArrivalTime: '--:--',
+    averageDepartureTime: '--:--',
+    attendanceRate: 0,
+    leaveDays: 0
   };
 
   // Options pour les mois et années
@@ -187,9 +195,19 @@ export class ManagerHistoriqueComponent implements OnInit {
       workDays: this.getWorkDaysInMonth(),
       lateCount: 0,
       punctualityRate: 0,
-      totalHours: 0
+      totalHours: 0,
+      averageArrivalTime: '--:--',
+      averageDepartureTime: '--:--',
+      attendanceRate: 0,
+      leaveDays: 0
     };
 
+    if (this.monthlyHistory.length === 0) {
+      this.monthlyStats = stats;
+      return;
+    }
+
+    // Calculate basic stats
     this.monthlyHistory.forEach(entry => {
       if (entry.status === 'present' || entry.status === 'late') {
         stats.presentDays++;
@@ -198,11 +216,44 @@ export class ManagerHistoriqueComponent implements OnInit {
       if (entry.status === 'late') {
         stats.lateCount++;
       }
+      if (entry.status === 'leave') {
+        stats.leaveDays++;
+      }
     });
 
+    // Calculate punctuality and attendance rates
     stats.punctualityRate = stats.presentDays > 0 
       ? ((stats.presentDays - stats.lateCount) / stats.presentDays) * 100 
       : 0;
+    
+    stats.attendanceRate = (stats.presentDays / stats.workDays) * 100;
+
+    // Calculate average arrival and departure times
+    const validEntries = this.monthlyHistory.filter(entry => 
+      entry.checkIn && entry.checkOut && (entry.status === 'present' || entry.status === 'late')
+    );
+
+    if (validEntries.length > 0) {
+      // Calculate average arrival time
+      const totalArrivalMinutes = validEntries.reduce((total, entry) => {
+        const [hours, minutes] = entry.checkIn!.split(':').map(Number);
+        return total + (hours * 60 + minutes);
+      }, 0);
+      const avgArrivalMinutes = Math.round(totalArrivalMinutes / validEntries.length);
+      const avgArrivalHours = Math.floor(avgArrivalMinutes / 60);
+      const avgArrivalMins = avgArrivalMinutes % 60;
+      stats.averageArrivalTime = `${avgArrivalHours.toString().padStart(2, '0')}:${avgArrivalMins.toString().padStart(2, '0')}`;
+
+      // Calculate average departure time
+      const totalDepartureMinutes = validEntries.reduce((total, entry) => {
+        const [hours, minutes] = entry.checkOut!.split(':').map(Number);
+        return total + (hours * 60 + minutes);
+      }, 0);
+      const avgDepartureMinutes = Math.round(totalDepartureMinutes / validEntries.length);
+      const avgDepartureHours = Math.floor(avgDepartureMinutes / 60);
+      const avgDepartureMins = avgDepartureMinutes % 60;
+      stats.averageDepartureTime = `${avgDepartureHours.toString().padStart(2, '0')}:${avgDepartureMins.toString().padStart(2, '0')}`;
+    }
 
     this.monthlyStats = stats;
   }

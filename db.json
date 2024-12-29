@@ -267,10 +267,10 @@
       "userId": 1,
       "date": "2024-12-29T20:21:06.001Z",
       "checkIn": "21:21:06",
-      "checkOut": null,
+      "checkOut": "22:57:48",
       "lunchStart": null,
       "lunchEnd": null,
-      "totalHours": 0,
+      "totalHours": 1.6,
       "status": "late",
       "isLate": true,
       "id": 6
