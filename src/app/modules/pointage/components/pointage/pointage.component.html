@@ -95,27 +95,66 @@
                 </div>
 
                 <!-- Action Buttons -->
+                <!-- Action Buttons -->
                 <div class="flex flex-wrap gap-2 sm:gap-3">
-                    <div class="camera-container" *ngIf="showCamera">
-                        <video #cameraFeed id="cameraFeed" autoplay playsinline></video>
-                        <div class="camera-overlay" *ngIf="verificationInProgress">
-                            <p-progressSpinner></p-progressSpinner>
-                            <span>Vérification en cours...</span>
+                    <!-- Camera Container -->
+                    <div class="camera-container relative w-full rounded-2xl overflow-hidden bg-gray-900" *ngIf="showCamera">
+                        <!-- Camera Feed -->
+                        <video
+                            #cameraFeed
+                            id="cameraFeed"
+                            autoplay
+                            playsinline
+                            class="w-full h-[300px] sm:h-[400px] object-cover">
+                        </video>
+
+                        <!-- Scanning Effect -->
+                        <div class="absolute inset-0 pointer-events-none">
+                            <!-- Corner Markers -->
+                            <div class="absolute top-0 left-0 w-8 h-8 border-t-2 border-l-2 border-green-400"></div>
+                            <div class="absolute top-0 right-0 w-8 h-8 border-t-2 border-r-2 border-green-400"></div>
+                            <div class="absolute bottom-0 left-0 w-8 h-8 border-b-2 border-l-2 border-green-400"></div>
+                            <div class="absolute bottom-0 right-0 w-8 h-8 border-b-2 border-r-2 border-green-400"></div>
+
+                            <!-- Scanning Line -->
+                            <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-green-400 to-transparent opacity-75 scan-line"></div>
+
+                            <!-- Face Detection Area -->
+                            <div class="absolute inset-8 border-2 border-dashed border-white/30 rounded-xl"></div>
                         </div>
-                        <div class="camera-controls">
-                            <p-button 
-                                [disabled]="verificationInProgress" 
-                                (click)="verifyFaceAndCheckIn()" 
-                                label="Vérifier">
-                            </p-button>
-                            <p-button 
-                                [disabled]="verificationInProgress" 
-                                (click)="stopCamera()" 
-                                severity="secondary" 
-                                label="Annuler">
-                            </p-button>
+
+                        <!-- Loading Overlay -->
+                        <div class="absolute inset-0 flex flex-col items-center justify-center bg-black/50 backdrop-blur-sm" *ngIf="verificationInProgress">
+                            <div class="relative">
+                                <p-progressSpinner styleClass="w-16 h-16"></p-progressSpinner>
+                                <div class="absolute inset-0 animate-ping bg-blue-500 rounded-full opacity-20"></div>
+                            </div>
+                            <span class="mt-4 text-white font-medium">Vérification en cours...</span>
+                        </div>
+
+                        <!-- Camera Controls -->
+                        <div class="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 to-transparent">
+                            <div class="flex justify-center gap-3">
+                                <button
+                                        pButton
+                                        [disabled]="verificationInProgress"
+                                        (click)="verifyFaceAndCheckIn()"
+                                        label="Vérifier"
+                                        icon="pi pi-camera"
+                                        class="p-button-rounded p-button-success">
+                                </button>
+                                <button
+                                        pButton
+                                        [disabled]="verificationInProgress"
+                                        (click)="stopCamera()"
+                                        label="Annuler"
+                                        icon="pi pi-times"
+                                        class="p-button-rounded p-button-secondary">
+                                </button>
+                            </div>
                         </div>
                     </div>
+
                     <button
                             pButton
                             [label]="checkInTime ? 'Départ' : 'Arrivée'"
@@ -133,14 +172,13 @@
                             [disabled]="!checkInTime || checkOutTime">
                         <i class="pi pi-clock mr-2"></i>
                     </button>
-                </div>
-            </div>
+                </div>            </div>
         </div>
 
         <!-- Calendar Section -->
         <div class="bg-white rounded-xl shadow-sm p-4 sm:p-6 lg:col-span-2">
             <!-- Mobile Calendar Toggle -->
-            <div class="lg:hidden mb-4">
+            <div class="mb-4">
                 <button pButton 
                         type="button" 
                         [label]="showCalendar ? 'Masquer le calendrier' : 'Afficher le calendrier'"
@@ -150,7 +188,7 @@
             </div>
 
             <!-- Calendar -->
-            <div [ngClass]="{'hidden': !showCalendar}" class="lg:block">
+            <div [ngClass]="{'hidden': !showCalendar}">
                 <p-calendar [(ngModel)]="selectedDate" 
                            [inline]="true" 
                            [showWeek]="true"

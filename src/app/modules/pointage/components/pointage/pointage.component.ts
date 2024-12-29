@@ -69,7 +69,7 @@ export class PointageComponent implements OnInit, OnDestroy {
   private referenceImage: HTMLImageElement | null = null;
   showCamera = false;
   verificationInProgress = false;
-  showCalendar: boolean = window.innerWidth >= 1024; // Show by default on desktop
+  showCalendar: boolean = false; // Show by default on desktop
 
   constructor(
     private pointageService: PointageService,
@@ -406,6 +406,7 @@ export class PointageComponent implements OnInit, OnDestroy {
         this.showMessage('error', 'Erreur lors du chargement des détails');
       }
     });
+    this.showCalendar= false;
   }
 
   loadMonthlyHistory() {
