@@ -19,7 +19,9 @@
         4,
         5,
         6,
-        7
+        7,
+        8,
+        9
       ],
       "hireDate": "2023-01-01",
       "leaveBalance": {
@@ -200,6 +202,34 @@
       "contractType": "CDI",
       "photoUrl": "assets/images/default-avatar.png",
       "id": 7
+    },
+    {
+      "username": "yassine.abdellaoui@gmail.com",
+      "email": "yassine.abdellaoui@gmail.com",
+      "firstName": "yassin",
+      "lastName": "abdellaoui",
+      "password": "123456",
+      "name": "yassin abdellaoui",
+      "role": "manager",
+      "department": "Engineering",
+      "position": "Tech lead",
+      "managerId": 1,
+      "managedEmployees": [],
+      "hireDate": "2024-12-29T23:28:46.345Z",
+      "leaveBalance": {
+        "annual": 30,
+        "sick": 15
+      },
+      "workSchedule": {
+        "startTime": "09:00",
+        "endTime": "17:00",
+        "lunchBreakDuration": 60
+      },
+      "rating": 5,
+      "status": "active",
+      "contractType": "CDI",
+      "photoUrl": "https://res.cloudinary.com/ddhnjfnce/image/upload/v1735514935/soxw9kwfrv2eqe26xi42.jpg",
+      "id": 8
     }
   ],
   "time-entries": [

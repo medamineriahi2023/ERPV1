@@ -17,6 +17,32 @@
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+                <div class="field col-span-2 flex flex-col items-center">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Photo de profil</label>
+                    <div class="flex flex-col items-center">
+                        <img [src]="imageUrl || 'assets/images/default-avatar.png'"
+                             alt="Profile Preview"
+                             class="w-32 h-32 rounded-full mb-4 object-cover border-2 border-gray-200">
+                        <p-fileUpload #fileUpload
+                                      mode="basic"
+                                      chooseLabel="Choisir une image"
+                                      [showUploadButton]="false"
+                                      [showCancelButton]="false"
+                                      (onSelect)="onImageUpload($event)"
+                                      accept="image/*"
+                                      [maxFileSize]="1000000"
+                                      [disabled]="uploadInProgress"
+                                      styleClass="p-button-rounded p-button-outlined">
+                            <ng-template pTemplate="content">
+                                <div *ngIf="uploadInProgress" class="flex items-center justify-center">
+                                    <i class="pi pi-spin pi-spinner mr-2"></i>
+                                    <span>Téléchargement en cours...</span>
+                                </div>
+                            </ng-template>
+                        </p-fileUpload>
+                    </div>
+                </div>
               <!-- Prénom -->
               <div class="field">
                 <label for="firstName" class="block text-sm font-medium text-gray-700 mb-2">Prénom*</label>

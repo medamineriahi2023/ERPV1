@@ -20,6 +20,7 @@ import { Router } from '@angular/router';
 import { User } from '../../../../core/interfaces/user.interface';
 import { AuthService } from '../../../../core/services/auth.service';
 import { switchMap, tap } from 'rxjs/operators';
+import { CloudinaryService } from '../../../../core/services/cloudinary.service';
 
 @Component({
   selector: 'app-employee-form',
@@ -49,6 +50,8 @@ export class EmployeeFormComponent implements OnInit {
   @ViewChild('fileUpload') fileUpload!: FileUpload;
 
   employeeForm!: FormGroup;
+  imageUrl: string = '';
+  uploadInProgress = false;
   profileImageUrl: string = 'assets/images/default-avatar.png';
   items!: MenuItem[];
   activeIndex: number = 0;
@@ -88,10 +91,11 @@ export class EmployeeFormComponent implements OnInit {
 
   constructor(
     private fb: FormBuilder,
-    private messageService: MessageService,
-    private router: Router,
     private apiService: ApiService,
-    private authService: AuthService
+    private router: Router,
+    private authService: AuthService,
+    private messageService: MessageService,
+    private cloudinaryService: CloudinaryService
   ) {
     this.initForm();
     this.initializeSteps();
@@ -117,21 +121,19 @@ export class EmployeeFormComponent implements OnInit {
 
   private initForm(): void {
     this.employeeForm = this.fb.group({
-      firstName: ['', [Validators.required, Validators.minLength(2)]],
-      lastName: ['', [Validators.required, Validators.minLength(2)]],
+      firstName: ['', Validators.required],
+      lastName: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
-      username: ['', [Validators.required, Validators.minLength(4)]],
+      username: ['', Validators.required],
       password: ['', [
         Validators.required,
-        Validators.minLength(8),
         Validators.pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/)
       ]],
-      phone: ['', [
-        Validators.pattern(/^[2459]\d{7}$/)
-      ]],
+      phone: [''],
       birthDate: [null],
-      gender: [''],
       address: [''],
+      profileImage: [''],
+      gender: [''],
       city: [''],
       country: [''],
       position: ['', [Validators.required]],
@@ -151,7 +153,7 @@ export class EmployeeFormComponent implements OnInit {
         lunchBreakDuration: [60]
       }),
       performanceRating: [0],
-      role: ['employee']
+      role: ['employee'],
     });
   }
 
@@ -232,9 +234,10 @@ export class EmployeeFormComponent implements OnInit {
       const formData = this.employeeForm.value;
       
       const newUser: Omit<User, 'id'> = {
-        username: formData.email,
+        username: formData.username,
         email: formData.email,
         firstName: formData.firstName,
+        password: formData.password,
         lastName: formData.lastName,
         name: `${formData.firstName} ${formData.lastName}`,
         role: formData.role,
@@ -255,7 +258,7 @@ export class EmployeeFormComponent implements OnInit {
         rating: formData.performanceRating || 0,
         status: formData.status || 'active',
         contractType: formData.contractType || 'CDI',
-        photoUrl: this.profileImageUrl
+        photoUrl: this.imageUrl
       };
 
       this.apiService.createUser(newUser).pipe(
@@ -323,14 +326,34 @@ export class EmployeeFormComponent implements OnInit {
     }
   }
 
-  uploadFile(event: any) {
-    const file = event.target.files[0];
+  onImageUpload(event: any) {
+    const file = event.files[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onload = (e: any) => {
-        this.profileImageUrl = e.target.result;
-      };
-      reader.readAsDataURL(file);
+      this.uploadInProgress = true;
+      this.cloudinaryService.uploadImage(file).subscribe({
+        next: (url) => {
+          this.imageUrl = url;
+          this.employeeForm.patchValue({ profileImage: url });
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Success',
+            detail: 'Image uploaded successfully'
+          });
+          this.uploadInProgress = false;
+          if (this.fileUpload) {
+            this.fileUpload.clear();
+          }
+        },
+        error: (error) => {
+          console.error('Upload failed:', error);
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Error',
+            detail: 'Failed to upload image. Please try again.'
+          });
+          this.uploadInProgress = false;
+        }
+      });
     }
   }
 }
