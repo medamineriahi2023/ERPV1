@@ -69,6 +69,7 @@ export class PointageComponent implements OnInit, OnDestroy {
   private referenceImage: HTMLImageElement | null = null;
   showCamera = false;
   verificationInProgress = false;
+  showCalendar: boolean = window.innerWidth >= 1024; // Show by default on desktop
 
   constructor(
     private pointageService: PointageService,

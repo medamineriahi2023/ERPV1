@@ -118,8 +118,10 @@
                     <i class="pi pi-chart-line text-blue-500"></i>
                 </div>
             </div>
-            <div class="relative h-[300px] sm:h-[400px] w-full">
-                <canvas id="weeklyChart"></canvas>
+            <div class="flex items-center justify-center w-full">
+                <div class="relative h-[250px] sm:h-[400px] w-full max-w-[500px] mx-auto">
+                    <canvas id="weeklyChart"></canvas>
+                </div>
             </div>
         </div>
 
@@ -131,8 +133,10 @@
                     <i class="pi pi-chart-pie text-green-500"></i>
                 </div>
             </div>
-            <div class="relative h-[300px] sm:h-[400px] w-full flex items-center justify-center">
-                <canvas id="statusChart"></canvas>
+            <div class="flex items-center justify-center w-full">
+                <div class="relative h-[250px] sm:h-[400px] w-full max-w-[500px] mx-auto">
+                    <canvas id="statusChart"></canvas>
+                </div>
             </div>
         </div>
 
@@ -144,8 +148,10 @@
                     <i class="pi pi-chart-bar text-orange-500"></i>
                 </div>
             </div>
-            <div class="relative h-[300px] sm:h-[400px] w-full">
-                <canvas id="punctualityChart"></canvas>
+            <div class="flex items-center justify-center w-full">
+                <div class="relative h-[250px] sm:h-[400px] w-full max-w-[800px] mx-auto">
+                    <canvas id="punctualityChart"></canvas>
+                </div>
             </div>
         </div>
     </div>
@@ -243,13 +249,13 @@
     </div>
 
     <!-- Monthly History -->
-    <div class="mt-6">
-        <div class="bg-white rounded-xl shadow-sm mb-6">
-            <div class="border-b border-gray-100 bg-gray-50/50 px-6 py-4">
-                <h3 class="text-lg font-semibold text-gray-800">Historique mensuel</h3>
+    <div class="mt-4 sm:mt-6">
+        <div class="bg-white rounded-xl shadow-sm mb-4 sm:mb-6">
+            <div class="border-b border-gray-100 bg-gray-50/50 px-4 sm:px-6 py-3 sm:py-4">
+                <h3 class="text-base sm:text-lg font-semibold text-gray-800">Historique mensuel</h3>
             </div>
 
-            <div class="p-6">
+            <div class="p-3 sm:p-6 overflow-x-auto">
                 <p-table
                         [value]="monthlyEntries"
                         [paginator]="true"
@@ -258,31 +264,46 @@
                         [tableStyle]="{ 'min-width': '50rem' }"
                         [rowsPerPageOptions]="[10, 25, 50]"
                         [loading]="loading"
+                        styleClass="text-sm"
+                        [responsive]="true"
+                        [breakpoint]="'960px'"
                         currentPageReportTemplate="Affichage de {first} à {last} sur {totalRecords} entrées"
                         [globalFilterFields]="['user.firstName', 'user.lastName', 'date', 'status']">
 
                     <ng-template pTemplate="header">
                         <tr>
-                            <th class="text-left">Employé</th>
-                            <th class="text-center">Date</th>
-                            <th class="text-center">Arrivée</th>
-                            <th class="text-center">Départ</th>
-                            <th class="text-center">Pause déjeuner</th>
-                            <th class="text-center">Heures totales</th>
-                            <th class="text-center">Statut</th>
+                            <th class="text-left text-sm">Employé</th>
+                            <th class="text-center text-sm hidden sm:table-cell">Date</th>
+                            <th class="text-center text-sm">Arrivée</th>
+                            <th class="text-center text-sm">Départ</th>
+                            <th class="text-center text-sm hidden sm:table-cell">Pause déjeuner</th>
+                            <th class="text-center text-sm hidden sm:table-cell">Heures totales</th>
+                            <th class="text-center text-sm">Statut</th>
                         </tr>
                     </ng-template>
 
                     <ng-template pTemplate="body" let-entry>
                         <tr class="hover:bg-gray-50">
-                            <td class="px-4 py-2">{{ formatDate(entry.date) }}</td>
-                            <td class="px-4 py-2">{{ getEmployeeFullName(entry) }}</td>
-                            <td class="px-4 py-2">{{ formatTime(entry.checkIn) }}</td>
-                            <td class="px-4 py-2">{{ formatTime(entry.checkOut) }}</td>
-                            <td class="px-4 py-2">{{ formatLunchTime(entry) }}</td>
-                            <td class="px-4 py-2">{{ formatWorkDuration(entry) }}</td>
-                            <td class="px-4 py-2">
-                                <span [class]="getStatusBadgeClass(entry.status)">
+                            <td class="px-2 sm:px-4 py-2 text-sm">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center">
+                                        <span class="text-sm font-medium text-gray-600">
+                                            {{entry.user?.firstName?.charAt(0)}}{{entry.user?.lastName?.charAt(0)}}
+                                        </span>
+                                    </div>
+                                    <div>
+                                        <div class="font-medium">{{ getEmployeeFullName(entry) }}</div>
+                                        <div class="text-xs text-gray-500 sm:hidden">{{ formatDate(entry.date) }}</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="px-2 sm:px-4 py-2 text-sm hidden sm:table-cell">{{ formatDate(entry.date) }}</td>
+                            <td class="px-2 sm:px-4 py-2 text-sm">{{ formatTime(entry.checkIn) }}</td>
+                            <td class="px-2 sm:px-4 py-2 text-sm">{{ formatTime(entry.checkOut) }}</td>
+                            <td class="px-2 sm:px-4 py-2 text-sm hidden sm:table-cell">{{ formatLunchTime(entry) }}</td>
+                            <td class="px-2 sm:px-4 py-2 text-sm hidden sm:table-cell">{{ formatWorkDuration(entry) }}</td>
+                            <td class="px-2 sm:px-4 py-2">
+                                <span [class]="getStatusBadgeClass(entry.status) + ' text-xs sm:text-sm'">
                                     {{ getStatusLabel(entry.status) }}
                                 </span>
                             </td>
@@ -291,11 +312,8 @@
 
                     <ng-template pTemplate="emptymessage">
                         <tr>
-                            <td colspan="7" class="text-center py-6">
-                                <div class="flex flex-col items-center justify-center text-gray-500">
-                                    <i class="pi pi-calendar text-3xl mb-2"></i>
-                                    <p>Aucune entrée trouvée pour ce mois</p>
-                                </div>
+                            <td colspan="7" class="text-center py-4 sm:py-6">
+                                <div class="text-sm text-gray-500">Aucune entrée trouvée pour la période sélectionnée</div>
                             </td>
                         </tr>
                     </ng-template>

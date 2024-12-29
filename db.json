@@ -42,7 +42,7 @@
       "lastName": "Soker",
       "name": "Safwen Soker",
       "role": "employee",
-      "photoUrl": "assets/images/default-avatar.png",
+      "photoUrl": "https://i.imgur.com/xpVw5Ov.jpeg",
       "department": "Engineering",
       "position": "Developpeur",
       "managerId": 1,
@@ -171,7 +171,7 @@
       "rating": 5,
       "status": "active",
       "contractType": "CDI",
-      "photoUrl": "assets/images/default-avatar.png",
+      "photoUrl": "https://i.imgur.com/BQfIQJN.jpeg",
       "id": 6
     },
     {
@@ -205,7 +205,7 @@
   "time-entries": [
     {
       "userId": 1,
-      "date": "2024-12-29T01:13:20.874Z",
+      "date": "2024-12-28T01:13:20.874Z",
       "checkIn": "02:13:20",
       "checkOut": "02:25:51",
       "lunchStart": null,
@@ -217,7 +217,7 @@
     },
     {
       "userId": 6,
-      "date": "2024-12-29T01:27:04.630Z",
+      "date": "2024-12-28T01:27:04.630Z",
       "checkIn": "02:27:04",
       "checkOut": "02:33:26",
       "lunchStart": "02:33:12",
@@ -226,6 +226,18 @@
       "status": "present",
       "isLate": false,
       "id": 2
+    },
+    {
+      "userId": 2,
+      "date": "2024-12-28T17:21:17.591Z",
+      "checkIn": "18:21:17",
+      "checkOut": "18:25:04",
+      "lunchStart": null,
+      "lunchEnd": null,
+      "totalHours": 0.07,
+      "status": "late",
+      "isLate": true,
+      "id": 3
     }
   ],
   "leave-requests": [],

@@ -1,11 +1,11 @@
-<div class="min-h-screen bg-gray-50 py-8">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="mt-8">
-      <div class="bg-white rounded-lg shadow-sm p-6">
+<div class="min-h-screen bg-gray-50 py-4 sm:py-8">
+  <div class="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8">
+    <div class="mt-4 sm:mt-8">
+      <div class="bg-white rounded-lg shadow-sm p-3 sm:p-6">
         <!-- En-tête -->
-        <div class="mb-8">
-          <h1 class="text-2xl font-semibold text-gray-900">Validation des Congés</h1>
-          <p class="mt-2 text-sm text-gray-600">Gérez les demandes de congés de votre équipe</p>
+        <div class="mb-4 sm:mb-8">
+          <h1 class="text-xl sm:text-2xl font-semibold text-gray-900">Validation des Congés</h1>
+          <p class="mt-1 sm:mt-2 text-xs sm:text-sm text-gray-600">Gérez les demandes de congés de votre équipe</p>
         </div>
 
         <!-- Table des demandes -->
@@ -15,76 +15,79 @@
           [rows]="10"
           [loading]="loading"
           [rowHover]="true"
-          styleClass="p-datatable-lg"
+          styleClass="p-datatable-sm sm:p-datatable-lg"
           [globalFilterFields]="['employeeId', 'type', 'status']"
           [showCurrentPageReport]="true"
+          [responsive]="true"
+          [breakpoint]="'960px'"
           currentPageReportTemplate="Affichage de {first} à {last} sur {totalRecords} demandes">
           
           <ng-template pTemplate="caption">
-            <div class="flex justify-between items-center p-3">
-              <h2 class="text-xl font-semibold">Liste des demandes</h2>
-              <span class="p-input-icon-left">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-0 p-2 sm:p-3">
+              <h2 class="text-lg sm:text-xl font-semibold">Liste des demandes</h2>
+              <span class="p-input-icon-left w-full sm:w-auto">
                 <i class="pi pi-search"></i>
                 <input 
                   pInputText 
                   type="text" 
                   [(ngModel)]="searchTerm"
                   placeholder="Rechercher..."
-                  class="p-inputtext-sm" />
+                  class="w-full sm:w-auto p-inputtext-sm" />
               </span>
             </div>
           </ng-template>
 
           <ng-template pTemplate="header">
             <tr>
-              <th>Employé</th>
-              <th>Type</th>
-              <th>Période</th>
-              <th>Durée</th>
-              <th>Raison</th>
-              <th>Statut</th>
-              <th>Actions</th>
+              <th class="text-sm">Employé</th>
+              <th class="text-sm hidden sm:table-cell">Type</th>
+              <th class="text-sm">Période</th>
+              <th class="text-sm hidden sm:table-cell">Durée</th>
+              <th class="text-sm hidden sm:table-cell">Raison</th>
+              <th class="text-sm">Statut</th>
+              <th class="text-sm">Actions</th>
             </tr>
           </ng-template>
 
           <ng-template pTemplate="body" let-conge>
             <tr>
               <td>
-                <div class="flex items-center gap-3">
+                <div class="flex items-center gap-2 sm:gap-3">
                   <p-avatar 
                     [label]="conge.user?.firstName?.charAt(0) || '?'"
-                    styleClass="mr-2"
+                    styleClass="mr-1 sm:mr-2"
                     [style]="{'background-color': '#2196F3', 'color': '#ffffff'}"
+                    [size]="'normal'"
                     shape="circle">
                   </p-avatar>
                   <div>
-                    <div class="font-medium">
+                    <div class="text-sm font-medium">
                       {{ conge.user?.firstName }} {{ conge.user?.lastName }}
                     </div>
-                    <div class="text-sm text-gray-500">
+                    <div class="text-xs sm:text-sm text-gray-500">
                       {{ calculateDaysUntilStart(conge.startDate) }} jours avant début
                     </div>
                   </div>
                 </div>
               </td>
 
-              <td>
-                <p-tag [value]="conge.type?.label"></p-tag>
+              <td class="hidden sm:table-cell">
+                <p-tag [value]="conge.type?.label" [style]="{'font-size': '0.75rem'}"></p-tag>
               </td>
 
               <td>
-                <div class="text-sm">
+                <div class="text-xs sm:text-sm">
                   <div>Du {{ conge.startDate | date:'dd/MM/yyyy' }}</div>
                   <div>Au {{ conge.endDate | date:'dd/MM/yyyy' }}</div>
                 </div>
               </td>
 
-              <td>
-                <span class="font-medium">{{ conge.duration }} jours</span>
+              <td class="hidden sm:table-cell">
+                <span class="text-sm font-medium">{{ conge.duration }} jours</span>
               </td>
 
-              <td>
-                <div class="text-sm text-gray-600">
+              <td class="hidden sm:table-cell">
+                <div class="text-xs sm:text-sm text-gray-600">
                   {{ conge.reason || 'Non spécifié' }}
                 </div>
               </td>
@@ -92,17 +95,18 @@
               <td>
                 <p-tag 
                   [value]="getStatusLabel(conge.status)"
-                  [severity]="getStatusSeverity(conge.status)">
+                  [severity]="getStatusSeverity(conge.status)"
+                  [style]="{'font-size': '0.75rem'}">
                 </p-tag>
               </td>
 
               <td>
-                <div class="flex gap-2">
+                <div class="flex gap-1 sm:gap-2">
                   <button 
                     pButton 
                     pRipple 
                     icon="pi pi-check" 
-                    class="p-button-rounded p-button-success mr-2"
+                    class="p-button-rounded p-button-success p-button-sm sm:p-button-normal"
                     [disabled]="conge.status !== 'EN_ATTENTE'"
                     (click)="approveConge(conge)">
                   </button>
@@ -113,8 +117,8 @@
 
           <ng-template pTemplate="emptymessage">
             <tr>
-              <td colspan="7" class="text-center p-4">
-                Aucune demande de congé trouvée
+              <td colspan="7" class="text-center p-3 sm:p-4">
+                <div class="text-sm">Aucune demande de congé trouvée</div>
               </td>
             </tr>
           </ng-template>
@@ -128,45 +132,48 @@
 <p-dialog 
   [(visible)]="showApprovalDialog"
   [modal]="true" 
-  [style]="{width: '450px'}"
+  [style]="{width: '90vw', maxWidth: '450px'}"
   header="Validation de la demande"
   class="p-fluid">
 
   <ng-template pTemplate="content">
     <div class="field">
-      <label for="comment">Commentaire</label>
+      <label for="comment" class="text-sm font-medium mb-1">Commentaire</label>
       <textarea 
         id="comment" 
         pInputTextarea 
         [(ngModel)]="approverComment" 
         required 
         rows="3" 
-        class="w-full"></textarea>
+        class="w-full text-sm">
+      </textarea>
     </div>
   </ng-template>
 
   <ng-template pTemplate="footer">
-    <button 
-      pButton 
-      pRipple 
-      label="Approuver" 
-      class="p-button-success" 
-      (click)="confirmApproval()">
-    </button>
-    <button 
-      pButton 
-      pRipple 
-      label="Refuser" 
-      class="p-button-danger" 
-      (click)="confirmRejection()">
-    </button>
-    <button 
-      pButton 
-      pRipple 
-      label="Annuler" 
-      class="p-button-secondary" 
-      (click)="hideDialog()">
-    </button>
+    <div class="flex flex-col sm:flex-row gap-2 sm:gap-3">
+      <button 
+        pButton 
+        pRipple 
+        label="Approuver" 
+        class="p-button-success p-button-sm sm:p-button-normal w-full sm:w-auto" 
+        (click)="confirmApproval()">
+      </button>
+      <button 
+        pButton 
+        pRipple 
+        label="Refuser" 
+        class="p-button-danger p-button-sm sm:p-button-normal w-full sm:w-auto" 
+        (click)="confirmRejection()">
+      </button>
+      <button 
+        pButton 
+        pRipple 
+        label="Annuler" 
+        class="p-button-secondary p-button-sm sm:p-button-normal w-full sm:w-auto" 
+        (click)="hideDialog()">
+      </button>
+    </div>
   </ng-template>
 </p-dialog>
 
