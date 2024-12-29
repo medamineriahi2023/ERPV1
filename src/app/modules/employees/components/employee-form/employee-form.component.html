@@ -39,17 +39,43 @@
               <div class="field">
                 <label for="username" class="block text-sm font-medium text-gray-700 mb-2">Nom d'utilisateur*</label>
                 <input pInputText id="username" type="text" formControlName="username" class="w-full rounded-lg" />
+                <small class="text-red-500" *ngIf="employeeForm.get('username')?.errors?.['required'] && employeeForm.get('username')?.touched">
+                  Le nom d'utilisateur est requis
+                </small>
+              </div>
+
+              <!-- Password -->
+              <div class="field">
+                <label for="password" class="block text-sm font-medium text-gray-700 mb-2">Mot de passe*</label>
+                <p-password id="password" 
+                           formControlName="password"
+                           [feedback]="true"
+                           [toggleMask]="true"
+                           styleClass="w-full"
+                           [style]="{'width':'100%'}"
+                           inputStyleClass="w-full">
+                </p-password>
+                <small class="text-red-500" *ngIf="employeeForm.get('password')?.errors?.['required'] && employeeForm.get('password')?.touched">
+                  Le mot de passe est requis
+                </small>
+                <small class="text-red-500" *ngIf="employeeForm.get('password')?.errors?.['pattern'] && employeeForm.get('password')?.touched">
+                  Le mot de passe doit contenir au moins 8 caractères, une majuscule, une minuscule, un chiffre et un caractère spécial
+                </small>
               </div>
 
               <!-- Téléphone -->
               <div class="field">
                 <label for="phone" class="block text-sm font-medium text-gray-700 mb-2">Téléphone</label>
                 <p-inputMask id="phone" 
-                             formControlName="phone" 
-                             mask="99-999-9999" 
-                             placeholder="XX-XXX-XXXX"
-                             styleClass="w-full rounded-lg">
+                            formControlName="phone" 
+                            mask="99999999"
+                            placeholder="Exemple: 20123456"
+                            styleClass="w-full">
                 </p-inputMask>
+                <small class="text-gray-500">Format: 8 chiffres commençant par 2, 5, 9 ou 4</small>
+                <small class="text-red-500" *ngIf="employeeForm.get('phone')?.errors?.['pattern'] && employeeForm.get('phone')?.touched">
+                  Le numéro de téléphone doit commencer par 2, 4, 5 ou 9 et contenir 8 chiffres
+                </small>
               </div>
 
               <!-- Date de naissance -->

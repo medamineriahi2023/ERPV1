@@ -10,9 +10,11 @@ import { ChartModule } from 'primeng/chart';
 import { MessageService } from 'primeng/api';
 import { PointageService } from '../../../../core/services/pointage.service';
 import { AuthService } from '../../../../core/services/auth.service';
+import { FaceRecognitionService } from '../../../../core/services/face-recognition.service';
 import { User, TimeEntry } from '../../../../core/interfaces/user.interface';
 import { Subscription, interval } from 'rxjs';
 import { startWith } from 'rxjs/operators';
+import {ProgressSpinner} from "primeng/progressspinner";
 
 @Component({
   selector: 'app-pointage',
@@ -25,7 +27,8 @@ import { startWith } from 'rxjs/operators';
     CalendarModule,
     TableModule,
     ToastModule,
-    ChartModule
+    ChartModule,
+    ProgressSpinner
   ],
   providers: [MessageService],
   templateUrl: './pointage.component.html',
@@ -61,12 +64,20 @@ export class PointageComponent implements OnInit, OnDestroy {
   onTimeArrivalCount: number = 0;
   averageBreakTime: number = 0;
 
+  private videoStream: MediaStream | null = null;
+  private videoElement: HTMLVideoElement | null = null;
+  private referenceImage: HTMLImageElement | null = null;
+  showCamera = false;
+  verificationInProgress = false;
+
   constructor(
     private pointageService: PointageService,
     private authService: AuthService,
-    private messageService: MessageService
+    private messageService: MessageService,
+    private faceRecognitionService: FaceRecognitionService
   ) {
     this.initializeCharts();
+    this.loadReferenceImage();
   }
 
   private initializeCharts() {
@@ -180,6 +191,22 @@ export class PointageComponent implements OnInit, OnDestroy {
     };
   }
 
+  private async loadReferenceImage() {
+    this.referenceImage = new Image();
+    this.referenceImage.src = '/assets/images/default-profile.jpg';
+    await new Promise((resolve, reject) => {
+      this.referenceImage.onload = resolve;
+      this.referenceImage.onerror = reject;
+    }).catch(error => {
+      console.error('Error loading reference image:', error);
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Erreur',
+        detail: 'Impossible de charger l\'image de référence'
+      });
+    });
+  }
+
   ngOnInit() {
     this.currentUser = this.authService.getCurrentUser();
     this.setupClock();
@@ -258,35 +285,23 @@ export class PointageComponent implements OnInit, OnDestroy {
     this.lunchEndTime = null;
   }
 
-  toggleCheckInOut() {
+  async toggleCheckInOut() {
     if (!this.currentUser?.id) {
       this.showMessage('error', 'Utilisateur non connecté');
       return;
     }
 
-    const userId = this.currentUser.id;
-
     if (!this.checkInTime) {
-      this.pointageService.getActiveSession(userId).subscribe({
-        next: (activeSession) => {
+      // For check-in, first verify if there's no active session
+      this.pointageService.getActiveSession(this.currentUser.id).subscribe({
+        next: async (activeSession) => {
           if (activeSession) {
             this.showMessage('error', 'Une session est déjà active pour aujourd\'hui');
-            this.loadTodayEntry(); 
+            this.loadTodayEntry();
             return;
           }
-
-          this.pointageService.checkIn(userId).subscribe({
-            next: (entry) => {
-              this.currentEntry = entry;
-              this.checkInTime = entry.checkIn;
-              this.showMessage('success', 'Arrivée enregistrée');
-              this.loadMonthlyHistory();
-            },
-            error: (error: Error) => {
-              console.error('Erreur lors de l\'enregistrement de l\'arrivée:', error);
-              this.showMessage('error', 'Erreur lors de l\'enregistrement de l\'arrivée');
-            }
-          });
+          // Start camera for face verification
+          await this.startCamera();
         },
         error: (error: Error) => {
           console.error('Erreur lors de la vérification de la session:', error);
@@ -298,12 +313,11 @@ export class PointageComponent implements OnInit, OnDestroy {
         next: (entry: TimeEntry) => {
           this.currentEntry = entry;
           this.checkOutTime = entry.checkOut || null;
-          
-          // Afficher le message avec les heures travaillées
-          const message = entry.totalHours > 0 
-            ? `Départ enregistré. Temps travaillé: ${entry.totalHours.toFixed(2)} heures`
-            : 'Départ enregistré';
-            
+
+          const message = entry.totalHours > 0
+              ? `Départ enregistré. Temps travaillé: ${entry.totalHours.toFixed(2)} heures`
+              : 'Départ enregistré';
+
           this.showMessage('success', message);
           this.loadMonthlyHistory();
         },
@@ -314,6 +328,8 @@ export class PointageComponent implements OnInit, OnDestroy {
       });
     }
   }
+
+
 
   toggleLunchBreak() {
     if (!this.currentEntry?.id || this.checkOutTime) return;
@@ -496,4 +512,108 @@ export class PointageComponent implements OnInit, OnDestroy {
       life: 3000
     });
   }
+
+  async startCamera() {
+
+    if (!this.referenceImage) {
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Erreur',
+        detail: 'Image de référence non chargée'
+      });
+      return;
+    }
+
+    try {
+      this.showCamera = true;
+      const stream = await navigator.mediaDevices.getUserMedia({ 
+        video: {
+          width: { ideal: 640 },
+          height: { ideal: 480 },
+          facingMode: 'user'
+        } 
+      });
+      this.videoStream = stream;
+      
+      // Wait for DOM to update
+      setTimeout(() => {
+        this.videoElement = document.querySelector('#cameraFeed');
+        if (this.videoElement) {
+          this.videoElement.srcObject = stream;
+        }
+      }, 100);
+    } catch (error) {
+      console.error('Error accessing camera:', error);
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Erreur',
+        detail: 'Impossible d\'accéder à la caméra'
+      });
+    }
+  }
+
+  stopCamera() {
+    if (this.videoStream) {
+      this.videoStream.getTracks().forEach(track => track.stop());
+      this.videoStream = null;
+    }
+    this.showCamera = false;
+  }
+
+  async verifyFaceAndCheckIn() {
+    if (!this.videoElement || !this.referenceImage) {
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Erreur',
+        detail: 'Caméra ou image de référence non disponible'
+      });
+      return;
+    }
+
+    this.verificationInProgress = true;
+
+    try {
+      const isMatch = await this.faceRecognitionService.verifyFace(
+          this.videoElement,
+          this.referenceImage
+      );
+
+      if (isMatch) {
+
+        this.pointageService.checkIn(this.currentUser.id).subscribe({
+          next: (entry) => {
+            this.currentEntry = entry;
+            this.checkInTime = entry.checkIn;
+            this.showMessage('success', 'Arrivée enregistrée');
+            this.loadMonthlyHistory();
+            this.stopCamera();
+          },
+          error: (error) => {
+            console.error('Error during check-in:', error);
+            this.showMessage('error', 'Erreur lors du pointage');
+          }
+        });
+      } else {
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Erreur',
+          detail: 'La vérification du visage a échoué. Veuillez réessayer.'
+        });
+      }
+    } catch (error) {
+      console.error('Error during face verification:', error);
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Erreur',
+        detail: 'Erreur lors de la vérification du visage'
+      });
+    } finally {
+      this.verificationInProgress = false;
+      if (!this.checkInTime) {
+        // Only stop camera if check-in wasn't successful
+        this.stopCamera();
+      }
+    }
+  }
+
 }

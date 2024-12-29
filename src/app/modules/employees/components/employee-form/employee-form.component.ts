@@ -88,7 +88,7 @@ export class EmployeeFormComponent implements OnInit {
     private apiService: ApiService,
     private authService: AuthService
   ) {
-    this.initializeForm();
+    this.initForm();
     this.initializeSteps();
     this.initializeDates();
     this.currentUser = this.authService.getCurrentUser();
@@ -110,13 +110,20 @@ export class EmployeeFormComponent implements OnInit {
     }
   }
 
-  private initializeForm() {
+  private initForm(): void {
     this.employeeForm = this.fb.group({
-      firstName: ['', [Validators.required]],
-      lastName: ['', [Validators.required]],
+      firstName: ['', [Validators.required, Validators.minLength(2)]],
+      lastName: ['', [Validators.required, Validators.minLength(2)]],
       email: ['', [Validators.required, Validators.email]],
-      username: ['', [Validators.required]],
-      phone: [''],
+      username: ['', [Validators.required, Validators.minLength(4)]],
+      password: ['', [
+        Validators.required,
+        Validators.minLength(8),
+        Validators.pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/)
+      ]],
+      phone: ['', [
+        Validators.pattern(/^[2459]\d{7}$/)
+      ]],
       birthDate: [null],
       gender: [''],
       address: [''],

@@ -21,12 +21,16 @@
             "index": "src/index.html",
             "browser": "src/main.ts",
             "polyfills": [
-              "zone.js"
+              "zone.js",
+              "src/polyfills.ts"
             ],
             "tsConfig": "tsconfig.app.json",
             "inlineStyleLanguage": "scss",
             "assets": [
               "src/assets"
+            ],
+            "allowedCommonJsDependencies": [
+              "buffer"
             ],
             "styles": [
               "src/styles.scss",

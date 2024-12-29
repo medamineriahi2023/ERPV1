@@ -129,52 +129,50 @@ export class PointageService {
   }
 
   checkOut(entryId: number): Observable<TimeEntry> {
+    const now = new Date();
+    const checkOutTime = this.formatTime(now);
+
     return this.http.get<TimeEntry>(`${this.apiUrl}/${entryId}`).pipe(
       switchMap(entry => {
-        const now = new Date();
-        const checkOutTime = this.formatTime(now);
-        
-        // Update entry with checkout time
-        entry.checkOut = checkOutTime;
-        
         // Calculate total hours
-        const updatedEntry = { ...entry, checkOut: checkOutTime };
-        const totalHours = this.calculateWorkingHours(updatedEntry);
+        const checkInTime = entry.checkIn;
+        const totalHours = this.calculateHoursDifference(checkInTime, checkOutTime);
 
-        // Update entry in database
-        return this.http.patch<TimeEntry>(`${this.apiUrl}/${entryId}`, {
+        // Update the entry with checkout time and total hours
+        return this.http.put<TimeEntry>(`${this.apiUrl}/${entryId}`, {
+          ...entry,
           checkOut: checkOutTime,
           totalHours: totalHours
         });
-      }),
-      map(response => ({
-        ...response,
-        date: response.date ? new Date(response.date) : new Date()
-      }))
+      })
     );
   }
 
   startLunch(entryId: number): Observable<TimeEntry> {
     const now = new Date();
-    return this.http.patch<TimeEntry>(`${this.apiUrl}/${entryId}`, {
-      lunchStart: this.formatTime(now)
-    }).pipe(
-      map(response => ({
-        ...response,
-        date: response.date ? new Date(response.date) : new Date()
-      }))
+    const lunchStartTime = this.formatTime(now);
+
+    return this.http.get<TimeEntry>(`${this.apiUrl}/${entryId}`).pipe(
+      switchMap(entry => {
+        return this.http.put<TimeEntry>(`${this.apiUrl}/${entryId}`, {
+          ...entry,
+          lunchStart: lunchStartTime
+        });
+      })
     );
   }
 
   endLunch(entryId: number): Observable<TimeEntry> {
     const now = new Date();
-    return this.http.patch<TimeEntry>(`${this.apiUrl}/${entryId}`, {
-      lunchEnd: this.formatTime(now)
-    }).pipe(
-      map(response => ({
-        ...response,
-        date: response.date ? new Date(response.date) : new Date()
-      }))
+    const lunchEndTime = this.formatTime(now);
+
+    return this.http.get<TimeEntry>(`${this.apiUrl}/${entryId}`).pipe(
+      switchMap(entry => {
+        return this.http.put<TimeEntry>(`${this.apiUrl}/${entryId}`, {
+          ...entry,
+          lunchEnd: lunchEndTime
+        });
+      })
     );
   }
 
@@ -193,6 +191,16 @@ export class PointageService {
 
   private formatTime(date: Date): string {
     return date.toTimeString().split(' ')[0];
+  }
+
+  private calculateHoursDifference(startTime: string, endTime: string): number {
+    const [startHours, startMinutes] = startTime.split(':').map(Number);
+    const [endHours, endMinutes] = endTime.split(':').map(Number);
+    
+    const totalStartMinutes = startHours * 60 + startMinutes;
+    const totalEndMinutes = endHours * 60 + endMinutes;
+    
+    return Number(((totalEndMinutes - totalStartMinutes) / 60).toFixed(2));
   }
 
   private calculateWorkingHours(entry: TimeEntry): number {

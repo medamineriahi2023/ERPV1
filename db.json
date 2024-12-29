@@ -18,7 +18,8 @@
         3,
         4,
         5,
-        6
+        6,
+        7
       ],
       "hireDate": "2023-01-01",
       "leaveBalance": {
@@ -64,6 +65,7 @@
     {
       "username": "aliriahi@gmail.com",
       "email": "aliriahi@gmail.com",
+      "password": "123456",
       "firstName": "ali",
       "lastName": "riahi",
       "name": "ali riahi",
@@ -91,6 +93,7 @@
     {
       "username": "riahimedaminer@gmail.com",
       "email": "riahimedaminer@gmail.com",
+      "password": "123456",
       "firstName": "Llewellyn",
       "lastName": "Bahringer",
       "name": "Llewellyn Bahringer",
@@ -118,6 +121,7 @@
     {
       "username": "riahimedaminer@gmail.com",
       "email": "riahimedaminer@gmail.com",
+      "password": "123456",
       "firstName": "Informatique",
       "lastName": "de gestion",
       "name": "Informatique de gestion",
@@ -143,8 +147,9 @@
       "id": 5
     },
     {
-      "username": "mekniemna@gmail.com",
+      "username": "mekniemna",
       "email": "mekniemna@gmail.com",
+      "password": "123456",
       "firstName": "Emna",
       "lastName": "Mekni",
       "name": "Emna Mekni",
@@ -168,92 +173,59 @@
       "contractType": "CDI",
       "photoUrl": "assets/images/default-avatar.png",
       "id": 6
+    },
+    {
+      "username": "kamel@gmail.com",
+      "email": "kamel@gmail.com",
+      "firstName": "kamel",
+      "lastName": "Riahi",
+      "name": "kamel Riahi",
+      "role": "employee",
+      "department": "Engineering",
+      "position": "Developpeur",
+      "managerId": 1,
+      "managedEmployees": [],
+      "hireDate": "2024-12-29T17:06:15.742Z",
+      "leaveBalance": {
+        "annual": 30,
+        "sick": 15
+      },
+      "workSchedule": {
+        "startTime": "09:00",
+        "endTime": "17:00",
+        "lunchBreakDuration": 60
+      },
+      "rating": 0,
+      "status": "active",
+      "contractType": "CDI",
+      "photoUrl": "assets/images/default-avatar.png",
+      "id": 7
     }
   ],
   "time-entries": [
     {
-      "userId": 2,
-      "date": "2024-12-27T21:51:07.739Z",
-      "checkIn": "09:00:00",
-      "checkOut": "17:00:00",
+      "userId": 1,
+      "date": "2024-12-29T01:13:20.874Z",
+      "checkIn": "02:13:20",
+      "checkOut": "02:25:51",
       "lunchStart": null,
       "lunchEnd": null,
-      "totalHours": 8,
+      "totalHours": 0.2,
       "status": "present",
-      "isLate": true,
+      "isLate": false,
       "id": 1
     },
     {
-      "userId": 2,
-      "date": "2024-12-28T00:00:49.859Z",
-      "checkIn": "09:00:00",
-      "checkOut": "17:00:00",
-      "lunchStart": null,
-      "lunchEnd": null,
-      "totalHours": 8,
+      "userId": 6,
+      "date": "2024-12-29T01:27:04.630Z",
+      "checkIn": "02:27:04",
+      "checkOut": "02:33:26",
+      "lunchStart": "02:33:12",
+      "lunchEnd": "02:33:22",
+      "totalHours": 0.1,
       "status": "present",
       "isLate": false,
       "id": 2
-    },
-    {
-      "userId": 1,
-      "date": "2024-12-28T00:24:43.276Z",
-      "checkIn": "09:00:00",
-      "checkOut": "17:00:00",
-      "lunchStart": null,
-      "lunchEnd": null,
-      "totalHours": 8,
-      "status": "present",
-      "isLate": false,
-      "id": 3
-    },
-    {
-      "userId": 2,
-      "date": "2025-01-01T16:53:22.134Z",
-      "checkIn": "17:53:22",
-      "checkOut": "19:28:50",
-      "lunchStart": null,
-      "lunchEnd": null,
-      "totalHours": 1.59,
-      "status": "late",
-      "isLate": true,
-      "id": 4
-    },
-    {
-      "userId": 2,
-      "date": "2025-01-02T07:56:10.333Z",
-      "checkIn": "08:56:10",
-      "checkOut": "18:56:05",
-      "lunchStart": null,
-      "lunchEnd": null,
-      "totalHours": 10,
-      "status": "present",
-      "isLate": false,
-      "id": 5
-    },
-    {
-      "userId": 2,
-      "date": "2025-01-03T08:57:10.599Z",
-      "checkIn": "09:57:10",
-      "checkOut": "18:08:06",
-      "lunchStart": null,
-      "lunchEnd": null,
-      "totalHours": 8.18,
-      "status": "late",
-      "isLate": true,
-      "id": 6
-    },
-    {
-      "userId": 2,
-      "date": "2025-01-04T07:10:40.594Z",
-      "checkIn": "08:10:40",
-      "checkOut": "18:00:15",
-      "lunchStart": "13:11:25",
-      "lunchEnd": "14:11:14",
-      "totalHours": 8.83,
-      "status": "present",
-      "isLate": false,
-      "id": 7
     }
   ],
   "leave-requests": [],
@@ -335,6 +307,33 @@
       "createdAt": "2025-01-01T18:34:15.263Z",
       "updatedAt": "2025-01-01T18:35:39.071Z",
       "id": 3,
+      "approverComment": ""
+    },
+    {
+      "employeeId": 6,
+      "managerId": 1,
+      "type": {
+        "label": "Maladie",
+        "value": "MALADIE",
+        "icon": "pi pi-heart",
+        "color": "#EF4444"
+      },
+      "startDate": "2024-12-29T23:00:00.000Z",
+      "endDate": "2024-12-30T23:00:00.000Z",
+      "duration": 2,
+      "status": "APPROUVE",
+      "reason": "Congé maladie",
+      "urgencyLevel": {
+        "label": "Urgent",
+        "value": "URGENT",
+        "icon": "pi pi-exclamation-triangle"
+      },
+      "attachments": [
+        "Certificat medical.pdf"
+      ],
+      "createdAt": "2024-12-28T22:34:32.657Z",
+      "updatedAt": "2024-12-28T22:47:58.122Z",
+      "id": 4,
       "approverComment": ""
     }
   ]

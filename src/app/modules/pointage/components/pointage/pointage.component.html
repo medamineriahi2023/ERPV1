@@ -95,6 +95,26 @@
 
                 <!-- Action Buttons -->
                 <div class="flex gap-3">
+                    <div class="camera-container" *ngIf="showCamera">
+                        <video #cameraFeed id="cameraFeed" autoplay playsinline></video>
+                        <div class="camera-overlay" *ngIf="verificationInProgress">
+                            <p-progressSpinner></p-progressSpinner>
+                            <span>Vérification en cours...</span>
+                        </div>
+                        <div class="camera-controls">
+                            <p-button 
+                                [disabled]="verificationInProgress" 
+                                (click)="verifyFaceAndCheckIn()" 
+                                label="Vérifier">
+                            </p-button>
+                            <p-button 
+                                [disabled]="verificationInProgress" 
+                                (click)="stopCamera()" 
+                                severity="secondary" 
+                                label="Annuler">
+                            </p-button>
+                        </div>
+                    </div>
                     <button
                             pButton
                             [label]="checkInTime ? 'Départ' : 'Arrivée'"
