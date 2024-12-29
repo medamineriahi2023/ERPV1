@@ -22,9 +22,24 @@ export class HistoryService {
   ) {}
 
   /**
+   * Récupère l'historique mensuel pour un utilisateur spécifique
+   */
+  getUserMonthlyHistory(userId: number, startDate: Date, endDate: Date): Observable<UserTimeEntry[]> {
+    return this.http.get<UserTimeEntry[]>(
+      `${this.apiUrl}?userId=${userId}&date_gte=${startDate.toISOString()}&date_lte=${endDate.toISOString()}&_sort=date&_order=desc`
+    ).pipe(
+      map(entries => entries.map(entry => this.processTimeEntry(entry))),
+      catchError(error => {
+        console.error('Erreur lors de la récupération de l\'historique:', error);
+        return throwError(() => new Error('Impossible de charger l\'historique'));
+      })
+    );
+  }
+
+  /**
    * Récupère l'historique mensuel de l'utilisateur connecté
    */
-  getUserMonthlyHistory(month: number, year: number): Observable<MonthlyStats> {
+  getCurrentUserMonthlyHistory(month: number, year: number): Observable<MonthlyStats> {
     return this.authService.currentUser$.pipe(
       map(user => {
         if (!user) throw new Error('Utilisateur non connecté');

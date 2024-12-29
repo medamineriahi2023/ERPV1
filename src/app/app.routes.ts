@@ -61,6 +61,11 @@ export const routes: Routes = [
         loadComponent: () => import('./modules/pointage/components/team-pointage/team-pointage.component')
             .then(m => m.TeamPointageComponent)
       },
+      {
+        path: 'pointage/manager-historique',
+        loadComponent: () => import('./modules/pointage/components/manager-historique/manager-historique.component')
+            .then(m => m.ManagerHistoriqueComponent)
+      },
 
       // Default route
       {

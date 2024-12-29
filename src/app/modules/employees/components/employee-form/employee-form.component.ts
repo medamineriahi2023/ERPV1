@@ -81,6 +81,11 @@ export class EmployeeFormComponent implements OnInit {
     { label: 'En congé', value: 'on_leave' }
   ];
 
+  roles = [
+    { label: 'Employé', value: 'employee', icon: 'pi-user' },
+    { label: 'Manager', value: 'manager', icon: 'pi-briefcase' }
+  ];
+
   constructor(
     private fb: FormBuilder,
     private messageService: MessageService,
@@ -145,7 +150,8 @@ export class EmployeeFormComponent implements OnInit {
         endTime: ['17:00'],
         lunchBreakDuration: [60]
       }),
-      performanceRating: [0]
+      performanceRating: [0],
+      role: ['employee']
     });
   }
 
@@ -193,6 +199,28 @@ export class EmployeeFormComponent implements OnInit {
     return statusObj ? statusObj.label : status;
   }
 
+  getRoleIcon(role: string): string {
+    switch (role) {
+      case 'employee':
+        return 'pi-user';
+      case 'manager':
+        return 'pi-briefcase';
+      default:
+        return 'pi-user';
+    }
+  }
+
+  getRoleLabel(role: string): string {
+    switch (role) {
+      case 'employee':
+        return 'Employé';
+      case 'manager':
+        return 'Manager';
+      default:
+        return role;
+    }
+  }
+
   isStepValid(step: number): boolean {
     return true;
   }
@@ -209,7 +237,7 @@ export class EmployeeFormComponent implements OnInit {
         firstName: formData.firstName,
         lastName: formData.lastName,
         name: `${formData.firstName} ${formData.lastName}`,
-        role: 'employee',
+        role: formData.role,
         department: formData.department,
         position: formData.position,
         managerId: this.currentUser?.id || null,

@@ -67,7 +67,6 @@ export class HistoriqueComponent implements OnInit {
 
   constructor(
     private historyService: HistoryService,
-    private authService: AuthService
   ) {}
 
   ngOnInit() {
@@ -76,7 +75,7 @@ export class HistoriqueComponent implements OnInit {
 
   loadMonthlyData() {
     this.loading = true;
-    this.historyService.getUserMonthlyHistory(this.currentMonth, this.currentYear)
+    this.historyService.getCurrentUserMonthlyHistory(this.currentMonth, this.currentYear)
       .subscribe({
         next: (data) => {
           this.monthlyData = data;

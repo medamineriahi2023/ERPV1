@@ -166,6 +166,27 @@ export class SidebarComponent implements OnInit {
     } else {
       this.menuItems = this.getEmployeeMenuItems();
     }
+
+    if (this.currentUser?.role === 'manager') {
+      this.menuItems.push(
+        {
+          label: 'Gestion d\'équipe',
+          icon: 'pi pi-users',
+          items: [
+            {
+              label: 'Pointage Équipe',
+              icon: 'pi pi-clock',
+              routerLink: '/pointage/team'
+            },
+            {
+              label: 'Historique Pointage',
+              icon: 'pi pi-calendar',
+              routerLink: '/pointage/manager-historique'
+            }
+          ]
+        }
+      );
+    }
   }
 
   private getManagerMenuItems(): MenuItem[] {
@@ -199,12 +220,6 @@ export class SidebarComponent implements OnInit {
             label: 'Mon pointage',
             icon: 'pi pi-user-edit',
             routerLink: '/pointage/dashboard'
-          },
-          {
-            label: 'Pointage équipe',
-            icon: 'pi pi-users',
-            routerLink: '/pointage/team',
-            visible: true // Always show for managers
           }
         ]
       }

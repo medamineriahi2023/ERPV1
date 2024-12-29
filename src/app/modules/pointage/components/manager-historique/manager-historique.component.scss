@@ -1,0 +1,33 @@
+:host ::ng-deep {
+  .p-dropdown {
+    width: 100%;
+  }
+
+  .p-calendar {
+    width: 100%;
+  }
+
+  .p-datatable {
+    .p-datatable-header {
+      background: transparent;
+      border: none;
+      padding: 0.5rem 1rem;
+    }
+
+    th {
+      background: #f8fafc;
+      border-width: 0;
+      font-weight: 600;
+      color: #475569;
+    }
+
+    td {
+      border-width: 0;
+      padding: 0.75rem 1rem;
+    }
+
+    tr:nth-child(even) {
+      background: #f8fafc;
+    }
+  }
+}
