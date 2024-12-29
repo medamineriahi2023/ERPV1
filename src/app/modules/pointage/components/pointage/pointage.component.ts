@@ -77,8 +77,8 @@ export class PointageComponent implements OnInit, OnDestroy {
     private messageService: MessageService,
     private faceRecognitionService: FaceRecognitionService
   ) {
+    this.authService.currentUser$.subscribe(e => this.loadReferenceImage(e.photoUrl));
     this.initializeCharts();
-    this.loadReferenceImage();
   }
 
   private initializeCharts() {
@@ -192,9 +192,9 @@ export class PointageComponent implements OnInit, OnDestroy {
     };
   }
 
-  private async loadReferenceImage() {
+  private async loadReferenceImage(correntUserImageUrl: string) {
     this.referenceImage = new Image();
-    this.referenceImage.src = '/assets/images/default-profile.jpg';
+    this.referenceImage.src = correntUserImageUrl ?? '/assets/images/default-profile.jpg';
     await new Promise((resolve, reject) => {
       this.referenceImage.onload = resolve;
       this.referenceImage.onerror = reject;
