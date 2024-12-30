@@ -1,182 +1,163 @@
-<div class="min-h-screen bg-gray-50/50 p-3 sm:p-6">
-    <div class="mb-4 sm:mb-8">
-        <h1 class="text-xl sm:text-2xl font-bold text-gray-800">Gestion du Temps</h1>
-        <p class="text-sm sm:text-base text-gray-600 mt-1">Suivez vos heures de travail et votre présence</p>
+<div class="pointage-container max-w-7xl mx-auto p-4 md:p-6 lg:p-8">
+    <div class="header">
+        <h1 class="font-bold text-gray-800">Gestion du Temps</h1>
+        <p class="text-gray-600 mt-1">Suivez vos heures de travail et votre présence</p>
     </div>
 
     <!-- Statistics Dashboard -->
-    <div class="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-4 mb-4 sm:mb-6">
-        <div class="bg-white rounded-xl shadow-sm p-3 sm:p-4">
-            <h3 class="text-base sm:text-lg font-semibold text-gray-800 mb-2">Présences</h3>
+    <div class="stats-grid">
+        <div class="stat-card">
+            <h3 class="font-semibold text-gray-800">Présences</h3>
             <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center">
                 <div>
-                    <p class="text-xs sm:text-sm text-gray-600">Total des jours</p>
-                    <p class="text-lg sm:text-2xl font-bold text-gray-900">{{totalWorkDays}}</p>
+                    <p class="stat-label text-gray-600">Total des jours</p>
+                    <p class="stat-value font-bold text-gray-900">{{totalWorkDays}}</p>
                 </div>
-                <div class="text-left sm:text-right mt-2 sm:mt-0">
-                    <p class="text-xs sm:text-sm text-green-600">À l'heure: {{onTimeArrivalCount}}</p>
-                    <p class="text-xs sm:text-sm text-orange-600">En retard: {{lateArrivalCount}}</p>
-                </div>
-            </div>
-        </div>
-
-        <div class="bg-white rounded-xl shadow-sm p-3 sm:p-4">
-            <h3 class="text-base sm:text-lg font-semibold text-gray-800 mb-2">Heures de Travail</h3>
-            <div class="flex justify-between items-center">
-                <div>
-                    <p class="text-xs sm:text-sm text-gray-600">Moyenne quotidienne</p>
-                    <p class="text-lg sm:text-2xl font-bold text-gray-900">{{averageWorkHours | number:'1.1-1'}}h</p>
+                <div class="text-left sm:text-right mt-1 sm:mt-0">
+                    <p class="stat-label text-green-600">À l'heure: {{onTimeArrivalCount}}</p>
+                    <p class="stat-label text-orange-600">En retard: {{lateArrivalCount}}</p>
                 </div>
             </div>
         </div>
 
-        <div class="bg-white rounded-xl shadow-sm p-3 sm:p-4">
-            <h3 class="text-base sm:text-lg font-semibold text-gray-800 mb-2">Pauses Déjeuner</h3>
-            <div class="flex justify-between items-center">
-                <div>
-                    <p class="text-xs sm:text-sm text-gray-600">Moyenne</p>
-                    <p class="text-lg sm:text-2xl font-bold text-gray-900">{{averageBreakTime | number:'1.0-0'}} min</p>
-                </div>
+        <div class="stat-card">
+            <h3 class="font-semibold text-gray-800">Heures</h3>
+            <div>
+                <p class="stat-label text-gray-600">Moyenne/jour</p>
+                <p class="stat-value font-bold text-gray-900">{{averageWorkHours | number:'1.1-1'}}h</p>
             </div>
         </div>
 
-        <div class="bg-white rounded-xl shadow-sm p-3 sm:p-4">
-            <h3 class="text-base sm:text-lg font-semibold text-gray-800 mb-2">Ponctualité</h3>
-            <div class="flex justify-between items-center">
-                <div>
-                    <p class="text-xs sm:text-sm text-gray-600">Taux de ponctualité</p>
-                    <p class="text-lg sm:text-2xl font-bold text-gray-900">
-                        {{(onTimeArrivalCount / totalWorkDays * 100) | number:'1.0-0'}}%
-                    </p>
-                </div>
+        <div class="stat-card">
+            <h3 class="font-semibold text-gray-800">Pauses</h3>
+            <div>
+                <p class="stat-label text-gray-600">Moyenne</p>
+                <p class="stat-value font-bold text-gray-900">{{averageBreakTime | number:'1.0-0'}} min</p>
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <h3 class="font-semibold text-gray-800">Ponctualité</h3>
+            <div>
+                <p class="stat-label text-gray-600">Taux</p>
+                <p class="stat-value font-bold text-gray-900">
+                    {{(onTimeArrivalCount / totalWorkDays * 100) | number:'1.0-0'}}%
+                </p>
             </div>
         </div>
     </div>
 
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
+    <div class="grid grid-cols-1 gap-3 lg:grid-cols-3">
         <!-- Today's Status -->
-        <div class="bg-white rounded-xl shadow-sm p-4 sm:p-6">
-            <div class="flex flex-col gap-4 sm:gap-6">
+        <div class="bg-white rounded-lg shadow-sm p-3">
+            <div class="flex flex-col gap-3">
                 <!-- Time Display -->
-                <div class="text-center">
-                    <div class="bg-blue-50 rounded-xl p-3 sm:p-4 mb-4">
-                        <h2 class="text-2xl sm:text-3xl font-bold text-blue-600 mb-1">{{currentTime | date:'HH:mm:ss'}}</h2>
-                        <p class="text-sm sm:text-base text-blue-600/75">{{today | date:'EEEE d MMMM yyyy'}}</p>
-                    </div>
+                <div class="time-display">
+                    <h2 class="current-time font-bold text-blue-600">{{currentTime | date:'HH:mm:ss'}}</h2>
+                    <p class="current-date text-blue-600/75">{{today | date:'EEEE d MMMM yyyy'}}</p>
                 </div>
 
                 <!-- Time Records -->
-                <div class="space-y-3 sm:space-y-4">
-                    <div class="flex justify-between items-center p-2 sm:p-3 bg-gray-50 rounded-lg">
-                        <div class="flex items-center gap-2">
+                <div class="time-records">
+                    <div class="record-item">
+                        <div class="record-label flex items-center">
                             <i class="pi pi-sign-in text-green-500"></i>
-                            <span class="text-sm sm:text-base text-gray-700">Arrivée</span>
+                            <span class="text-gray-700">Arrivée</span>
                         </div>
-                        <span class="text-sm sm:text-base font-medium text-gray-900">{{checkInTime || '--:--'}}</span>
+                        <span class="record-value font-medium text-gray-900">{{checkInTime || '--:--'}}</span>
                     </div>
 
-                    <div class="flex justify-between items-center p-2 sm:p-3 bg-gray-50 rounded-lg">
-                        <div class="flex items-center gap-2">
+                    <div class="record-item">
+                        <div class="record-label flex items-center">
                             <i class="pi pi-clock text-orange-500"></i>
-                            <span class="text-sm sm:text-base text-gray-700">Pause déjeuner</span>
+                            <span class="text-gray-700">Pause déjeuner</span>
                         </div>
-                        <span class="text-sm sm:text-base font-medium text-gray-900">
+                        <span class="record-value font-medium text-gray-900">
                             {{lunchStartTime || '--:--'}} - {{lunchEndTime || '--:--'}}
                         </span>
                     </div>
 
-                    <div class="flex justify-between items-center p-2 sm:p-3 bg-gray-50 rounded-lg">
-                        <div class="flex items-center gap-2">
+                    <div class="record-item">
+                        <div class="record-label flex items-center">
                             <i class="pi pi-sign-out text-red-500"></i>
-                            <span class="text-sm sm:text-base text-gray-700">Départ</span>
+                            <span class="text-gray-700">Départ</span>
                         </div>
-                        <span class="text-sm sm:text-base font-medium text-gray-900">{{checkOutTime || '--:--'}}</span>
+                        <span class="record-value font-medium text-gray-900">{{checkOutTime || '--:--'}}</span>
+                    </div>
+                </div>
+
+                <!-- Camera Container -->
+                <div class="camera-container" *ngIf="showCamera">
+                    <video #cameraFeed id="cameraFeed" autoplay playsinline></video>
+
+                    <!-- Scanning Effect -->
+                    <div class="absolute inset-0 pointer-events-none">
+                        <!-- Corner Markers -->
+                        <div class="corner-marker top-0 left-0 border-t border-l"></div>
+                        <div class="corner-marker top-0 right-0 border-t border-r"></div>
+                        <div class="corner-marker bottom-0 left-0 border-b border-l"></div>
+                        <div class="corner-marker bottom-0 right-0 border-b border-r"></div>
+
+                        <!-- Scanning Line -->
+                        <div class="scan-line absolute top-0 left-0 w-full bg-gradient-to-r from-transparent via-green-400 to-transparent opacity-75"></div>
+
+                        <!-- Face Detection Area -->
+                        <div class="absolute inset-6 sm:inset-8 border-2 border-dashed border-white/30 rounded-lg"></div>
+                    </div>
+
+                    <!-- Loading Overlay -->
+                    <div class="absolute inset-0 flex flex-col items-center justify-center bg-black/50 backdrop-blur-sm" *ngIf="verificationInProgress">
+                        <div class="relative">
+                            <p-progressSpinner></p-progressSpinner>
+                            <div class="absolute inset-0 animate-ping bg-blue-500 rounded-full opacity-20"></div>
+                        </div>
+                        <span class="mt-3 text-white font-medium">Vérification en cours...</span>
+                    </div>
+
+                    <!-- Camera Controls -->
+                    <div class="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black/80 to-transparent">
+                        <div class="flex justify-center gap-2">
+                            <button pButton
+                                    [disabled]="verificationInProgress"
+                                    (click)="verifyFaceAndCheckIn()"
+                                    label="Vérifier"
+                                    icon="pi pi-camera"
+                                    class="p-button-rounded p-button-success">
+                            </button>
+                            <button pButton
+                                    [disabled]="verificationInProgress"
+                                    (click)="stopCamera()"
+                                    label="Annuler"
+                                    icon="pi pi-times"
+                                    class="p-button-rounded p-button-secondary">
+                            </button>
+                        </div>
                     </div>
                 </div>
 
                 <!-- Action Buttons -->
-                <!-- Action Buttons -->
-                <div class="flex flex-wrap gap-2 sm:gap-3">
-                    <!-- Camera Container -->
-                    <div class="camera-container relative w-full rounded-2xl overflow-hidden bg-gray-900" *ngIf="showCamera">
-                        <!-- Camera Feed -->
-                        <video
-                            #cameraFeed
-                            id="cameraFeed"
-                            autoplay
-                            playsinline
-                            class="w-full h-[300px] sm:h-[400px] object-cover">
-                        </video>
-
-                        <!-- Scanning Effect -->
-                        <div class="absolute inset-0 pointer-events-none">
-                            <!-- Corner Markers -->
-                            <div class="absolute top-0 left-0 w-8 h-8 border-t-2 border-l-2 border-green-400"></div>
-                            <div class="absolute top-0 right-0 w-8 h-8 border-t-2 border-r-2 border-green-400"></div>
-                            <div class="absolute bottom-0 left-0 w-8 h-8 border-b-2 border-l-2 border-green-400"></div>
-                            <div class="absolute bottom-0 right-0 w-8 h-8 border-b-2 border-r-2 border-green-400"></div>
-
-                            <!-- Scanning Line -->
-                            <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-green-400 to-transparent opacity-75 scan-line"></div>
-
-                            <!-- Face Detection Area -->
-                            <div class="absolute inset-8 border-2 border-dashed border-white/30 rounded-xl"></div>
-                        </div>
-
-                        <!-- Loading Overlay -->
-                        <div class="absolute inset-0 flex flex-col items-center justify-center bg-black/50 backdrop-blur-sm" *ngIf="verificationInProgress">
-                            <div class="relative">
-                                <p-progressSpinner styleClass="w-16 h-16"></p-progressSpinner>
-                                <div class="absolute inset-0 animate-ping bg-blue-500 rounded-full opacity-20"></div>
-                            </div>
-                            <span class="mt-4 text-white font-medium">Vérification en cours...</span>
-                        </div>
-
-                        <!-- Camera Controls -->
-                        <div class="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 to-transparent">
-                            <div class="flex justify-center gap-3">
-                                <button
-                                        pButton
-                                        [disabled]="verificationInProgress"
-                                        (click)="verifyFaceAndCheckIn()"
-                                        label="Vérifier"
-                                        icon="pi pi-camera"
-                                        class="p-button-rounded p-button-success">
-                                </button>
-                                <button
-                                        pButton
-                                        [disabled]="verificationInProgress"
-                                        (click)="stopCamera()"
-                                        label="Annuler"
-                                        icon="pi pi-times"
-                                        class="p-button-rounded p-button-secondary">
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <button
-                            pButton
+                <div class="action-buttons">
+                    <button pButton
                             [label]="checkInTime ? 'Départ' : 'Arrivée'"
-                            [class]="'flex-1 p-3 ' + (checkInTime ? 'p-button-danger' : 'p-button-success')"
+                            [class]="checkInTime ? 'p-button-danger' : 'p-button-success'"
                             (click)="toggleCheckInOut()"
                             [disabled]="isActionDisabled()">
-                        <i [class]="'mr-2 ' + (checkInTime ? 'pi pi-sign-out' : 'pi pi-sign-in')"></i>
+                        <i [class]="checkInTime ? 'pi pi-sign-out' : 'pi pi-sign-in'"></i>
                     </button>
 
-                    <button
-                            pButton
+                    <button pButton
                             [label]="lunchStartTime && !lunchEndTime ? 'Fin pause' : 'Début pause'"
-                            class="flex-1 p-3 p-button-outlined"
+                            class="p-button-outlined"
                             (click)="toggleLunchBreak()"
                             [disabled]="!checkInTime || checkOutTime">
-                        <i class="pi pi-clock mr-2"></i>
+                        <i class="pi pi-clock"></i>
                     </button>
-                </div>            </div>
+                </div>
+            </div>
         </div>
 
         <!-- Calendar Section -->
-        <div class="bg-white rounded-xl shadow-sm p-4 sm:p-6 lg:col-span-2">
+        <div class="bg-white rounded-lg shadow-sm p-4 lg:col-span-2">
             <!-- Mobile Calendar Toggle -->
             <div class="mb-4">
                 <button pButton 
@@ -200,10 +181,10 @@
 
             <!-- Selected Date Details -->
             <div class="mt-4">
-                <h3 class="text-base sm:text-lg font-semibold text-gray-800 mb-4">Détails du jour sélectionné</h3>
+                <h3 class="text-base font-semibold text-gray-800 mb-4">Détails du jour sélectionné</h3>
 
-                <div class="space-y-3 sm:space-y-4" *ngIf="selectedDateDetails">
-                    <div class="p-3 sm:p-4 bg-blue-50 rounded-lg">
+                <div class="space-y-3" *ngIf="selectedDateDetails">
+                    <div class="p-3 bg-blue-50 rounded-lg">
                         <p class="text-blue-600 font-medium">{{selectedDateDetails.date | date:'fullDate'}}</p>
                     </div>
 
@@ -254,8 +235,8 @@
     </div>
 
     <!-- Monthly History -->
-    <div class="mt-4 sm:mt-6">
-        <div class="bg-white rounded-xl shadow-sm p-4 sm:p-6">
+    <div class="mt-4">
+        <div class="bg-white rounded-lg shadow-sm p-4">
             <h3 class="text-lg font-semibold text-gray-800 mb-4">Historique mensuel</h3>
 
             <p-table

@@ -1,14 +1,14 @@
-<div class="min-h-screen bg-gray-50/50">
+<div class="min-h-screen bg-gray-50/50 manager-historique-container">
   <!-- En-tête -->
-  <div class="p-6">
+  <div class="p-6 header">
     <h1 class="text-2xl font-bold text-gray-800 mb-2">Historique de Pointage - Équipe</h1>
     <p class="text-gray-600">Consultez l'historique de présence de votre équipe</p>
   </div>
 
   <!-- Filtres et contrôles -->
-  <div class="px-6 mb-6">
+  <div class="px-6 mb-6 filters-section">
     <div class="bg-white rounded-xl shadow-sm p-4">
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 filter-grid">
         <!-- Sélection de l'employé -->
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-2">Employé</label>
@@ -46,8 +46,8 @@
       </div>
 
       <!-- Contrôles de vue -->
-      <div class="mt-4 flex justify-between items-center">
-        <div class="flex gap-2">
+      <div class="mt-4 view-controls">
+        <div class="flex gap-2 button-group">
           <button
             pButton
             [class.p-button-outlined]="activeView !== 'list'"
@@ -72,7 +72,7 @@
         </div>
 
         <!-- Export buttons -->
-        <div class="flex gap-2">
+        <div class="flex gap-2 button-group">
           <button
             pButton
             icon="pi pi-file-pdf"
@@ -95,92 +95,92 @@
   </div>
 
   <!-- Statistiques rapides -->
-  <div class="px-6 mb-6">
+  <div class="px-6 mb-6 stats-grid">
     <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
       <!-- Jours travaillés -->
-      <div class="bg-white rounded-xl shadow-sm p-4 text-center">
-        <div class="text-3xl font-bold text-gray-800 mb-2">
+      <div class="stat-card bg-white rounded-xl shadow-sm p-4 text-center">
+        <div class="stat-value text-3xl font-bold text-gray-800 mb-2">
           {{monthlyStats.presentDays}}/{{monthlyStats.workDays}}
         </div>
-        <div class="text-sm text-gray-600">Jours travaillés</div>
+        <div class="stat-label text-sm text-gray-600">Jours travaillés</div>
       </div>
 
       <!-- Retards -->
-      <div class="bg-white rounded-xl shadow-sm p-4 text-center">
-        <div class="text-3xl font-bold text-orange-600 mb-2">
+      <div class="stat-card bg-white rounded-xl shadow-sm p-4 text-center">
+        <div class="stat-value text-3xl font-bold text-orange-600 mb-2">
           {{monthlyStats.lateCount}}
         </div>
-        <div class="text-sm text-gray-600">Retards</div>
+        <div class="stat-label text-sm text-gray-600">Retards</div>
       </div>
 
       <!-- Taux de ponctualité -->
-      <div class="bg-white rounded-xl shadow-sm p-4 text-center">
-        <div class="text-3xl font-bold text-green-600 mb-2">
+      <div class="stat-card bg-white rounded-xl shadow-sm p-4 text-center">
+        <div class="stat-value text-3xl font-bold text-green-600 mb-2">
           {{monthlyStats.punctualityRate | number:'1.0-0'}}%
         </div>
-        <div class="text-sm text-gray-600">Ponctualité</div>
+        <div class="stat-label text-sm text-gray-600">Ponctualité</div>
       </div>
 
       <!-- Heures totales -->
-      <div class="bg-white rounded-xl shadow-sm p-4 text-center">
-        <div class="text-3xl font-bold text-blue-600 mb-2">
+      <div class="stat-card bg-white rounded-xl shadow-sm p-4 text-center">
+        <div class="stat-value text-3xl font-bold text-blue-600 mb-2">
           {{monthlyStats.totalHours | number:'1.0-1'}}h
         </div>
-        <div class="text-sm text-gray-600">Heures totales</div>
+        <div class="stat-label text-sm text-gray-600">Heures totales</div>
       </div>
     </div>
 
     <!-- Deuxième ligne de statistiques -->
     <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mt-4">
       <!-- Moyenne d'arrivée -->
-      <div class="bg-white rounded-xl shadow-sm p-4 text-center">
-        <div class="text-3xl font-bold text-indigo-600 mb-2">
+      <div class="stat-card bg-white rounded-xl shadow-sm p-4 text-center">
+        <div class="stat-value text-3xl font-bold text-indigo-600 mb-2">
           {{monthlyStats.averageArrivalTime}}
         </div>
-        <div class="text-sm text-gray-600">Moyenne d'arrivée</div>
+        <div class="stat-label text-sm text-gray-600">Moyenne d'arrivée</div>
       </div>
 
       <!-- Moyenne de départ -->
-      <div class="bg-white rounded-xl shadow-sm p-4 text-center">
-        <div class="text-3xl font-bold text-purple-600 mb-2">
+      <div class="stat-card bg-white rounded-xl shadow-sm p-4 text-center">
+        <div class="stat-value text-3xl font-bold text-purple-600 mb-2">
           {{monthlyStats.averageDepartureTime}}
         </div>
-        <div class="text-sm text-gray-600">Moyenne de départ</div>
+        <div class="stat-label text-sm text-gray-600">Moyenne de départ</div>
       </div>
 
       <!-- Taux de présence -->
-      <div class="bg-white rounded-xl shadow-sm p-4 text-center">
-        <div class="text-3xl font-bold text-teal-600 mb-2">
+      <div class="stat-card bg-white rounded-xl shadow-sm p-4 text-center">
+        <div class="stat-value text-3xl font-bold text-teal-600 mb-2">
           {{monthlyStats.attendanceRate | number:'1.0-0'}}%
         </div>
-        <div class="text-sm text-gray-600">Taux de présence</div>
+        <div class="stat-label text-sm text-gray-600">Taux de présence</div>
       </div>
 
       <!-- Jours de congé -->
-      <div class="bg-white rounded-xl shadow-sm p-4 text-center">
-        <div class="text-3xl font-bold text-pink-600 mb-2">
+      <div class="stat-card bg-white rounded-xl shadow-sm p-4 text-center">
+        <div class="stat-value text-3xl font-bold text-pink-600 mb-2">
           {{monthlyStats.leaveDays}}
         </div>
-        <div class="text-sm text-gray-600">Jours de congé</div>
+        <div class="stat-label text-sm text-gray-600">Jours de congé</div>
       </div>
     </div>
   </div>
 
   <!-- Vue Calendrier -->
-  <div class="px-6 mb-6" *ngIf="activeView === 'calendar'">
+  <div class="px-6 mb-6 calendar-view" *ngIf="activeView === 'calendar'">
     <div class="bg-white rounded-xl shadow-sm overflow-hidden">
       <!-- En-tête du calendrier -->
-      <div class="grid grid-cols-7 bg-gray-50 border-b">
+      <div class="grid grid-cols-7 bg-gray-50 border-b calendar-header">
         <div class="p-2 text-center font-medium text-gray-600" *ngFor="let day of ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim']">
           {{day}}
         </div>
       </div>
 
       <!-- Corps du calendrier -->
-      <div class="grid grid-cols-7">
+      <div class="grid grid-cols-7 calendar-body">
         <div
           *ngFor="let day of calendarDays"
-          [class]="'p-2 border-b border-r min-h-[100px] ' +
+          [class]="'p-2 border-b border-r min-h-[100px] calendar-cell ' +
             (day.isCurrentMonth ? 'bg-white' : 'bg-gray-50') +
             (day.isToday ? ' ring-2 ring-blue-500 ring-inset' : '')"
         >
@@ -208,7 +208,7 @@
   </div>
 
   <!-- Vue Liste -->
-  <div class="px-6 mb-6" *ngIf="activeView === 'list'">
+  <div class="px-6 mb-6 table-view" *ngIf="activeView === 'list'">
     <div class="bg-white rounded-xl shadow-sm overflow-hidden">
       <p-table
         [value]="monthlyHistory"
