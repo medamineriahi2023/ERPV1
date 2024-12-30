@@ -33,8 +33,9 @@
         "endTime": "17:00",
         "lunchBreakDuration": 60
       },
-      "status": "active",
-      "contractType": "CDI"
+      "status": "OFFLINE",
+      "contractType": "CDI",
+      "lastActive": "2024-12-30T17:41:21.110Z"
     },
     {
       "username": "safwane",
@@ -60,9 +61,10 @@
         "lunchBreakDuration": 60
       },
       "rating": 4,
-      "status": "active",
+      "status": "ACTIVE",
       "contractType": "CDI",
-      "id": 2
+      "id": 2,
+      "lastActive": "2024-12-30T17:41:20.545Z"
     },
     {
       "username": "aliriahi@gmail.com",
@@ -309,10 +311,10 @@
       "userId": 1,
       "date": "2024-12-30T07:54:22.023Z",
       "checkIn": "08:54:22",
-      "checkOut": null,
+      "checkOut": "17:32:08",
       "lunchStart": "14:02:01",
       "lunchEnd": "15:15:01",
-      "totalHours": 0,
+      "totalHours": 8.63,
       "status": "present",
       "isLate": false,
       "id": 7
@@ -322,6 +324,62 @@
   "projects": [],
   "weekly-reports": [],
   "notifications": [],
+  "messages": [
+    {
+      "id": "1735579074077",
+      "senderId": "1",
+      "senderName": "medaminer",
+      "receiverId": "2",
+      "content": "hi",
+      "timestamp": "2024-12-30T17:17:54.077Z",
+      "read": true
+    },
+    {
+      "id": "1735579085446",
+      "senderId": "2",
+      "senderName": "safwane",
+      "receiverId": "1",
+      "content": "hi",
+      "timestamp": "2024-12-30T17:18:05.446Z",
+      "read": true
+    },
+    {
+      "id": "1735579281394",
+      "senderId": "1",
+      "senderName": "medaminer",
+      "receiverId": "2",
+      "content": "how u doing",
+      "timestamp": "2024-12-30T17:21:21.394Z",
+      "read": true
+    },
+    {
+      "id": "1735579372775",
+      "senderId": "1",
+      "senderName": "medaminer",
+      "receiverId": "2",
+      "content": "dsffdsf",
+      "timestamp": "2024-12-30T17:22:52.775Z",
+      "read": true
+    },
+    {
+      "id": "1735579491858",
+      "senderId": "2",
+      "senderName": "safwane",
+      "receiverId": "1",
+      "content": "hi",
+      "timestamp": "2024-12-30T17:24:51.858Z",
+      "read": true
+    },
+    {
+      "id": "1735579799695",
+      "senderId": "1",
+      "senderName": "medaminer",
+      "receiverId": "2",
+      "content": "hi",
+      "timestamp": "2024-12-30T17:29:59.695Z",
+      "read": true
+    }
+  ],
   "conges": [
     {
       "managerId": 1,

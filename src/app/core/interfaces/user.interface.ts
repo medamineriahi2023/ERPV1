@@ -23,8 +23,9 @@ export interface User {
     lunchBreakDuration: number; // in minutes
   };
   rating?: number;
-  status?: 'active' | 'inactive' | 'pending';
+  status: 'active' | 'inactive' | 'pending' | 'ACTIVE' | 'INACTIVE' | 'OFFLINE';
   contractType?: 'CDI' | 'CDD' | 'Intern';
+  lastActive?: string;
 }
 
 export interface LoginResponse {
@@ -49,6 +50,3 @@ export interface TimeEntry {
   status: 'present' | 'absent' | 'leave' | 'holiday' | 'late';
   isLate?: boolean;
 }
-
-
-

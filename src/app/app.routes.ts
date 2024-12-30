@@ -66,6 +66,11 @@ export const routes: Routes = [
         loadComponent: () => import('./modules/pointage/components/manager-historique/manager-historique.component')
             .then(m => m.ManagerHistoriqueComponent)
       },
+      {
+        path: 'messaging',
+        loadComponent: () => import('./modules/messaging/messaging.component')
+            .then(m => m.MessagingComponent)
+      },
 
       // Default route
       {

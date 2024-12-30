@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { BehaviorSubject, Observable, firstValueFrom } from 'rxjs';
+import { BehaviorSubject, Observable, firstValueFrom, map, tap } from 'rxjs';
 import { User, LoginRequest, LoginResponse } from '../interfaces/user.interface';
 import { ApiService } from './api.service';
 
@@ -91,5 +91,15 @@ export class AuthService {
     return users
       .filter(user => currentUser.managedEmployees.includes(user.id))
       .map(({ password, ...user }) => user);
+  }
+
+  getAllUsers(): Observable<Omit<User, 'password'>[]> {
+    return this.apiService.getUsers().pipe(
+      map(users => users.map(({ password, ...user }) => user))
+    );
+  }
+
+  getUsers(): Observable<User[]> {
+    return this.apiService.getUsers();
   }
 }

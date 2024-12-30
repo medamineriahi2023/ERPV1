@@ -222,6 +222,17 @@ export class SidebarComponent implements OnInit {
             routerLink: '/pointage/dashboard'
           }
         ]
+      },
+      {
+        label: 'Messagerie',
+        icon: 'pi pi-comments',
+        items: [
+          {
+            label: 'Messagerie locale',
+            icon: 'pi pi-comments',
+            routerLink: '/messaging'
+          }
+        ]
       }
       // {
       //   label: 'Projets',
@@ -277,6 +288,17 @@ export class SidebarComponent implements OnInit {
             label: 'Mes statistiques',
             icon: 'pi pi-chart-line',
             routerLink: ['/pointage/stats']
+          }
+        ]
+      },
+      {
+        label: 'Messagerie',
+        icon: 'pi pi-comments',
+        items: [
+          {
+            label: 'Messagerie locale',
+            icon: 'pi pi-comments',
+            routerLink: '/messaging'
           }
         ]
       }

@@ -1,0 +1,136 @@
+<div class="messaging-container">
+  <div class="users-list" [class.mobile-hidden]="selectedUser && isMobileView">
+    <div class="search-box">
+      <span class="p-input-icon-left w-full">
+        <i class="pi pi-search"></i>
+        <input type="text" pInputText class="w-full" [(ngModel)]="searchTermValue" (ngModelChange)="filterUsers()" placeholder="Search users...">
+      </span>
+    </div>
+
+    <div class="users-scroll">
+      <p-scrollPanel [style]="{width: '100%', height: 'calc(100vh -180px)'}">
+        <ng-container *ngIf="filteredUsers.length > 0; else noUsersMessage">
+          <div class="user-item" *ngFor="let user of filteredUsers" 
+               [class.selected]="selectedUser?.userId === user.userId"
+               (click)="selectUser(user)">
+            <div class="user-avatar">
+              <p-avatar [image]="user.photoUrl" size="large" shape="circle" [style]="{'width': '50px', 'height': '50px'}">
+              </p-avatar>
+              <div class="status-indicator" [style.background-color]="getStatusColor(user.status)"></div>
+            </div>
+            <div class="user-info">
+              <div class="user-name-time">
+                <span class="user-name">{{user.username}}</span>
+                <span class="last-message-time" *ngIf="getLastMessageTime(user)">
+                  {{getLastMessageTime(user) | date:'shortTime'}}
+                </span>
+              </div>
+              <div class="user-details">
+                <span class="user-role" *ngIf="user.role || user.position">
+                  {{user.role || 'Employee'}}{{user.position ? ' • ' + user.position : ''}}
+                </span>
+              </div>
+              <div class="last-message">{{getLastMessage(user)}}</div>
+            </div>
+            <p-badge *ngIf="getUnreadCount(user) > 0" [value]="getUnreadCount(user).toString()"></p-badge>
+          </div>
+        </ng-container>
+        <ng-template #noUsersMessage>
+          <div class="no-users-message">
+            <p>No users found</p>
+          </div>
+        </ng-template>
+      </p-scrollPanel>
+    </div>
+  </div>
+
+  <div class="chat-area" [class.mobile-visible]="selectedUser && isMobileView">
+    <div class="chat-header">
+      <div class="selected-user" *ngIf="selectedUser">
+        <div class="user-info-left">
+          <button *ngIf="isMobileView" pButton icon="pi pi-arrow-left" class="p-button-text back-button" (click)="backToUserList()"></button>
+          <p-avatar [image]="selectedUser.photoUrl"
+                   [label]="!selectedUser.photoUrl ? selectedUser.username[0] : ''"
+                   size="large"
+                   [style]="{'background-color': !selectedUser.photoUrl ? getStatusColor(selectedUser.status) : undefined}">
+            <div class="status-indicator" [style.background-color]="getStatusColor(selectedUser.status)"></div>
+          </p-avatar>
+          <div class="user-details">
+            <span class="user-name">{{selectedUser.username}}</span>
+            <div class="user-info-details">
+              <span class="user-role" *ngIf="selectedUser.role || selectedUser.position">
+                {{selectedUser.role || 'Employee'}}{{selectedUser.position ? ' • ' + selectedUser.position : ''}}
+              </span>
+              <span class="user-status">{{selectedUser.status.toLowerCase()}}</span>
+            </div>
+          </div>
+        </div>
+        <div class="chat-actions">
+          <button pButton type="button" icon="pi pi-phone" class="p-button-rounded p-button-text"></button>
+          <button pButton type="button" icon="pi pi-video" class="p-button-rounded p-button-text"></button>
+          <button pButton type="button" icon="pi pi-ellipsis-v" class="p-button-rounded p-button-text"></button>
+        </div>
+      </div>
+    </div>
+
+    <div class="chat-messages">
+      <p-scrollPanel [style]="{width: '100%', height: 'calc(100vh - 260px)'}">
+        <ng-container *ngIf="selectedUser && messages.length > 0; else noChat">
+          <div class="message-date-separator" *ngFor="let date of getMessageDates()">
+            <div class="date-separator">
+              <hr>
+              <span class="date-label">{{date | date}}</span>
+              <hr>
+            </div>
+            <div class="messages-group">
+              <ng-container *ngFor="let message of getMessagesByDate(date)">
+                <div class="message" [class.sent]="message.senderId === currentUserId">
+                  <div class="message-content">
+                    <div class="message-text">{{message.content}}</div>
+                    <div class="message-meta">
+                      <span>{{message.timestamp | date:'shortTime'}}</span>
+                      <i class="pi pi-check-circle" *ngIf="message.read"></i>
+                    </div>
+                  </div>
+                </div>
+              </ng-container>
+            </div>
+          </div>
+        </ng-container>
+      </p-scrollPanel>
+    </div>
+
+    <div class="message-input" *ngIf="selectedUser">
+      <button pButton type="button" icon="pi pi-paperclip" class="p-button-rounded p-button-text"></button>
+      <div class="input-container">
+        <input type="text" pInputText [(ngModel)]="currentMessage" 
+               placeholder="Écrivez votre message..."
+               (keyup.enter)="sendMessage()"
+               class="p-inputtext-lg">
+        <div class="input-actions">
+          <button pButton type="button" icon="pi pi-smile" class="p-button-rounded p-button-text"></button>
+          <button pButton type="button" icon="pi pi-image" class="p-button-rounded p-button-text"></button>
+        </div>
+      </div>
+      <button pButton type="button" icon="pi pi-send" 
+              (click)="sendMessage()"
+              [disabled]="!currentMessage.trim()"
+              class="p-button-rounded p-button-primary">
+      </button>
+    </div>
+  </div>
+</div>
+
+<ng-template #noUsersMessage>
+  <div class="no-users-message">
+    <p>No users found</p>
+  </div>
+</ng-template>
+
+<ng-template #noChat>
+  <div class="no-chat-selected">
+    <i class="pi pi-comments text-6xl text-gray-300 mb-4"></i>
+    <h2>Bienvenue dans votre messagerie</h2>
+    <p>Sélectionnez une conversation pour commencer à discuter</p>
+  </div>
+</ng-template>
