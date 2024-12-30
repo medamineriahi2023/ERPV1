@@ -69,7 +69,7 @@ export class MessagingComponent implements OnInit, OnDestroy {
   }
 
   private checkScreenSize() {
-    this.isMobileView = window.innerWidth <= 350;
+    this.isMobileView = window.innerWidth <= 450;
   }
 
   ngOnInit() {
