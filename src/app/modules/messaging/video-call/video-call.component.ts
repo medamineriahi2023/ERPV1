@@ -215,6 +215,14 @@ export class VideoCallComponent implements OnInit, OnDestroy {
 
   constructor(private webRTCService: WebRTCService) {}
 
+  startCall(userId: string, type: 'video' | 'audio' = 'video') {
+    if (!userId) {
+      console.error('No user ID provided for call');
+      return;
+    }
+    this.webRTCService.initiateCall(userId, type);
+  }
+
   ngOnInit() {
     this.subscriptions.push(
       this.webRTCService.localVideoStream.subscribe(stream => {

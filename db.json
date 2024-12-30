@@ -35,7 +35,7 @@
       },
       "status": "ACTIVE",
       "contractType": "CDI",
-      "lastActive": "2024-12-30T18:06:15.112Z"
+      "lastActive": "2024-12-30T21:57:18.597Z"
     },
     {
       "username": "safwane",
@@ -64,7 +64,7 @@
       "status": "ACTIVE",
       "contractType": "CDI",
       "id": 2,
-      "lastActive": "2024-12-30T18:06:11.377Z"
+      "lastActive": "2024-12-30T21:57:21.491Z"
     },
     {
       "username": "aliriahi@gmail.com",
@@ -746,6 +746,699 @@
       "receiverId": "1",
       "content": "RTC:{\"type\":\"call-ended\",\"sender\":\"2\",\"receiver\":\"1\",\"payload\":null}",
       "timestamp": "2024-12-30T18:05:33.931Z",
+      "read": true
+    },
+    {
+      "id": "1735595167391",
+      "senderId": "1",
+      "senderName": "medaminer",
+      "receiverId": "2",
+      "content": "RTC:{\"type\":\"call-request\",\"sender\":\"1\",\"receiver\":\"2\",\"payload\":{\"type\":\"audio\"}}",
+      "timestamp": "2024-12-30T21:46:07.391Z",
+      "read": true
+    },
+    {
+      "id": "1735595172500",
+      "senderId": "2",
+      "senderName": "safwane",
+      "receiverId": "1",
+      "content": "RTC:{\"type\":\"call-accepted\",\"sender\":\"2\",\"receiver\":\"1\",\"payload\":null}",
+      "timestamp": "2024-12-30T21:46:12.500Z",
+      "read": true
+    },
+    {
+      "id": "1735595177541",
+      "senderId": "1",
+      "senderName": "medaminer",
+      "receiverId": "2",
+      "content": "RTC:{\"type\":\"offer\",\"sender\":\"1\",\"receiver\":\"2\",\"payload\":{\"sdp\":\"v=0\\r\\no=- 1808346697585687537 2 IN IP4 127.0.0.1\\r\\ns=-\\r\\nt=0 0\\r\\na=group:BUNDLE 0\\r\\na=extmap-allow-mixed\\r\\na=msid-semantic: WMS 4ae7846b-5ea2-4b20-941a-1311a0c9d635\\r\\nm=audio 9 UDP/TLS/RTP/SAVPF 111 63 9 0 8 13 110 126\\r\\nc=IN IP4 0.0.0.0\\r\\na=rtcp:9 IN IP4 0.0.0.0\\r\\na=ice-ufrag:qUh9\\r\\na=ice-pwd:tIGOv68qBh+nik3uwrMcpaqE\\r\\na=ice-options:trickle\\r\\na=fingerprint:sha-256 F0:77:5C:77:60:5D:3A:1E:B8:F0:BB:EF:FA:33:D3:A7:7D:15:DA:54:1B:95:E8:19:C2:26:7C:3E:3A:F8:B2:21\\r\\na=setup:actpass\\r\\na=mid:0\\r\\na=extmap:1 urn:ietf:params:rtp-hdrext:ssrc-audio-level\\r\\na=extmap:2 http://www.webrtc.org/experiments/rtp-hdrext/abs-send-time\\r\\na=extmap:3 http://www.ietf.org/id/draft-holmer-rmcat-transport-wide-cc-extensions-01\\r\\na=extmap:4 urn:ietf:params:rtp-hdrext:sdes:mid\\r\\na=sendrecv\\r\\na=msid:4ae7846b-5ea2-4b20-941a-1311a0c9d635 8082095d-d971-4234-804c-09961e5a1f79\\r\\na=rtcp-mux\\r\\na=rtcp-rsize\\r\\na=rtpmap:111 opus/48000/2\\r\\na=rtcp-fb:111 transport-cc\\r\\na=fmtp:111 minptime=10;useinbandfec=1\\r\\na=rtpmap:63 red/48000/2\\r\\na=fmtp:63 111/111\\r\\na=rtpmap:9 G722/8000\\r\\na=rtpmap:0 PCMU/8000\\r\\na=rtpmap:8 PCMA/8000\\r\\na=rtpmap:13 CN/8000\\r\\na=rtpmap:110 telephone-event/48000\\r\\na=rtpmap:126 telephone-event/8000\\r\\na=ssrc:4147561544 cname:7O9RnFWR8mIfRMdW\\r\\na=ssrc:4147561544 msid:4ae7846b-5ea2-4b20-941a-1311a0c9d635 8082095d-d971-4234-804c-09961e5a1f79\\r\\n\",\"type\":\"offer\"}}",
+      "timestamp": "2024-12-30T21:46:17.541Z",
+      "read": true
+    },
+    {
+      "id": "1735595177544",
+      "senderId": "1",
+      "senderName": "medaminer",
+      "receiverId": "2",
+      "content": "RTC:{\"type\":\"ice-candidate\",\"sender\":\"1\",\"receiver\":\"2\",\"payload\":{\"candidate\":\"candidate:3569635125 1 udp 2122260223 192.168.144.1 36749 typ host generation 0 ufrag qUh9 network-id 1\",\"sdpMid\":\"0\",\"sdpMLineIndex\":0,\"usernameFragment\":\"qUh9\"}}",
+      "timestamp": "2024-12-30T21:46:17.544Z",
+      "read": true
+    },
+    {
+      "id": "1735595177546",
+      "senderId": "1",
+      "senderName": "medaminer",
+      "receiverId": "2",
+      "content": "RTC:{\"type\":\"ice-candidate\",\"sender\":\"1\",\"receiver\":\"2\",\"payload\":{\"candidate\":\"candidate:3554122340 1 udp 2122129151 192.168.1.16 54170 typ host generation 0 ufrag qUh9 network-id 3 network-cost 10\",\"sdpMid\":\"0\",\"sdpMLineIndex\":0,\"usernameFragment\":\"qUh9\"}}",
+      "timestamp": "2024-12-30T21:46:17.546Z",
+      "read": true
+    },
+    {
+      "id": "1735595177545",
+      "senderId": "1",
+      "senderName": "medaminer",
+      "receiverId": "2",
+      "content": "RTC:{\"type\":\"ice-candidate\",\"sender\":\"1\",\"receiver\":\"2\",\"payload\":{\"candidate\":\"candidate:388016528 1 udp 2122194687 192.168.128.1 40121 typ host generation 0 ufrag qUh9 network-id 2\",\"sdpMid\":\"0\",\"sdpMLineIndex\":0,\"usernameFragment\":\"qUh9\"}}",
+      "timestamp": "2024-12-30T21:46:17.545Z",
+      "read": true
+    },
+    {
+      "id": "1735595177637",
+      "senderId": "1",
+      "senderName": "medaminer",
+      "receiverId": "2",
+      "content": "RTC:{\"type\":\"ice-candidate\",\"sender\":\"1\",\"receiver\":\"2\",\"payload\":{\"candidate\":\"candidate:352983167 1 udp 1686052607 197.15.18.165 36749 typ srflx raddr 192.168.144.1 rport 36749 generation 0 ufrag qUh9 network-id 1\",\"sdpMid\":\"0\",\"sdpMLineIndex\":0,\"usernameFragment\":\"qUh9\"}}",
+      "timestamp": "2024-12-30T21:46:17.637Z",
+      "read": true
+    },
+    {
+      "id": "1735595177656",
+      "senderId": "1",
+      "senderName": "medaminer",
+      "receiverId": "2",
+      "content": "RTC:{\"type\":\"ice-candidate\",\"sender\":\"1\",\"receiver\":\"2\",\"payload\":{\"candidate\":\"candidate:711891873 1 tcp 1518280447 192.168.144.1 9 typ host tcptype active generation 0 ufrag qUh9 network-id 1\",\"sdpMid\":\"0\",\"sdpMLineIndex\":0,\"usernameFragment\":\"qUh9\"}}",
+      "timestamp": "2024-12-30T21:46:17.656Z",
+      "read": true
+    },
+    {
+      "id": "1735595177657",
+      "senderId": "1",
+      "senderName": "medaminer",
+      "receiverId": "2",
+      "content": "RTC:{\"type\":\"ice-candidate\",\"sender\":\"1\",\"receiver\":\"2\",\"payload\":{\"candidate\":\"candidate:763186928 1 tcp 1518149375 192.168.1.16 9 typ host tcptype active generation 0 ufrag qUh9 network-id 3 network-cost 10\",\"sdpMid\":\"0\",\"sdpMLineIndex\":0,\"usernameFragment\":\"qUh9\"}}",
+      "timestamp": "2024-12-30T21:46:17.657Z",
+      "read": true
+    },
+    {
+      "id": "1735595177668",
+      "senderId": "1",
+      "senderName": "medaminer",
+      "receiverId": "2",
+      "content": "RTC:{\"type\":\"ice-candidate\",\"sender\":\"1\",\"receiver\":\"2\",\"payload\":{\"candidate\":\"candidate:3605987034 1 udp 1685987071 197.15.18.165 40121 typ srflx raddr 192.168.128.1 rport 40121 generation 0 ufrag qUh9 network-id 2\",\"sdpMid\":\"0\",\"sdpMLineIndex\":0,\"usernameFragment\":\"qUh9\"}}",
+      "timestamp": "2024-12-30T21:46:17.668Z",
+      "read": true
+    },
+    {
+      "id": "1735595177669",
+      "senderId": "1",
+      "senderName": "medaminer",
+      "receiverId": "2",
+      "content": "RTC:{\"type\":\"ice-candidate\",\"sender\":\"1\",\"receiver\":\"2\",\"payload\":{\"candidate\":\"candidate:2090695514 1 udp 1685921535 197.15.18.165 54170 typ srflx raddr 192.168.1.16 rport 54170 generation 0 ufrag qUh9 network-id 3 network-cost 10\",\"sdpMid\":\"0\",\"sdpMLineIndex\":0,\"usernameFragment\":\"qUh9\"}}",
+      "timestamp": "2024-12-30T21:46:17.669Z",
+      "read": true
+    },
+    {
+      "id": "1735595181381",
+      "senderId": "2",
+      "senderName": "safwane",
+      "receiverId": "1",
+      "content": "RTC:{\"type\":\"answer\",\"sender\":\"2\",\"receiver\":\"1\",\"payload\":{\"sdp\":\"v=0\\r\\no=- 876089439797510978 2 IN IP4 127.0.0.1\\r\\ns=-\\r\\nt=0 0\\r\\na=group:BUNDLE 0\\r\\na=extmap-allow-mixed\\r\\na=msid-semantic: WMS 31fe897a-1953-41e3-9414-1fc44f5db298\\r\\nm=audio 9 UDP/TLS/RTP/SAVPF 111 63 9 0 8 13 110 126\\r\\nc=IN IP4 0.0.0.0\\r\\na=rtcp:9 IN IP4 0.0.0.0\\r\\na=ice-ufrag:68Vw\\r\\na=ice-pwd:59kwXx707ZheQugUBI1fKP7C\\r\\na=ice-options:trickle\\r\\na=fingerprint:sha-256 8C:11:85:5C:4F:79:FD:5C:3B:B4:72:78:2C:55:37:33:FE:20:A8:04:F6:1C:B1:B0:B6:0D:B2:C6:E7:D5:52:74\\r\\na=setup:active\\r\\na=mid:0\\r\\na=extmap:1 urn:ietf:params:rtp-hdrext:ssrc-audio-level\\r\\na=extmap:2 http://www.webrtc.org/experiments/rtp-hdrext/abs-send-time\\r\\na=extmap:3 http://www.ietf.org/id/draft-holmer-rmcat-transport-wide-cc-extensions-01\\r\\na=extmap:4 urn:ietf:params:rtp-hdrext:sdes:mid\\r\\na=sendrecv\\r\\na=msid:31fe897a-1953-41e3-9414-1fc44f5db298 c66d6d7c-0b9a-4ab7-b7d8-f459a5231cf7\\r\\na=rtcp-mux\\r\\na=rtcp-rsize\\r\\na=rtpmap:111 opus/48000/2\\r\\na=rtcp-fb:111 transport-cc\\r\\na=fmtp:111 minptime=10;useinbandfec=1\\r\\na=rtpmap:63 red/48000/2\\r\\na=fmtp:63 111/111\\r\\na=rtpmap:9 G722/8000\\r\\na=rtpmap:0 PCMU/8000\\r\\na=rtpmap:8 PCMA/8000\\r\\na=rtpmap:13 CN/8000\\r\\na=rtpmap:110 telephone-event/48000\\r\\na=rtpmap:126 telephone-event/8000\\r\\na=ssrc:1725724458 cname:ZFNy+63HavzwfmSD\\r\\n\",\"type\":\"answer\"}}",
+      "timestamp": "2024-12-30T21:46:21.381Z",
+      "read": true
+    },
+    {
+      "id": "1735595181385",
+      "senderId": "2",
+      "senderName": "safwane",
+      "receiverId": "1",
+      "content": "RTC:{\"type\":\"ice-candidate\",\"sender\":\"2\",\"receiver\":\"1\",\"payload\":{\"candidate\":\"candidate:2635315018 1 udp 2122260223 192.168.144.1 45146 typ host generation 0 ufrag 68Vw network-id 1\",\"sdpMid\":\"0\",\"sdpMLineIndex\":0,\"usernameFragment\":\"68Vw\"}}",
+      "timestamp": "2024-12-30T21:46:21.385Z",
+      "read": true
+    },
+    {
+      "id": "1735595181386",
+      "senderId": "2",
+      "senderName": "safwane",
+      "receiverId": "1",
+      "content": "RTC:{\"type\":\"ice-candidate\",\"sender\":\"2\",\"receiver\":\"1\",\"payload\":{\"candidate\":\"candidate:1593266671 1 udp 2122194687 192.168.128.1 53047 typ host generation 0 ufrag 68Vw network-id 2\",\"sdpMid\":\"0\",\"sdpMLineIndex\":0,\"usernameFragment\":\"68Vw\"}}",
+      "timestamp": "2024-12-30T21:46:21.386Z",
+      "read": true
+    },
+    {
+      "id": "1735595181387",
+      "senderId": "2",
+      "senderName": "safwane",
+      "receiverId": "1",
+      "content": "RTC:{\"type\":\"ice-candidate\",\"sender\":\"2\",\"receiver\":\"1\",\"payload\":{\"candidate\":\"candidate:2583716379 1 udp 2122129151 192.168.1.16 41742 typ host generation 0 ufrag 68Vw network-id 3 network-cost 10\",\"sdpMid\":\"0\",\"sdpMLineIndex\":0,\"usernameFragment\":\"68Vw\"}}",
+      "timestamp": "2024-12-30T21:46:21.387Z",
+      "read": true
+    },
+    {
+      "id": "1735595181493",
+      "senderId": "2",
+      "senderName": "safwane",
+      "receiverId": "1",
+      "content": "RTC:{\"type\":\"answer\",\"sender\":\"2\",\"receiver\":\"1\",\"payload\":{\"sdp\":\"v=0\\r\\no=- 876089439797510978 3 IN IP4 127.0.0.1\\r\\ns=-\\r\\nt=0 0\\r\\na=group:BUNDLE 0\\r\\na=extmap-allow-mixed\\r\\na=msid-semantic: WMS 31fe897a-1953-41e3-9414-1fc44f5db298\\r\\nm=audio 45146 UDP/TLS/RTP/SAVPF 111 63 9 0 8 13 110 126\\r\\nc=IN IP4 192.168.144.1\\r\\na=rtcp:9 IN IP4 0.0.0.0\\r\\na=candidate:2635315018 1 udp 2122260223 192.168.144.1 45146 typ host generation 0 network-id 1\\r\\na=candidate:1593266671 1 udp 2122194687 192.168.128.1 53047 typ host generation 0 network-id 2\\r\\na=candidate:2583716379 1 udp 2122129151 192.168.1.16 41742 typ host generation 0 network-id 3 network-cost 10\\r\\na=ice-ufrag:68Vw\\r\\na=ice-pwd:59kwXx707ZheQugUBI1fKP7C\\r\\na=ice-options:trickle\\r\\na=fingerprint:sha-256 8C:11:85:5C:4F:79:FD:5C:3B:B4:72:78:2C:55:37:33:FE:20:A8:04:F6:1C:B1:B0:B6:0D:B2:C6:E7:D5:52:74\\r\\na=setup:active\\r\\na=mid:0\\r\\na=extmap:1 urn:ietf:params:rtp-hdrext:ssrc-audio-level\\r\\na=extmap:2 http://www.webrtc.org/experiments/rtp-hdrext/abs-send-time\\r\\na=extmap:3 http://www.ietf.org/id/draft-holmer-rmcat-transport-wide-cc-extensions-01\\r\\na=extmap:4 urn:ietf:params:rtp-hdrext:sdes:mid\\r\\na=sendrecv\\r\\na=msid:31fe897a-1953-41e3-9414-1fc44f5db298 c66d6d7c-0b9a-4ab7-b7d8-f459a5231cf7\\r\\na=rtcp-mux\\r\\na=rtcp-rsize\\r\\na=rtpmap:111 opus/48000/2\\r\\na=rtcp-fb:111 transport-cc\\r\\na=fmtp:111 minptime=10;useinbandfec=1\\r\\na=rtpmap:63 red/48000/2\\r\\na=fmtp:63 111/111\\r\\na=rtpmap:9 G722/8000\\r\\na=rtpmap:0 PCMU/8000\\r\\na=rtpmap:8 PCMA/8000\\r\\na=rtpmap:13 CN/8000\\r\\na=rtpmap:110 telephone-event/48000\\r\\na=rtpmap:126 telephone-event/8000\\r\\na=ssrc:1725724458 cname:ZFNy+63HavzwfmSD\\r\\n\",\"type\":\"answer\"}}",
+      "timestamp": "2024-12-30T21:46:21.493Z",
+      "read": true
+    },
+    {
+      "id": "1735595209504",
+      "senderId": "2",
+      "senderName": "safwane",
+      "receiverId": "1",
+      "content": "RTC:{\"type\":\"call-ended\",\"sender\":\"2\",\"receiver\":\"1\",\"payload\":null}",
+      "timestamp": "2024-12-30T21:46:49.504Z",
+      "read": true
+    },
+    {
+      "id": "1735595212499",
+      "senderId": "1",
+      "senderName": "medaminer",
+      "receiverId": "2",
+      "content": "RTC:{\"type\":\"call-ended\",\"sender\":\"1\",\"receiver\":\"2\",\"payload\":null}",
+      "timestamp": "2024-12-30T21:46:52.499Z",
+      "read": true
+    },
+    {
+      "id": "1735595227239",
+      "senderId": "1",
+      "senderName": "medaminer",
+      "receiverId": "2",
+      "content": "RTC:{\"type\":\"call-request\",\"sender\":\"1\",\"receiver\":\"2\",\"payload\":{\"type\":\"video\"}}",
+      "timestamp": "2024-12-30T21:47:07.239Z",
+      "read": true
+    },
+    {
+      "id": "1735595232560",
+      "senderId": "2",
+      "senderName": "safwane",
+      "receiverId": "1",
+      "content": "RTC:{\"type\":\"call-accepted\",\"sender\":\"2\",\"receiver\":\"1\",\"payload\":null}",
+      "timestamp": "2024-12-30T21:47:12.560Z",
+      "read": true
+    },
+    {
+      "id": "1735595232652",
+      "senderId": "2",
+      "senderName": "safwane",
+      "receiverId": "1",
+      "content": "RTC:{\"type\":\"call-ended\",\"sender\":\"2\",\"receiver\":\"1\",\"payload\":null}",
+      "timestamp": "2024-12-30T21:47:12.652Z",
+      "read": true
+    },
+    {
+      "id": "1735595237498",
+      "senderId": "1",
+      "senderName": "medaminer",
+      "receiverId": "2",
+      "content": "RTC:{\"type\":\"call-ended\",\"sender\":\"1\",\"receiver\":\"2\",\"payload\":null}",
+      "timestamp": "2024-12-30T21:47:17.498Z",
+      "read": true
+    },
+    {
+      "id": "1735595268976",
+      "senderId": "1",
+      "senderName": "medaminer",
+      "receiverId": "2",
+      "content": "RTC:{\"type\":\"call-request\",\"sender\":\"1\",\"receiver\":\"2\",\"payload\":{\"type\":\"video\"}}",
+      "timestamp": "2024-12-30T21:47:48.976Z",
+      "read": true
+    },
+    {
+      "id": "1735595274471",
+      "senderId": "2",
+      "senderName": "safwane",
+      "receiverId": "1",
+      "content": "RTC:{\"type\":\"call-accepted\",\"sender\":\"2\",\"receiver\":\"1\",\"payload\":null}",
+      "timestamp": "2024-12-30T21:47:54.471Z",
+      "read": true
+    },
+    {
+      "id": "1735595274525",
+      "senderId": "2",
+      "senderName": "safwane",
+      "receiverId": "1",
+      "content": "RTC:{\"type\":\"call-ended\",\"sender\":\"2\",\"receiver\":\"1\",\"payload\":null}",
+      "timestamp": "2024-12-30T21:47:54.525Z",
+      "read": true
+    },
+    {
+      "id": "1735595277503",
+      "senderId": "1",
+      "senderName": "medaminer",
+      "receiverId": "2",
+      "content": "RTC:{\"type\":\"call-ended\",\"sender\":\"1\",\"receiver\":\"2\",\"payload\":null}",
+      "timestamp": "2024-12-30T21:47:57.503Z",
+      "read": true
+    },
+    {
+      "id": "1735595442199",
+      "senderId": "1",
+      "senderName": "medaminer",
+      "receiverId": "2",
+      "content": "RTC:{\"type\":\"call-request\",\"sender\":\"1\",\"receiver\":\"2\",\"payload\":{\"type\":\"video\"}}",
+      "timestamp": "2024-12-30T21:50:42.199Z",
+      "read": true
+    },
+    {
+      "id": "1735595454513",
+      "senderId": "2",
+      "senderName": "safwane",
+      "receiverId": "1",
+      "content": "RTC:{\"type\":\"call-accepted\",\"sender\":\"2\",\"receiver\":\"1\",\"payload\":null}",
+      "timestamp": "2024-12-30T21:50:54.513Z",
+      "read": true
+    },
+    {
+      "id": "1735595455304",
+      "senderId": "2",
+      "senderName": "safwane",
+      "receiverId": "1",
+      "content": "RTC:{\"type\":\"call-ended\",\"sender\":\"2\",\"receiver\":\"1\",\"payload\":null}",
+      "timestamp": "2024-12-30T21:50:55.304Z",
+      "read": true
+    },
+    {
+      "id": "1735595459062",
+      "senderId": "1",
+      "senderName": "medaminer",
+      "receiverId": "2",
+      "content": "RTC:{\"type\":\"call-ended\",\"sender\":\"1\",\"receiver\":\"2\",\"payload\":null}",
+      "timestamp": "2024-12-30T21:50:59.062Z",
+      "read": true
+    },
+    {
+      "id": "1735595578752",
+      "senderId": "1",
+      "senderName": "medaminer",
+      "receiverId": "2",
+      "content": "RTC:{\"type\":\"call-request\",\"sender\":\"1\",\"receiver\":\"2\",\"payload\":{\"type\":\"video\"}}",
+      "timestamp": "2024-12-30T21:52:58.752Z",
+      "read": true
+    },
+    {
+      "id": "1735595592337",
+      "senderId": "2",
+      "senderName": "safwane",
+      "receiverId": "1",
+      "content": "RTC:{\"type\":\"call-accepted\",\"sender\":\"2\",\"receiver\":\"1\",\"payload\":null}",
+      "timestamp": "2024-12-30T21:53:12.337Z",
+      "read": true
+    },
+    {
+      "id": "1735595592415",
+      "senderId": "2",
+      "senderName": "safwane",
+      "receiverId": "1",
+      "content": "RTC:{\"type\":\"call-ended\",\"sender\":\"2\",\"receiver\":\"1\",\"payload\":null}",
+      "timestamp": "2024-12-30T21:53:12.415Z",
+      "read": true
+    },
+    {
+      "id": "1735595595856",
+      "senderId": "1",
+      "senderName": "medaminer",
+      "receiverId": "2",
+      "content": "RTC:{\"type\":\"call-ended\",\"sender\":\"1\",\"receiver\":\"2\",\"payload\":null}",
+      "timestamp": "2024-12-30T21:53:15.856Z",
+      "read": true
+    },
+    {
+      "id": "1735595723948",
+      "senderId": "1",
+      "senderName": "medaminer",
+      "receiverId": "2",
+      "content": "RTC:{\"type\":\"call-request\",\"sender\":\"1\",\"receiver\":\"2\",\"payload\":{\"type\":\"video\"}}",
+      "timestamp": "2024-12-30T21:55:23.948Z",
+      "read": true
+    },
+    {
+      "id": "1735595730309",
+      "senderId": "2",
+      "senderName": "safwane",
+      "receiverId": "1",
+      "content": "RTC:{\"type\":\"call-ended\",\"sender\":\"2\",\"receiver\":\"1\",\"payload\":null}",
+      "timestamp": "2024-12-30T21:55:30.309Z",
+      "read": true
+    },
+    {
+      "id": "1735595730313",
+      "senderId": "2",
+      "senderName": "safwane",
+      "receiverId": "1",
+      "content": "RTC:{\"type\":\"call-accepted\",\"sender\":\"2\",\"receiver\":\"1\",\"payload\":null}",
+      "timestamp": "2024-12-30T21:55:30.313Z",
+      "read": true
+    },
+    {
+      "id": "1735595735980",
+      "senderId": "1",
+      "senderName": "medaminer",
+      "receiverId": "2",
+      "content": "RTC:{\"type\":\"call-ended\",\"sender\":\"1\",\"receiver\":\"2\",\"payload\":null}",
+      "timestamp": "2024-12-30T21:55:35.980Z",
+      "read": true
+    },
+    {
+      "id": "1735595740135",
+      "senderId": "1",
+      "senderName": "medaminer",
+      "receiverId": "2",
+      "content": "RTC:{\"type\":\"call-request\",\"sender\":\"1\",\"receiver\":\"2\",\"payload\":{\"type\":\"audio\"}}",
+      "timestamp": "2024-12-30T21:55:40.136Z",
+      "read": true
+    },
+    {
+      "id": "1735595744825",
+      "senderId": "2",
+      "senderName": "safwane",
+      "receiverId": "1",
+      "content": "RTC:{\"type\":\"call-rejected\",\"sender\":\"2\",\"receiver\":\"1\",\"payload\":null}",
+      "timestamp": "2024-12-30T21:55:44.825Z",
+      "read": true
+    },
+    {
+      "id": "1735595745967",
+      "senderId": "2",
+      "senderName": "safwane",
+      "receiverId": "1",
+      "content": "RTC:{\"type\":\"call-accepted\",\"sender\":\"2\",\"receiver\":\"1\",\"payload\":null}",
+      "timestamp": "2024-12-30T21:55:45.967Z",
+      "read": true
+    },
+    {
+      "id": "1735595745964",
+      "senderId": "1",
+      "senderName": "medaminer",
+      "receiverId": "2",
+      "content": "RTC:{\"type\":\"call-ended\",\"sender\":\"1\",\"receiver\":\"2\",\"payload\":null}",
+      "timestamp": "2024-12-30T21:55:45.964Z",
+      "read": true
+    },
+    {
+      "id": "1735595754786",
+      "senderId": "2",
+      "senderName": "safwane",
+      "receiverId": "1",
+      "content": "RTC:{\"type\":\"call-ended\",\"sender\":\"2\",\"receiver\":\"1\",\"payload\":null}",
+      "timestamp": "2024-12-30T21:55:54.786Z",
+      "read": true
+    },
+    {
+      "id": "1735595757452",
+      "senderId": "1",
+      "senderName": "medaminer",
+      "receiverId": "2",
+      "content": "RTC:{\"type\":\"call-request\",\"sender\":\"1\",\"receiver\":\"2\",\"payload\":{\"type\":\"audio\"}}",
+      "timestamp": "2024-12-30T21:55:57.452Z",
+      "read": true
+    },
+    {
+      "id": "1735595766062",
+      "senderId": "2",
+      "senderName": "safwane",
+      "receiverId": "1",
+      "content": "RTC:{\"type\":\"call-accepted\",\"sender\":\"2\",\"receiver\":\"1\",\"payload\":null}",
+      "timestamp": "2024-12-30T21:56:06.062Z",
+      "read": true
+    },
+    {
+      "id": "1735595776243",
+      "senderId": "1",
+      "senderName": "medaminer",
+      "receiverId": "2",
+      "content": "RTC:{\"type\":\"ice-candidate\",\"sender\":\"1\",\"receiver\":\"2\",\"payload\":{\"candidate\":\"candidate:756107651 1 udp 2122194687 192.168.128.1 39204 typ host generation 0 ufrag +onm network-id 2\",\"sdpMid\":\"0\",\"sdpMLineIndex\":0,\"usernameFragment\":\"+onm\"}}",
+      "timestamp": "2024-12-30T21:56:16.243Z",
+      "read": true
+    },
+    {
+      "id": "1735595776236",
+      "senderId": "1",
+      "senderName": "medaminer",
+      "receiverId": "2",
+      "content": "RTC:{\"type\":\"offer\",\"sender\":\"1\",\"receiver\":\"2\",\"payload\":{\"sdp\":\"v=0\\r\\no=- 2801558272230617023 2 IN IP4 127.0.0.1\\r\\ns=-\\r\\nt=0 0\\r\\na=group:BUNDLE 0\\r\\na=extmap-allow-mixed\\r\\na=msid-semantic: WMS 2db80938-de1e-4139-b7e9-9402447e3b2d\\r\\nm=audio 9 UDP/TLS/RTP/SAVPF 111 63 9 0 8 13 110 126\\r\\nc=IN IP4 0.0.0.0\\r\\na=rtcp:9 IN IP4 0.0.0.0\\r\\na=ice-ufrag:+onm\\r\\na=ice-pwd:RR9fhCKQp1nzdX1HwIgBycyf\\r\\na=ice-options:trickle\\r\\na=fingerprint:sha-256 44:81:4D:FF:3E:8E:B2:2A:70:21:C9:FE:A2:95:DA:B7:23:AA:CB:5E:AD:81:EE:95:BB:18:D3:77:1A:AD:9C:45\\r\\na=setup:actpass\\r\\na=mid:0\\r\\na=extmap:1 urn:ietf:params:rtp-hdrext:ssrc-audio-level\\r\\na=extmap:2 http://www.webrtc.org/experiments/rtp-hdrext/abs-send-time\\r\\na=extmap:3 http://www.ietf.org/id/draft-holmer-rmcat-transport-wide-cc-extensions-01\\r\\na=extmap:4 urn:ietf:params:rtp-hdrext:sdes:mid\\r\\na=sendrecv\\r\\na=msid:2db80938-de1e-4139-b7e9-9402447e3b2d cac1f069-279f-4a48-9df1-c589fc226fdc\\r\\na=rtcp-mux\\r\\na=rtcp-rsize\\r\\na=rtpmap:111 opus/48000/2\\r\\na=rtcp-fb:111 transport-cc\\r\\na=fmtp:111 minptime=10;useinbandfec=1\\r\\na=rtpmap:63 red/48000/2\\r\\na=fmtp:63 111/111\\r\\na=rtpmap:9 G722/8000\\r\\na=rtpmap:0 PCMU/8000\\r\\na=rtpmap:8 PCMA/8000\\r\\na=rtpmap:13 CN/8000\\r\\na=rtpmap:110 telephone-event/48000\\r\\na=rtpmap:126 telephone-event/8000\\r\\na=ssrc:1657949033 cname:jPScyStmP3/4ZWG6\\r\\na=ssrc:1657949033 msid:2db80938-de1e-4139-b7e9-9402447e3b2d cac1f069-279f-4a48-9df1-c589fc226fdc\\r\\n\",\"type\":\"offer\"}}",
+      "timestamp": "2024-12-30T21:56:16.236Z",
+      "read": true
+    },
+    {
+      "id": "1735595776244",
+      "senderId": "1",
+      "senderName": "medaminer",
+      "receiverId": "2",
+      "content": "RTC:{\"type\":\"ice-candidate\",\"sender\":\"1\",\"receiver\":\"2\",\"payload\":{\"candidate\":\"candidate:3924195959 1 udp 2122129151 192.168.1.16 39325 typ host generation 0 ufrag +onm network-id 3 network-cost 10\",\"sdpMid\":\"0\",\"sdpMLineIndex\":0,\"usernameFragment\":\"+onm\"}}",
+      "timestamp": "2024-12-30T21:56:16.244Z",
+      "read": true
+    },
+    {
+      "id": "1735595776241",
+      "senderId": "1",
+      "senderName": "medaminer",
+      "receiverId": "2",
+      "content": "RTC:{\"type\":\"ice-candidate\",\"sender\":\"1\",\"receiver\":\"2\",\"payload\":{\"candidate\":\"candidate:4009078566 1 udp 2122260223 192.168.144.1 49345 typ host generation 0 ufrag +onm network-id 1\",\"sdpMid\":\"0\",\"sdpMLineIndex\":0,\"usernameFragment\":\"+onm\"}}",
+      "timestamp": "2024-12-30T21:56:16.241Z",
+      "read": true
+    },
+    {
+      "id": "1735595776344",
+      "senderId": "1",
+      "senderName": "medaminer",
+      "receiverId": "2",
+      "content": "RTC:{\"type\":\"ice-candidate\",\"sender\":\"1\",\"receiver\":\"2\",\"payload\":{\"candidate\":\"candidate:274693042 1 tcp 1518280447 192.168.144.1 9 typ host tcptype active generation 0 ufrag +onm network-id 1\",\"sdpMid\":\"0\",\"sdpMLineIndex\":0,\"usernameFragment\":\"+onm\"}}",
+      "timestamp": "2024-12-30T21:56:16.344Z",
+      "read": true
+    },
+    {
+      "id": "1735595776345",
+      "senderId": "1",
+      "senderName": "medaminer",
+      "receiverId": "2",
+      "content": "RTC:{\"type\":\"ice-candidate\",\"sender\":\"1\",\"receiver\":\"2\",\"payload\":{\"candidate\":\"candidate:3552288023 1 tcp 1518214911 192.168.128.1 9 typ host tcptype active generation 0 ufrag +onm network-id 2\",\"sdpMid\":\"0\",\"sdpMLineIndex\":0,\"usernameFragment\":\"+onm\"}}",
+      "timestamp": "2024-12-30T21:56:16.345Z",
+      "read": true
+    },
+    {
+      "id": "1735595776346",
+      "senderId": "1",
+      "senderName": "medaminer",
+      "receiverId": "2",
+      "content": "RTC:{\"type\":\"ice-candidate\",\"sender\":\"1\",\"receiver\":\"2\",\"payload\":{\"candidate\":\"candidate:390901475 1 tcp 1518149375 192.168.1.16 9 typ host tcptype active generation 0 ufrag +onm network-id 3 network-cost 10\",\"sdpMid\":\"0\",\"sdpMLineIndex\":0,\"usernameFragment\":\"+onm\"}}",
+      "timestamp": "2024-12-30T21:56:16.346Z",
+      "read": true
+    },
+    {
+      "id": "1735595776392",
+      "senderId": "1",
+      "senderName": "medaminer",
+      "receiverId": "2",
+      "content": "RTC:{\"type\":\"ice-candidate\",\"sender\":\"1\",\"receiver\":\"2\",\"payload\":{\"candidate\":\"candidate:792459372 1 udp 1686052607 197.15.18.165 49345 typ srflx raddr 192.168.144.1 rport 49345 generation 0 ufrag +onm network-id 1\",\"sdpMid\":\"0\",\"sdpMLineIndex\":0,\"usernameFragment\":\"+onm\"}}",
+      "timestamp": "2024-12-30T21:56:16.392Z",
+      "read": true
+    },
+    {
+      "id": "1735595776663",
+      "senderId": "1",
+      "senderName": "medaminer",
+      "receiverId": "2",
+      "content": "RTC:{\"type\":\"ice-candidate\",\"sender\":\"1\",\"receiver\":\"2\",\"payload\":{\"candidate\":\"candidate:3974045385 1 udp 1685987071 197.15.18.165 39204 typ srflx raddr 192.168.128.1 rport 39204 generation 0 ufrag +onm network-id 2\",\"sdpMid\":\"0\",\"sdpMLineIndex\":0,\"usernameFragment\":\"+onm\"}}",
+      "timestamp": "2024-12-30T21:56:16.663Z",
+      "read": true
+    },
+    {
+      "id": "1735595776665",
+      "senderId": "1",
+      "senderName": "medaminer",
+      "receiverId": "2",
+      "content": "RTC:{\"type\":\"ice-candidate\",\"sender\":\"1\",\"receiver\":\"2\",\"payload\":{\"candidate\":\"candidate:1185717065 1 udp 1685921535 197.15.18.165 39325 typ srflx raddr 192.168.1.16 rport 39325 generation 0 ufrag +onm network-id 3 network-cost 10\",\"sdpMid\":\"0\",\"sdpMLineIndex\":0,\"usernameFragment\":\"+onm\"}}",
+      "timestamp": "2024-12-30T21:56:16.665Z",
+      "read": true
+    },
+    {
+      "id": "1735595784854",
+      "senderId": "2",
+      "senderName": "safwane",
+      "receiverId": "1",
+      "content": "RTC:{\"type\":\"answer\",\"sender\":\"2\",\"receiver\":\"1\",\"payload\":{\"sdp\":\"v=0\\r\\no=- 8636424854871325823 2 IN IP4 127.0.0.1\\r\\ns=-\\r\\nt=0 0\\r\\na=group:BUNDLE 0\\r\\na=extmap-allow-mixed\\r\\na=msid-semantic: WMS 6d8a4a48-3d05-45e1-910d-f8a36e01cfbd\\r\\nm=audio 9 UDP/TLS/RTP/SAVPF 111 63 9 0 8 13 110 126\\r\\nc=IN IP4 0.0.0.0\\r\\na=rtcp:9 IN IP4 0.0.0.0\\r\\na=ice-ufrag:fvJb\\r\\na=ice-pwd:Ssne+f2ROGqT+4G7NK/mDUjw\\r\\na=ice-options:trickle\\r\\na=fingerprint:sha-256 AA:4C:07:91:4C:CE:B5:06:D0:71:98:DC:B7:8E:AD:2F:96:E8:F1:1A:C4:09:A8:80:7F:36:44:34:4C:0C:C6:9A\\r\\na=setup:active\\r\\na=mid:0\\r\\na=extmap:1 urn:ietf:params:rtp-hdrext:ssrc-audio-level\\r\\na=extmap:2 http://www.webrtc.org/experiments/rtp-hdrext/abs-send-time\\r\\na=extmap:3 http://www.ietf.org/id/draft-holmer-rmcat-transport-wide-cc-extensions-01\\r\\na=extmap:4 urn:ietf:params:rtp-hdrext:sdes:mid\\r\\na=sendrecv\\r\\na=msid:6d8a4a48-3d05-45e1-910d-f8a36e01cfbd ba397b19-a368-43e9-9606-38d44037b6bd\\r\\na=rtcp-mux\\r\\na=rtcp-rsize\\r\\na=rtpmap:111 opus/48000/2\\r\\na=rtcp-fb:111 transport-cc\\r\\na=fmtp:111 minptime=10;useinbandfec=1\\r\\na=rtpmap:63 red/48000/2\\r\\na=fmtp:63 111/111\\r\\na=rtpmap:9 G722/8000\\r\\na=rtpmap:0 PCMU/8000\\r\\na=rtpmap:8 PCMA/8000\\r\\na=rtpmap:13 CN/8000\\r\\na=rtpmap:110 telephone-event/48000\\r\\na=rtpmap:126 telephone-event/8000\\r\\na=ssrc:1152333946 cname:rwbt3x231ZYMK9fV\\r\\n\",\"type\":\"answer\"}}",
+      "timestamp": "2024-12-30T21:56:24.854Z",
+      "read": true
+    },
+    {
+      "id": "1735595784859",
+      "senderId": "2",
+      "senderName": "safwane",
+      "receiverId": "1",
+      "content": "RTC:{\"type\":\"ice-candidate\",\"sender\":\"2\",\"receiver\":\"1\",\"payload\":{\"candidate\":\"candidate:2051493402 1 udp 2122260223 192.168.144.1 52273 typ host generation 0 ufrag fvJb network-id 1\",\"sdpMid\":\"0\",\"sdpMLineIndex\":0,\"usernameFragment\":\"fvJb\"}}",
+      "timestamp": "2024-12-30T21:56:24.859Z",
+      "read": true
+    },
+    {
+      "id": "1735595784860",
+      "senderId": "2",
+      "senderName": "safwane",
+      "receiverId": "1",
+      "content": "RTC:{\"type\":\"ice-candidate\",\"sender\":\"2\",\"receiver\":\"1\",\"payload\":{\"candidate\":\"candidate:3114510527 1 udp 2122194687 192.168.128.1 37460 typ host generation 0 ufrag fvJb network-id 2\",\"sdpMid\":\"0\",\"sdpMLineIndex\":0,\"usernameFragment\":\"fvJb\"}}",
+      "timestamp": "2024-12-30T21:56:24.860Z",
+      "read": true
+    },
+    {
+      "id": "1735595785013",
+      "senderId": "2",
+      "senderName": "safwane",
+      "receiverId": "1",
+      "content": "RTC:{\"type\":\"answer\",\"sender\":\"2\",\"receiver\":\"1\",\"payload\":{\"sdp\":\"v=0\\r\\no=- 8636424854871325823 3 IN IP4 127.0.0.1\\r\\ns=-\\r\\nt=0 0\\r\\na=group:BUNDLE 0\\r\\na=extmap-allow-mixed\\r\\na=msid-semantic: WMS 6d8a4a48-3d05-45e1-910d-f8a36e01cfbd\\r\\nm=audio 52273 UDP/TLS/RTP/SAVPF 111 63 9 0 8 13 110 126\\r\\nc=IN IP4 192.168.144.1\\r\\na=rtcp:9 IN IP4 0.0.0.0\\r\\na=candidate:2051493402 1 udp 2122260223 192.168.144.1 52273 typ host generation 0 network-id 1\\r\\na=candidate:3114510527 1 udp 2122194687 192.168.128.1 37460 typ host generation 0 network-id 2\\r\\na=candidate:2102696779 1 udp 2122129151 192.168.1.16 60945 typ host generation 0 network-id 3 network-cost 10\\r\\na=ice-ufrag:fvJb\\r\\na=ice-pwd:Ssne+f2ROGqT+4G7NK/mDUjw\\r\\na=ice-options:trickle\\r\\na=fingerprint:sha-256 AA:4C:07:91:4C:CE:B5:06:D0:71:98:DC:B7:8E:AD:2F:96:E8:F1:1A:C4:09:A8:80:7F:36:44:34:4C:0C:C6:9A\\r\\na=setup:active\\r\\na=mid:0\\r\\na=extmap:1 urn:ietf:params:rtp-hdrext:ssrc-audio-level\\r\\na=extmap:2 http://www.webrtc.org/experiments/rtp-hdrext/abs-send-time\\r\\na=extmap:3 http://www.ietf.org/id/draft-holmer-rmcat-transport-wide-cc-extensions-01\\r\\na=extmap:4 urn:ietf:params:rtp-hdrext:sdes:mid\\r\\na=sendrecv\\r\\na=msid:6d8a4a48-3d05-45e1-910d-f8a36e01cfbd ba397b19-a368-43e9-9606-38d44037b6bd\\r\\na=rtcp-mux\\r\\na=rtcp-rsize\\r\\na=rtpmap:111 opus/48000/2\\r\\na=rtcp-fb:111 transport-cc\\r\\na=fmtp:111 minptime=10;useinbandfec=1\\r\\na=rtpmap:63 red/48000/2\\r\\na=fmtp:63 111/111\\r\\na=rtpmap:9 G722/8000\\r\\na=rtpmap:0 PCMU/8000\\r\\na=rtpmap:8 PCMA/8000\\r\\na=rtpmap:13 CN/8000\\r\\na=rtpmap:110 telephone-event/48000\\r\\na=rtpmap:126 telephone-event/8000\\r\\na=ssrc:1152333946 cname:rwbt3x231ZYMK9fV\\r\\n\",\"type\":\"answer\"}}",
+      "timestamp": "2024-12-30T21:56:25.013Z",
+      "read": true
+    },
+    {
+      "id": "1735595819007",
+      "senderId": "1",
+      "senderName": "medaminer",
+      "receiverId": "2",
+      "content": "RTC:{\"type\":\"call-request\",\"sender\":\"1\",\"receiver\":\"2\",\"payload\":{\"type\":\"audio\"}}",
+      "timestamp": "2024-12-30T21:56:59.007Z",
+      "read": true
+    },
+    {
+      "id": "1735595823561",
+      "senderId": "2",
+      "senderName": "safwane",
+      "receiverId": "1",
+      "content": "RTC:{\"type\":\"call-accepted\",\"sender\":\"2\",\"receiver\":\"1\",\"payload\":null}",
+      "timestamp": "2024-12-30T21:57:03.561Z",
+      "read": true
+    },
+    {
+      "id": "1735595823800",
+      "senderId": "1",
+      "senderName": "medaminer",
+      "receiverId": "2",
+      "content": "RTC:{\"type\":\"offer\",\"sender\":\"1\",\"receiver\":\"2\",\"payload\":{\"sdp\":\"v=0\\r\\no=- 1685195783374679852 2 IN IP4 127.0.0.1\\r\\ns=-\\r\\nt=0 0\\r\\na=group:BUNDLE 0\\r\\na=extmap-allow-mixed\\r\\na=msid-semantic: WMS 8cef3c39-d590-4aaa-b777-75740e26a3f6\\r\\nm=audio 9 UDP/TLS/RTP/SAVPF 111 63 9 0 8 13 110 126\\r\\nc=IN IP4 0.0.0.0\\r\\na=rtcp:9 IN IP4 0.0.0.0\\r\\na=ice-ufrag:9aM4\\r\\na=ice-pwd:S3VKMBZS4PbkRWhFvK8mfY86\\r\\na=ice-options:trickle\\r\\na=fingerprint:sha-256 29:FD:52:ED:6B:11:05:FD:C8:A4:E0:30:C6:B7:70:41:74:A6:77:F9:7A:A2:82:C3:3E:F2:31:45:3A:A8:CA:CD\\r\\na=setup:actpass\\r\\na=mid:0\\r\\na=extmap:1 urn:ietf:params:rtp-hdrext:ssrc-audio-level\\r\\na=extmap:2 http://www.webrtc.org/experiments/rtp-hdrext/abs-send-time\\r\\na=extmap:3 http://www.ietf.org/id/draft-holmer-rmcat-transport-wide-cc-extensions-01\\r\\na=extmap:4 urn:ietf:params:rtp-hdrext:sdes:mid\\r\\na=sendrecv\\r\\na=msid:8cef3c39-d590-4aaa-b777-75740e26a3f6 79fa79ef-3667-424f-ac28-d9b540e34280\\r\\na=rtcp-mux\\r\\na=rtcp-rsize\\r\\na=rtpmap:111 opus/48000/2\\r\\na=rtcp-fb:111 transport-cc\\r\\na=fmtp:111 minptime=10;useinbandfec=1\\r\\na=rtpmap:63 red/48000/2\\r\\na=fmtp:63 111/111\\r\\na=rtpmap:9 G722/8000\\r\\na=rtpmap:0 PCMU/8000\\r\\na=rtpmap:8 PCMA/8000\\r\\na=rtpmap:13 CN/8000\\r\\na=rtpmap:110 telephone-event/48000\\r\\na=rtpmap:126 telephone-event/8000\\r\\na=ssrc:2232432346 cname:m9Zm1H479APl/c19\\r\\na=ssrc:2232432346 msid:8cef3c39-d590-4aaa-b777-75740e26a3f6 79fa79ef-3667-424f-ac28-d9b540e34280\\r\\n\",\"type\":\"offer\"}}",
+      "timestamp": "2024-12-30T21:57:03.800Z",
+      "read": true
+    },
+    {
+      "id": "1735595823812",
+      "senderId": "1",
+      "senderName": "medaminer",
+      "receiverId": "2",
+      "content": "RTC:{\"type\":\"ice-candidate\",\"sender\":\"1\",\"receiver\":\"2\",\"payload\":{\"candidate\":\"candidate:2387843743 1 udp 2122260223 192.168.144.1 43045 typ host generation 0 ufrag 9aM4 network-id 1\",\"sdpMid\":\"0\",\"sdpMLineIndex\":0,\"usernameFragment\":\"9aM4\"}}",
+      "timestamp": "2024-12-30T21:57:03.812Z",
+      "read": true
+    },
+    {
+      "id": "1735595823813",
+      "senderId": "1",
+      "senderName": "medaminer",
+      "receiverId": "2",
+      "content": "RTC:{\"type\":\"ice-candidate\",\"sender\":\"1\",\"receiver\":\"2\",\"payload\":{\"candidate\":\"candidate:1303870522 1 udp 2122194687 192.168.128.1 59211 typ host generation 0 ufrag 9aM4 network-id 2\",\"sdpMid\":\"0\",\"sdpMLineIndex\":0,\"usernameFragment\":\"9aM4\"}}",
+      "timestamp": "2024-12-30T21:57:03.813Z",
+      "read": true
+    },
+    {
+      "id": "1735595823815",
+      "senderId": "1",
+      "senderName": "medaminer",
+      "receiverId": "2",
+      "content": "RTC:{\"type\":\"ice-candidate\",\"sender\":\"1\",\"receiver\":\"2\",\"payload\":{\"candidate\":\"candidate:2302693326 1 udp 2122129151 192.168.1.16 59819 typ host generation 0 ufrag 9aM4 network-id 3 network-cost 10\",\"sdpMid\":\"0\",\"sdpMLineIndex\":0,\"usernameFragment\":\"9aM4\"}}",
+      "timestamp": "2024-12-30T21:57:03.815Z",
+      "read": true
+    },
+    {
+      "id": "1735595823864",
+      "senderId": "1",
+      "senderName": "medaminer",
+      "receiverId": "2",
+      "content": "RTC:{\"type\":\"ice-candidate\",\"sender\":\"1\",\"receiver\":\"2\",\"payload\":{\"candidate\":\"candidate:1335741909 1 udp 1686052607 197.15.18.165 43045 typ srflx raddr 192.168.144.1 rport 43045 generation 0 ufrag 9aM4 network-id 1\",\"sdpMid\":\"0\",\"sdpMLineIndex\":0,\"usernameFragment\":\"9aM4\"}}",
+      "timestamp": "2024-12-30T21:57:03.864Z",
+      "read": true
+    },
+    {
+      "id": "1735595823870",
+      "senderId": "1",
+      "senderName": "medaminer",
+      "receiverId": "2",
+      "content": "RTC:{\"type\":\"ice-candidate\",\"sender\":\"1\",\"receiver\":\"2\",\"payload\":{\"candidate\":\"candidate:2356751216 1 udp 1685987071 197.15.18.165 59211 typ srflx raddr 192.168.128.1 rport 59211 generation 0 ufrag 9aM4 network-id 2\",\"sdpMid\":\"0\",\"sdpMLineIndex\":0,\"usernameFragment\":\"9aM4\"}}",
+      "timestamp": "2024-12-30T21:57:03.870Z",
+      "read": true
+    },
+    {
+      "id": "1735595823872",
+      "senderId": "1",
+      "senderName": "medaminer",
+      "receiverId": "2",
+      "content": "RTC:{\"type\":\"ice-candidate\",\"sender\":\"1\",\"receiver\":\"2\",\"payload\":{\"candidate\":\"candidate:638234352 1 udp 1685921535 197.15.18.165 59819 typ srflx raddr 192.168.1.16 rport 59819 generation 0 ufrag 9aM4 network-id 3 network-cost 10\",\"sdpMid\":\"0\",\"sdpMLineIndex\":0,\"usernameFragment\":\"9aM4\"}}",
+      "timestamp": "2024-12-30T21:57:03.872Z",
+      "read": true
+    },
+    {
+      "id": "1735595823922",
+      "senderId": "1",
+      "senderName": "medaminer",
+      "receiverId": "2",
+      "content": "RTC:{\"type\":\"ice-candidate\",\"sender\":\"1\",\"receiver\":\"2\",\"payload\":{\"candidate\":\"candidate:1895386635 1 tcp 1518280447 192.168.144.1 9 typ host tcptype active generation 0 ufrag 9aM4 network-id 1\",\"sdpMid\":\"0\",\"sdpMLineIndex\":0,\"usernameFragment\":\"9aM4\"}}",
+      "timestamp": "2024-12-30T21:57:03.922Z",
+      "read": true
+    },
+    {
+      "id": "1735595823924",
+      "senderId": "1",
+      "senderName": "medaminer",
+      "receiverId": "2",
+      "content": "RTC:{\"type\":\"ice-candidate\",\"sender\":\"1\",\"receiver\":\"2\",\"payload\":{\"candidate\":\"candidate:3005065390 1 tcp 1518214911 192.168.128.1 9 typ host tcptype active generation 0 ufrag 9aM4 network-id 2\",\"sdpMid\":\"0\",\"sdpMLineIndex\":0,\"usernameFragment\":\"9aM4\"}}",
+      "timestamp": "2024-12-30T21:57:03.924Z",
+      "read": true
+    },
+    {
+      "id": "1735595823925",
+      "senderId": "1",
+      "senderName": "medaminer",
+      "receiverId": "2",
+      "content": "RTC:{\"type\":\"ice-candidate\",\"sender\":\"1\",\"receiver\":\"2\",\"payload\":{\"candidate\":\"candidate:2011863898 1 tcp 1518149375 192.168.1.16 9 typ host tcptype active generation 0 ufrag 9aM4 network-id 3 network-cost 10\",\"sdpMid\":\"0\",\"sdpMLineIndex\":0,\"usernameFragment\":\"9aM4\"}}",
+      "timestamp": "2024-12-30T21:57:03.925Z",
+      "read": true
+    },
+    {
+      "id": "1735595827741",
+      "senderId": "2",
+      "senderName": "safwane",
+      "receiverId": "1",
+      "content": "RTC:{\"type\":\"answer\",\"sender\":\"2\",\"receiver\":\"1\",\"payload\":{\"sdp\":\"v=0\\r\\no=- 7887025472161541920 2 IN IP4 127.0.0.1\\r\\ns=-\\r\\nt=0 0\\r\\na=group:BUNDLE 0\\r\\na=extmap-allow-mixed\\r\\na=msid-semantic: WMS 50a1cdff-f93f-44d6-9bc0-6d71480ce01a\\r\\nm=audio 9 UDP/TLS/RTP/SAVPF 111 63 9 0 8 13 110 126\\r\\nc=IN IP4 0.0.0.0\\r\\na=rtcp:9 IN IP4 0.0.0.0\\r\\na=ice-ufrag:ni42\\r\\na=ice-pwd:mA+Aov79azrnayR4VnBW0sPE\\r\\na=ice-options:trickle\\r\\na=fingerprint:sha-256 9F:C3:FD:F0:C7:23:67:F1:D7:00:A9:6C:99:CE:25:50:B5:5E:2C:03:54:26:8F:40:FD:6B:36:CB:54:08:32:90\\r\\na=setup:active\\r\\na=mid:0\\r\\na=extmap:1 urn:ietf:params:rtp-hdrext:ssrc-audio-level\\r\\na=extmap:2 http://www.webrtc.org/experiments/rtp-hdrext/abs-send-time\\r\\na=extmap:3 http://www.ietf.org/id/draft-holmer-rmcat-transport-wide-cc-extensions-01\\r\\na=extmap:4 urn:ietf:params:rtp-hdrext:sdes:mid\\r\\na=sendrecv\\r\\na=msid:50a1cdff-f93f-44d6-9bc0-6d71480ce01a c9948a03-edc4-4900-b4ae-7e8445bb04e7\\r\\na=rtcp-mux\\r\\na=rtcp-rsize\\r\\na=rtpmap:111 opus/48000/2\\r\\na=rtcp-fb:111 transport-cc\\r\\na=fmtp:111 minptime=10;useinbandfec=1\\r\\na=rtpmap:63 red/48000/2\\r\\na=fmtp:63 111/111\\r\\na=rtpmap:9 G722/8000\\r\\na=rtpmap:0 PCMU/8000\\r\\na=rtpmap:8 PCMA/8000\\r\\na=rtpmap:13 CN/8000\\r\\na=rtpmap:110 telephone-event/48000\\r\\na=rtpmap:126 telephone-event/8000\\r\\na=ssrc:940040699 cname:PT3+/w5a5BuTm/G0\\r\\n\",\"type\":\"answer\"}}",
+      "timestamp": "2024-12-30T21:57:07.741Z",
+      "read": true
+    },
+    {
+      "id": "1735595827981",
+      "senderId": "2",
+      "senderName": "safwane",
+      "receiverId": "1",
+      "content": "RTC:{\"type\":\"ice-candidate\",\"sender\":\"2\",\"receiver\":\"1\",\"payload\":{\"candidate\":\"candidate:2741699543 1 udp 2122260223 192.168.144.1 58962 typ host generation 0 ufrag ni42 network-id 1\",\"sdpMid\":\"0\",\"sdpMLineIndex\":0,\"usernameFragment\":\"ni42\"}}",
+      "timestamp": "2024-12-30T21:57:07.981Z",
+      "read": true
+    },
+    {
+      "id": "1735595827982",
+      "senderId": "2",
+      "senderName": "safwane",
+      "receiverId": "1",
+      "content": "RTC:{\"type\":\"ice-candidate\",\"sender\":\"2\",\"receiver\":\"1\",\"payload\":{\"candidate\":\"candidate:1258489642 1 udp 2122194687 192.168.128.1 39997 typ host generation 0 ufrag ni42 network-id 2\",\"sdpMid\":\"0\",\"sdpMLineIndex\":0,\"usernameFragment\":\"ni42\"}}",
+      "timestamp": "2024-12-30T21:57:07.982Z",
+      "read": true
+    },
+    {
+      "id": "1735595827984",
+      "senderId": "2",
+      "senderName": "safwane",
+      "receiverId": "1",
+      "content": "RTC:{\"type\":\"ice-candidate\",\"sender\":\"2\",\"receiver\":\"1\",\"payload\":{\"candidate\":\"candidate:3715779539 1 udp 2122129151 192.168.1.16 47466 typ host generation 0 ufrag ni42 network-id 3 network-cost 10\",\"sdpMid\":\"0\",\"sdpMLineIndex\":0,\"usernameFragment\":\"ni42\"}}",
+      "timestamp": "2024-12-30T21:57:07.984Z",
+      "read": true
+    },
+    {
+      "id": "1735595833043",
+      "senderId": "2",
+      "senderName": "safwane",
+      "receiverId": "1",
+      "content": "RTC:{\"type\":\"call-rejected\",\"sender\":\"2\",\"receiver\":\"1\",\"payload\":null}",
+      "timestamp": "2024-12-30T21:57:13.043Z",
+      "read": true
+    },
+    {
+      "id": "1735595833611",
+      "senderId": "1",
+      "senderName": "medaminer",
+      "receiverId": "2",
+      "content": "RTC:{\"type\":\"call-ended\",\"sender\":\"1\",\"receiver\":\"2\",\"payload\":null}",
+      "timestamp": "2024-12-30T21:57:13.611Z",
       "read": true
     }
   ],

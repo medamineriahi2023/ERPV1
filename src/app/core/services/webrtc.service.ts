@@ -100,36 +100,60 @@ export class WebRTCService {
     }
   }
 
-  public initiateCall(userId: string, type: 'video' | 'audio' = 'video') {
+  async initiateCall(userId: string, type: 'video' | 'audio' = 'video') {
     if (this.currentCall) {
+      console.warn('Already in a call');
       return;
     }
 
-    this.currentCall = {
-      userId,
-      type,
-      status: 'initiating'
-    };
+    const currentUser = this.authService.getCurrentUser();
+    if (!currentUser) return;
 
-    // Send only one call request message
-    this.sendRTCMessage({
-      type: 'call-request',
-      sender: String(this.authService.getCurrentUser().id),
-      receiver: userId,
-      payload: { type }
-    });
+    try {
+      await this.initializeMediaStream(type);
+      
+      this.currentCall = {
+        userId,
+        type,
+        status: 'initiating'
+      };
 
-    // Set timeout for call request
-    this.currentCallTimeout = setTimeout(() => {
-      if (this.currentCall?.status === 'initiating') {
-        this.endCall();
+      // Send call request
+      this.sendRTCMessage({
+        type: 'call-request',
+        sender: String(currentUser.id),
+        receiver: userId,
+        payload: {
+          type
+        }
+      });
+
+      // Set timeout for call request
+      if (this.currentCallTimeout) {
+        clearTimeout(this.currentCallTimeout);
       }
-    }, this.CALL_TIMEOUT);
+      this.currentCallTimeout = setTimeout(() => {
+        if (this.currentCall?.status === 'initiating') {
+          this.endCall();
+        }
+      }, this.CALL_TIMEOUT);
+
+    } catch (error) {
+      console.error('Error initiating call:', error);
+      this.cleanupCall();
+    }
   }
 
   private async handleCallRequest(message: RTCMessage) {
-    if (!this.peerConnection) {
-      this.initializePeerConnection();
+    if (this.currentCall) {
+      // If already in a call, reject the new call request
+      this.sendRTCMessage({
+        type: 'call-rejected',
+        sender: String(this.authService.getCurrentUser().id),
+        receiver: message.sender,
+        payload: null
+      });
+      return;
     }
 
     const caller = await this.authService.getUserById(Number(message.sender));
@@ -139,6 +163,13 @@ export class WebRTCService {
     if (this.currentCallTimeout) {
       clearTimeout(this.currentCallTimeout);
     }
+
+    // Set the current call
+    this.currentCall = {
+      userId: message.sender,
+      type: message.payload.type,
+      status: 'initiating'
+    };
 
     this.incomingCall.next({
       type: message.payload.type,
@@ -173,7 +204,8 @@ export class WebRTCService {
       payload: null
     });
 
-    this.initializeMediaStream();
+    // Initialize media stream with the correct call type
+    this.initializeMediaStream(this.currentCall.type);
   }
 
   public rejectCall() {
@@ -183,16 +215,23 @@ export class WebRTCService {
       this.currentCallTimeout = null;
     }
 
-    if (this.currentCall) {
-      // Send single reject message
-      this.sendRTCMessage({
-        type: 'call-rejected',
-        sender: String(this.authService.getCurrentUser().id),
-        receiver: this.currentCall.userId,
-        payload: null
-      });
+    const currentUser = this.authService.getCurrentUser();
+    if (!currentUser) return;
 
-      this.endCall();
+    if (this.currentCall || this.incomingCall.value) {
+      const targetUserId = this.currentCall?.userId || this.incomingCall.value?.caller.id;
+      
+      if (targetUserId) {
+        // Send single reject message
+        this.sendRTCMessage({
+          type: 'call-rejected',
+          sender: String(currentUser.id),
+          receiver: targetUserId,
+          payload: null
+        });
+      }
+
+      this.cleanupCall();
     }
   }
 
@@ -203,33 +242,52 @@ export class WebRTCService {
       this.currentCallTimeout = null;
     }
 
+    const currentUser = this.authService.getCurrentUser();
+    if (!currentUser) return;
+
     if (this.currentCall) {
       // Send single end call message
       this.sendRTCMessage({
         type: 'call-ended',
-        sender: String(this.authService.getCurrentUser().id),
+        sender: String(currentUser.id),
         receiver: this.currentCall.userId,
         payload: null
       });
-
-      this.cleanupCall();
     }
+
+    this.cleanupCall();
   }
 
   private cleanupCall() {
+    // Stop and cleanup peer connection
     if (this.peerConnection) {
-      this.peerConnection.close();
+      try {
+        this.peerConnection.close();
+      } catch (err) {
+        console.error('Error closing peer connection:', err);
+      }
       this.peerConnection = null;
     }
 
+    // Stop and cleanup local stream
     if (this.localStream.value) {
-      this.localStream.value.getTracks().forEach(track => track.stop());
+      try {
+        this.localStream.value.getTracks().forEach(track => {
+          track.stop();
+        });
+      } catch (err) {
+        console.error('Error stopping local tracks:', err);
+      }
       this.localStream.next(null);
     }
 
+    // Clear remote stream
     this.remoteStream.next(null);
+    
+    // Reset call state
     this.currentCall = null;
     this.incomingCall.next(null);
+    this.iceCandidates = [];
   }
 
   private async handleCallAccepted(message: RTCMessage) {
@@ -293,15 +351,8 @@ export class WebRTCService {
     if (!this.currentCall) return;
 
     try {
-      const constraints: MediaStreamConstraints = {
-        audio: true,
-        video: this.currentCall.type === 'video'
-      };
-
-      const stream = await navigator.mediaDevices.getUserMedia(constraints);
-      this.localStream.next(stream);
-
-      await this.createPeerConnection();
+      await this.initializeMediaStream(this.currentCall.type);
+      
       const offer = await this.peerConnection!.createOffer();
       await this.peerConnection!.setLocalDescription(offer);
 
@@ -317,6 +368,27 @@ export class WebRTCService {
 
     } catch (error) {
       console.error('Error initializing call:', error);
+      this.endCall();
+    }
+  }
+
+  private async initializeMediaStream(type: 'video' | 'audio' = 'video') {
+    try {
+      const constraints: MediaStreamConstraints = {
+        audio: true,
+        video: type === 'video' ? {
+          width: { ideal: 1280 },
+          height: { ideal: 720 }
+        } : false
+      };
+
+      const stream = await navigator.mediaDevices.getUserMedia(constraints);
+      this.localStream.next(stream);
+
+      await this.createPeerConnection();
+
+    } catch (error) {
+      console.error('Error initializing media stream:', error);
       this.endCall();
     }
   }
@@ -367,75 +439,13 @@ export class WebRTCService {
     }
   }
 
-  private initializePeerConnection() {
-    this.peerConnection = new RTCPeerConnection({
-      iceServers: [
-        { urls: 'stun:stun.l.google.com:19302' },
-        { urls: 'stun:stun1.l.google.com:19302' }
-      ]
-    });
-
-    this.peerConnection.onicecandidate = (event) => {
-      if (event.candidate) {
-        this.sendRTCMessage({
-          type: 'ice-candidate',
-          sender: String(this.authService.getCurrentUser().id),
-          receiver: this.currentCall.userId,
-          payload: event.candidate
-        });
-      }
-    };
-
-    this.peerConnection.ontrack = (event) => {
-      this.remoteStream.next(event.streams[0]);
-    };
-
-    if (this.localStream.value) {
-      this.localStream.value.getTracks().forEach(track => {
-        if (this.peerConnection && this.localStream.value) {
-          this.peerConnection.addTrack(track, this.localStream.value);
-        }
-      });
-    }
-  }
-
-  private async initializeMediaStream() {
-    try {
-      const constraints: MediaStreamConstraints = {
-        audio: true,
-        video: this.currentCall.type === 'video'
-      };
-
-      const stream = await navigator.mediaDevices.getUserMedia(constraints);
-      this.localStream.next(stream);
-
-      await this.createPeerConnection();
-      const offer = await this.peerConnection!.createOffer();
-      await this.peerConnection!.setLocalDescription(offer);
-
-      const currentUser = this.authService.getCurrentUser();
-      if (!currentUser) return;
-
-      await this.sendRTCMessage({
-        type: 'offer',
-        sender: String(currentUser.id),
-        receiver: this.currentCall.userId,
-        payload: offer
-      });
-
-    } catch (error) {
-      console.error('Error initializing media stream:', error);
-      this.endCall();
-    }
-  }
-
   private handleCallEnded() {
     this.endCall();
   }
 
   async toggleVideo() {
     const stream = this.localStream.value;
-    if (stream) {
+    if (stream && this.currentCall?.type === 'video') {
       const videoTrack = stream.getVideoTracks()[0];
       if (videoTrack) {
         videoTrack.enabled = !videoTrack.enabled;

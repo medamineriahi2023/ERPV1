@@ -68,9 +68,11 @@
         <div class="chat-actions">
           <button pButton icon="pi pi-video" class="p-button-rounded p-button-text" 
                   (click)="startVideoCall()" 
+                  [disabled]="!selectedUser || selectedUser.status === 'OFFLINE'"
                   pTooltip="Start video call"></button>
           <button pButton icon="pi pi-phone" class="p-button-rounded p-button-text" 
                   (click)="startAudioCall()" 
+                  [disabled]="!selectedUser || selectedUser.status === 'OFFLINE'"
                   pTooltip="Start voice call"></button>
           <button pButton type="button" icon="pi pi-ellipsis-v" class="p-button-rounded p-button-text"></button>
         </div>

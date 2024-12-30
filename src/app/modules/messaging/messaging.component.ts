@@ -200,11 +200,46 @@ export class MessagingComponent implements OnInit, OnDestroy {
   }
 
   getMessagesWithUser(userId: string): Message[] {
-    const currentUserId = String(this.authService.getCurrentUser()?.id);
-    return this.messages.filter(m => 
-      (m.senderId === userId && m.receiverId === currentUserId) ||
-      (m.senderId === currentUserId && m.receiverId === userId)
-    ).sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
+    return this.messages
+      .filter(message => {
+        const isRelevantParticipant = (
+          (message.senderId === userId && message.receiverId === this.currentUserId) ||
+          (message.senderId === this.currentUserId && message.receiverId === userId)
+        );
+
+        if (!isRelevantParticipant) return false;
+
+        if (message.content.startsWith('RTC:')) {
+          const rtcData = JSON.parse(message.content.slice(4));
+          const isSender = message.senderId === this.currentUserId;
+          
+          // Transform RTC message into user-friendly content
+          switch (rtcData.type) {
+            case 'call-request':
+              message.content = rtcData.payload.type === 'video' ? 
+                (isSender ? '📞 Started a video call' : '📞 Incoming video call') :
+                (isSender ? '📞 Started a voice call' : '📞 Incoming voice call');
+              break;
+            case 'call-accepted':
+              message.content = isSender ? '✅ Call accepted' : '✅ You accepted the call';
+              break;
+            case 'call-rejected':
+              message.content = isSender ? '❌ Call declined' : '❌ You declined the call';
+              break;
+            case 'call-canceled':
+              message.content = isSender ? '❌ You canceled the call' : '❌ Call was canceled';
+              break;
+            case 'call-ended':
+              message.content = '⏹️ Call ended';
+              break;
+            default:
+              return false; // Filter out other RTC messages (offer, answer, ice-candidate)
+          }
+          return true;
+        }
+        return true;
+      })
+      .sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
   }
 
   getMessageDates(): string[] {
