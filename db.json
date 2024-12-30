@@ -304,6 +304,18 @@
       "status": "late",
       "isLate": true,
       "id": 6
+    },
+    {
+      "userId": 1,
+      "date": "2024-12-30T07:54:22.023Z",
+      "checkIn": "08:54:22",
+      "checkOut": null,
+      "lunchStart": "14:02:01",
+      "lunchEnd": "15:15:01",
+      "totalHours": 0,
+      "status": "present",
+      "isLate": false,
+      "id": 7
     }
   ],
   "leave-requests": [],
