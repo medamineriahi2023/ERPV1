@@ -12,6 +12,8 @@ import { DatePipe, SlicePipe, CommonModule } from "@angular/common";
 import { InputText } from "primeng/inputtext";
 import { ButtonModule } from 'primeng/button';
 import { ChangeDetectorRef } from '@angular/core';
+import { WebRTCService } from '../../core/services/webrtc.service';
+import {VideoCallComponent} from "@app/modules/messaging/video-call/video-call.component";
 
 @Component({
   selector: 'app-messaging',
@@ -24,7 +26,8 @@ import { ChangeDetectorRef } from '@angular/core';
     Badge,
     DatePipe,
     InputText,
-    ButtonModule
+    ButtonModule,
+    VideoCallComponent
   ],
   templateUrl: './messaging.component.html',
   styleUrls: ['./messaging.component.scss']
@@ -53,6 +56,7 @@ export class MessagingComponent implements OnInit, OnDestroy {
   constructor(
     private messagingService: MessagingService,
     private authService: AuthService,
+    private webRTCService: WebRTCService,
     private cdr: ChangeDetectorRef
   ) {
     this.checkScreenSize();
@@ -254,5 +258,17 @@ export class MessagingComponent implements OnInit, OnDestroy {
 
   backToUserList() {
     this.selectedUser = null;
+  }
+
+  async startVideoCall() {
+    if (this.selectedUser) {
+      await this.webRTCService.initiateCall(this.selectedUser.userId, 'video');
+    }
+  }
+
+  async startAudioCall() {
+    if (this.selectedUser) {
+      await this.webRTCService.initiateCall(this.selectedUser.userId, 'audio');
+    }
   }
 }

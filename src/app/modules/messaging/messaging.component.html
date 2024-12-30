@@ -66,8 +66,12 @@
           </div>
         </div>
         <div class="chat-actions">
-          <button pButton type="button" icon="pi pi-phone" class="p-button-rounded p-button-text"></button>
-          <button pButton type="button" icon="pi pi-video" class="p-button-rounded p-button-text"></button>
+          <button pButton icon="pi pi-video" class="p-button-rounded p-button-text" 
+                  (click)="startVideoCall()" 
+                  pTooltip="Start video call"></button>
+          <button pButton icon="pi pi-phone" class="p-button-rounded p-button-text" 
+                  (click)="startAudioCall()" 
+                  pTooltip="Start voice call"></button>
           <button pButton type="button" icon="pi pi-ellipsis-v" class="p-button-rounded p-button-text"></button>
         </div>
       </div>
@@ -120,6 +124,8 @@
     </div>
   </div>
 </div>
+
+<app-video-call></app-video-call>
 
 <ng-template #noUsersMessage>
   <div class="no-users-message">
