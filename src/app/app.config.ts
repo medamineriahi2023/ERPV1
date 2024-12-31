@@ -1,20 +1,22 @@
-import { ApplicationConfig } from '@angular/core';
+import { ApplicationConfig, isDevMode } from '@angular/core';
 import { provideRouter } from '@angular/router';
 import { routes } from './app.routes';
-import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
-import { provideHttpClient } from '@angular/common/http';
+import { provideAnimations } from '@angular/platform-browser/animations';
+import { provideFirebaseApp, initializeApp } from '@angular/fire/app';
+import { getFirestore, provideFirestore } from '@angular/fire/firestore';
+import { getAuth, provideAuth } from '@angular/fire/auth';
+import { getDatabase, provideDatabase } from '@angular/fire/database';
+import { getStorage, provideStorage } from '@angular/fire/storage';
+import { environment } from '../environments/environment';
+import { provideServiceWorker } from '@angular/service-worker';
 import { providePrimeNG } from 'primeng/config';
 import Aura from '@primeng/themes/aura';
-import { environment } from '../environments/environment';
-import { initializeApp, provideFirebaseApp } from '@angular/fire/app';
-import { getDatabase, provideDatabase } from '@angular/fire/database';
-import { getAuth, provideAuth } from '@angular/fire/auth';
+import { provideHttpClient, withFetch } from '@angular/common/http';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideRouter(routes),
-    provideAnimationsAsync(),
-    provideHttpClient(),
+    provideAnimations(),
     providePrimeNG({
       theme: {
         preset: Aura
@@ -22,6 +24,11 @@ export const appConfig: ApplicationConfig = {
     }),
     provideFirebaseApp(() => initializeApp(environment.firebase)),
     provideAuth(() => getAuth()),
-    provideDatabase(() => getDatabase())
+    provideDatabase(() => getDatabase()),
+    provideServiceWorker('ngsw-worker.js', {
+      enabled: !isDevMode(),
+      registrationStrategy: 'registerWhenStable:30000'
+    }),
+    provideHttpClient(withFetch())
   ]
 };

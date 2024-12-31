@@ -20,6 +20,7 @@
     "@angular/platform-browser": "^19.0.0",
     "@angular/platform-browser-dynamic": "^19.0.0",
     "@angular/router": "^19.0.0",
+    "@angular/service-worker": "^19.0.5",
     "@cloudinary/angular": "^1.0.0-beta.14",
     "@cloudinary/url-gen": "^1.21.0",
     "@fortawesome/fontawesome-free": "^6.7.2",

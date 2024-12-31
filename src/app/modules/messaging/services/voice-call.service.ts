@@ -3,10 +3,13 @@ import { Database, ref, set, onValue, remove, get, off } from '@angular/fire/dat
 import { Auth } from '@angular/fire/auth';
 import { BehaviorSubject } from 'rxjs';
 import { AuthService } from '../../../core/services/auth.service';
+import { NotificationService } from '../../../core/services/notification.service';
+import { AudioService } from '../../../core/services/audio.service';
 
 export interface CallStatus {
   status: 'idle' | 'calling' | 'incoming' | 'connected';
   remoteUserId?: string;
+  callerName?: string;
 }
 
 @Injectable({
@@ -25,22 +28,69 @@ export class VoiceCallService {
   private remoteStream: MediaStream | null = null;
   private remoteAudio: HTMLAudioElement | null = null;
 
-  constructor(private authService: AuthService) {
+  constructor(
+    private authService: AuthService,
+    private notificationService: NotificationService,
+    private audioService: AudioService
+  ) {
     if (this.authService.isLoggedIn()) {
       const currentUserId = String(this.authService.getCurrentUser()?.id);
       const userCallsRef = ref(this.db, `calls/${currentUserId}`);
       
       // Listen for incoming calls
-      onValue(userCallsRef, (snapshot) => {
+      onValue(userCallsRef, async (snapshot) => {
         const callData = snapshot.val();
         if (callData?.offer && !callData.answer && !callData.rejected) {
           console.log('Incoming call detected:', callData);
+          
+          // Get caller's information
+          const callerInfo = await this.getUserInfo(callData.callerId);
+          
+          // Play call sound
+          this.audioService.playCallSound();
+          
+          // Show notification
+          await this.notificationService.showCallNotification({
+            id: callData.callerId,
+            name: callerInfo?.name || callData.callerId
+          });
+          
           this.callStatusSubject.next({
             status: 'incoming',
-            remoteUserId: callData.callerId
+            remoteUserId: callData.callerId,
+            callerName: callerInfo?.name
           });
         }
       });
+
+      // Listen for call actions from notifications
+      window.addEventListener('acceptCall', (event: any) => {
+        const callerInfo = event.detail;
+        if (this.callStatusSubject.value.status === 'incoming') {
+          this.audioService.stopCallSound();
+          this.acceptCall(callerInfo.id);
+        }
+      });
+
+      window.addEventListener('declineCall', (event: any) => {
+        const callerInfo = event.detail;
+        if (this.callStatusSubject.value.status === 'incoming') {
+          this.audioService.stopCallSound();
+          this.rejectCall(callerInfo.id);
+        }
+      });
+    }
+  }
+
+  private async getUserInfo(userId: string): Promise<{ name: string } | null> {
+    try {
+      const userRef = ref(this.db, `users/${userId}`);
+      const snapshot = await get(userRef);
+      const userData = snapshot.val();
+      return userData ? { name: userData.name || userData.username || userId } : null;
+    } catch (error) {
+      console.error('Error getting user info:', error);
+      return null;
     }
   }
 
@@ -347,11 +397,12 @@ export class VoiceCallService {
     }
   }
 
-  async acceptCall(callerId: string) {
-    if (!await this.checkAuth()) return;
-
-    console.log('Accepting call from:', callerId);
+  async acceptCall(callerId: string): Promise<void> {
     try {
+      this.audioService.stopCallSound();
+      if (!await this.checkAuth()) return;
+
+      console.log('Accepting call from:', callerId);
       // Clean up any existing call state
       this.cleanupCallHandlers();
       if (this.peerConnection) {
@@ -421,17 +472,25 @@ export class VoiceCallService {
 
     } catch (error) {
       console.error('Error accepting call:', error);
-      this.endCall();
+      this.audioService.stopCallSound();
+      throw error;
     }
   }
 
-  async rejectCall(callerId: string) {
-    if (!await this.checkAuth()) return;
+  async rejectCall(callerId: string): Promise<void> {
+    try {
+      this.audioService.stopCallSound();
+      if (!await this.checkAuth()) return;
 
-    console.log('Rejecting call from:', callerId);
-    const callRef = ref(this.db, `calls/${callerId}/rejected`);
-    await set(callRef, true);
-    this.endCall();
+      console.log('Rejecting call from:', callerId);
+      const callRef = ref(this.db, `calls/${callerId}/rejected`);
+      await set(callRef, true);
+      this.endCall();
+    } catch (error) {
+      console.error('Error rejecting call:', error);
+      this.audioService.stopCallSound();
+      throw error;
+    }
   }
 
   endCall() {
