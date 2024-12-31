@@ -12,6 +12,8 @@ import { DatePipe, SlicePipe, CommonModule } from "@angular/common";
 import { InputText } from "primeng/inputtext";
 import { ButtonModule } from 'primeng/button';
 import { ChangeDetectorRef } from '@angular/core';
+import { VoiceCallService, CallStatus } from './services/voice-call.service';
+import { Dialog } from 'primeng/dialog';
 
 @Component({
   selector: 'app-messaging',
@@ -24,7 +26,8 @@ import { ChangeDetectorRef } from '@angular/core';
     Badge,
     DatePipe,
     InputText,
-    ButtonModule
+    ButtonModule,
+    Dialog
   ],
   templateUrl: './messaging.component.html',
   styleUrls: ['./messaging.component.scss']
@@ -41,7 +44,12 @@ export class MessagingComponent implements OnInit, OnDestroy {
   isMobileView: boolean = false;
   private searchTermSubject = new BehaviorSubject<string>('');
   private subscriptions: Subscription[] = [];
-  
+  callStatus: CallStatus = { status: 'idle' };
+  showCallDialog: boolean = false;
+  private callStatusSubscription: Subscription | undefined;
+  callDuration: string = '00:00';
+  private callTimer: any;
+
   get searchTermValue(): string {
     return this.searchTermSubject.value;
   }
@@ -53,10 +61,11 @@ export class MessagingComponent implements OnInit, OnDestroy {
   constructor(
     private messagingService: MessagingService,
     private authService: AuthService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private voiceCallService: VoiceCallService
   ) {
-    this.checkScreenSize();
     this.currentUserId = String(this.authService.getCurrentUser()?.id);
+    this.checkScreenSize();
   }
 
   @HostListener('window:resize')
@@ -95,6 +104,31 @@ export class MessagingComponent implements OnInit, OnDestroy {
       ).subscribe(() => {
         this.filterUsers();
       })
+    );
+
+    // Subscribe to call status
+    this.callStatusSubscription = this.voiceCallService.callStatus$.subscribe(
+      status => {
+        console.log('Call status changed:', status);
+        this.callStatus = status;
+        
+        if (status.status === 'incoming') {
+          // Find and select the calling user
+          const callingUser = this.userStatuses.find(user => user.userId === status.remoteUserId);
+          if (callingUser) {
+            console.log('Incoming call from:', callingUser.username);
+            this.selectedUser = callingUser;
+            this.showCallDialog = true;
+          }
+        } else if (status.status === 'idle') {
+          this.showCallDialog = false;
+          this.stopCallTimer();
+        } else if (status.status === 'connected') {
+          console.log('Call connected, starting timer');
+          this.startCallTimer();
+        }
+        this.cdr.detectChanges();
+      }
     );
   }
 
@@ -248,8 +282,62 @@ export class MessagingComponent implements OnInit, OnDestroy {
     return message.id;
   }
 
+  initiateCall() {
+    if (this.selectedUser) {
+      console.log('Initiating call to:', this.selectedUser.username);
+      this.voiceCallService.startCall(this.selectedUser.userId, this.currentUserId);
+      this.showCallDialog = true;
+    }
+  }
+
+  async acceptCall() {
+    if (this.callStatus.remoteUserId && this.selectedUser) {
+      console.log('Accepting call from:', this.selectedUser.username);
+      await this.voiceCallService.acceptCall(this.callStatus.remoteUserId);
+    }
+  }
+
+  rejectCall() {
+    if (this.callStatus.remoteUserId) {
+      console.log('Rejecting call');
+      this.voiceCallService.rejectCall(this.callStatus.remoteUserId);
+      this.showCallDialog = false;
+    }
+  }
+
+  endCall() {
+    console.log('Ending call');
+    this.voiceCallService.endCall();
+    this.showCallDialog = false;
+  }
+
+  private startCallTimer() {
+    let seconds = 0;
+    this.stopCallTimer(); // Clear any existing timer
+    this.callTimer = setInterval(() => {
+      seconds++;
+      const minutes = Math.floor(seconds / 60);
+      const remainingSeconds = seconds % 60;
+      this.callDuration = `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
+      this.cdr.detectChanges();
+    }, 1000);
+    console.log('Call timer started');
+  }
+
+  private stopCallTimer() {
+    if (this.callTimer) {
+      clearInterval(this.callTimer);
+      this.callTimer = null;
+      this.callDuration = '00:00';
+      console.log('Call timer stopped');
+    }
+  }
+
   ngOnDestroy() {
     this.subscriptions.forEach(sub => sub.unsubscribe());
+    this.callStatusSubscription?.unsubscribe();
+    this.stopCallTimer();
+    this.voiceCallService.endCall();
   }
 
   backToUserList() {

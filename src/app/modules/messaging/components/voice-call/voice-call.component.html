@@ -1,0 +1,37 @@
+<div class="voice-call-container">
+  <!-- Idle State -->
+  <div *ngIf="callStatus.status === 'idle'" class="call-controls">
+    <button mat-fab color="primary" (click)="initiateCall(targetUserId, currentUserId)">
+      <mat-icon>call</mat-icon>
+    </button>
+  </div>
+
+  <!-- Calling State -->
+  <div *ngIf="callStatus.status === 'calling'" class="call-status">
+    <div class="status-text">Calling...</div>
+    <button mat-fab color="warn" (click)="endCall()">
+      <mat-icon>call_end</mat-icon>
+    </button>
+  </div>
+
+  <!-- Incoming Call State -->
+  <div *ngIf="callStatus.status === 'incoming'" class="incoming-call">
+    <div class="status-text">Incoming call...</div>
+    <div class="call-actions">
+      <button mat-fab color="primary" (click)="acceptCall(callStatus.remoteUserId!)">
+        <mat-icon>call</mat-icon>
+      </button>
+      <button mat-fab color="warn" (click)="rejectCall(callStatus.remoteUserId!)">
+        <mat-icon>call_end</mat-icon>
+      </button>
+    </div>
+  </div>
+
+  <!-- Connected State -->
+  <div *ngIf="callStatus.status === 'connected'" class="call-active">
+    <div class="status-text">Call in progress</div>
+    <button mat-fab color="warn" (click)="endCall()">
+      <mat-icon>call_end</mat-icon>
+    </button>
+  </div>
+</div>

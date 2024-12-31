@@ -447,6 +447,72 @@
   }
 }
 
+// Add voice call styles
+.user-actions {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.call-dialog {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2rem;
+  text-align: center;
+
+  .call-status {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+
+    h3 {
+      margin: 1rem 0;
+      color: var(--text-color);
+    }
+
+    .call-actions {
+      display: flex;
+      gap: 2rem;
+      margin-top: 1rem;
+    }
+
+    .call-timer {
+      font-size: 1.2rem;
+      color: var(--text-color-secondary);
+      margin: 0.5rem 0;
+    }
+  }
+
+  :host ::ng-deep {
+    .p-avatar.p-avatar-xlarge {
+      width: 6rem;
+      height: 6rem;
+    }
+  }
+}
+
+// Pulse animation for calling state
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.calling .p-avatar {
+  animation: pulse 1.5s infinite;
+}
+
 // Add smooth scrollbar styling
 ::-webkit-scrollbar {
   width: 8px;

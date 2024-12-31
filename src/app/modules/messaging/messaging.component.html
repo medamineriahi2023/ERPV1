@@ -49,24 +49,17 @@
       <div class="selected-user" *ngIf="selectedUser">
         <div class="user-info-left">
           <button *ngIf="isMobileView" pButton icon="pi pi-arrow-left" class="p-button-text back-button" (click)="backToUserList()"></button>
-          <p-avatar [image]="selectedUser.photoUrl"
-                   [label]="!selectedUser.photoUrl ? selectedUser.username[0] : ''"
-                   size="large"
-                   [style]="{'background-color': !selectedUser.photoUrl ? getStatusColor(selectedUser.status) : undefined}">
-            <div class="status-indicator" [style.background-color]="getStatusColor(selectedUser.status)"></div>
-          </p-avatar>
+          <p-avatar [image]="selectedUser.photoUrl" size="large" shape="circle"></p-avatar>
           <div class="user-details">
             <span class="user-name">{{selectedUser.username}}</span>
-            <div class="user-info-details">
-              <span class="user-role" *ngIf="selectedUser.role || selectedUser.position">
-                {{selectedUser.role || 'Employee'}}{{selectedUser.position ? ' • ' + selectedUser.position : ''}}
-              </span>
-              <span class="user-status">{{selectedUser.status.toLowerCase()}}</span>
-            </div>
+            <span class="user-status">{{selectedUser.status}}</span>
           </div>
         </div>
-        <div class="chat-actions">
-          <button pButton type="button" icon="pi pi-phone" class="p-button-rounded p-button-text"></button>
+        <div class="user-actions">
+          <button pButton type="button" icon="pi pi-phone" class="p-button-rounded p-button-success" 
+                  (click)="initiateCall()" 
+                  [disabled]="callStatus.status !== 'idle'">
+          </button>
           <button pButton type="button" icon="pi pi-video" class="p-button-rounded p-button-text"></button>
           <button pButton type="button" icon="pi pi-ellipsis-v" class="p-button-rounded p-button-text"></button>
         </div>
@@ -120,6 +113,51 @@
     </div>
   </div>
 </div>
+
+<p-dialog [(visible)]="showCallDialog" 
+          [modal]="true" 
+          [closable]="false" 
+          [style]="{width: '300px'}" 
+          [showHeader]="false">
+  <div class="call-dialog">
+    <!-- Calling State -->
+    <div *ngIf="callStatus.status === 'calling'" class="call-status">
+      <p-avatar [image]="selectedUser?.photoUrl" size="xlarge" shape="circle"></p-avatar>
+      <h3>Calling {{selectedUser?.username}}...</h3>
+      <button pButton icon="pi pi-phone-slash" 
+              class="p-button-rounded p-button-danger"
+              (click)="endCall()">
+      </button>
+    </div>
+
+    <!-- Incoming Call State -->
+    <div *ngIf="callStatus.status === 'incoming'" class="call-status">
+      <p-avatar [image]="selectedUser?.photoUrl" size="xlarge" shape="circle"></p-avatar>
+      <h3>Incoming call from {{selectedUser?.username}}</h3>
+      <div class="call-actions">
+        <button pButton icon="pi pi-phone" 
+                class="p-button-rounded p-button-success"
+                (click)="acceptCall()">
+        </button>
+        <button pButton icon="pi pi-phone-slash" 
+                class="p-button-rounded p-button-danger"
+                (click)="rejectCall()">
+        </button>
+      </div>
+    </div>
+
+    <!-- Connected State -->
+    <div *ngIf="callStatus.status === 'connected'" class="call-status">
+      <p-avatar [image]="selectedUser?.photoUrl" size="xlarge" shape="circle"></p-avatar>
+      <h3>On call with {{selectedUser?.username}}</h3>
+      <div class="call-timer">{{callDuration}}</div>
+      <button pButton icon="pi pi-phone-slash" 
+              class="p-button-rounded p-button-danger"
+              (click)="endCall()">
+      </button>
+    </div>
+  </div>
+</p-dialog>
 
 <ng-template #noUsersMessage>
   <div class="no-users-message">

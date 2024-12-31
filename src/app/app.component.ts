@@ -5,6 +5,7 @@ import { ButtonModule } from 'primeng/button';
 import { ToastModule } from 'primeng/toast';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { MessageService, ConfirmationService } from 'primeng/api';
+import {AngularFireModule} from "@angular/fire/compat";
 
 @Component({
   selector: 'app-root',
@@ -20,8 +21,8 @@ import { MessageService, ConfirmationService } from 'primeng/api';
     RouterOutlet,
     ButtonModule,
     ToastModule,
-    ConfirmDialogModule
-  ],
+    ConfirmDialogModule,
+      AngularFireModule  ],
   providers: [MessageService, ConfirmationService]
 })
 export class AppComponent {
