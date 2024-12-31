@@ -41,7 +41,7 @@
               "./node_modules/@fortawesome/fontawesome-free/css/all.min.css"
             ],
             "scripts": [],
-            "serviceWorker": true
+            "serviceWorker": false
           },
           "configurations": {
             "production": {
