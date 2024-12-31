@@ -41,8 +41,7 @@
               "./node_modules/@fortawesome/fontawesome-free/css/all.min.css"
             ],
             "scripts": [],
-            "serviceWorker": true,
-            "ngswConfigPath": "ngsw-config.json"
+            "serviceWorker": true
           },
           "configurations": {
             "production": {
@@ -58,12 +57,14 @@
                   "maximumError": "18kb"
                 }
               ],
-              "outputHashing": "all"
+              "outputHashing": "all",
+              "serviceWorker": "ngsw-config.json"
             },
             "development": {
               "optimization": false,
               "extractLicenses": false,
-              "sourceMap": true
+              "sourceMap": true,
+              "serviceWorker": false
             }
           },
           "defaultConfiguration": "production"

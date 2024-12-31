@@ -33,9 +33,9 @@
         "endTime": "17:00",
         "lunchBreakDuration": 60
       },
-      "status": "OFFLINE",
+      "status": "ACTIVE",
       "contractType": "CDI",
-      "lastActive": "2024-12-31T19:25:26.343Z"
+      "lastActive": "2024-12-31T23:06:16.298Z"
     },
     {
       "username": "safwane",
@@ -64,7 +64,7 @@
       "status": "ACTIVE",
       "contractType": "CDI",
       "id": 2,
-      "lastActive": "2024-12-31T19:25:15.498Z"
+      "lastActive": "2024-12-31T23:06:15.560Z"
     },
     {
       "username": "aliriahi@gmail.com",
@@ -177,7 +177,7 @@
       "contractType": "CDI",
       "photoUrl": "https://i.imgur.com/BQfIQJN.jpeg",
       "id": 6,
-      "lastActive": "2024-12-31T02:10:07.556Z"
+      "lastActive": "2024-12-31T19:38:04.214Z"
     },
     {
       "username": "kamel@gmail.com",
@@ -379,6 +379,316 @@
       "content": "hi",
       "timestamp": "2024-12-30T17:29:59.695Z",
       "read": true
+    },
+    {
+      "senderId": "2",
+      "senderName": "safwane",
+      "receiverId": "1",
+      "content": "dfdfsdf",
+      "type": "call",
+      "timestamp": "2024-12-31T22:02:48.956Z",
+      "read": true,
+      "id": "O4_8X9K"
+    },
+    {
+      "id": "f35hxnlbk",
+      "senderId": "1",
+      "senderName": "medaminer",
+      "receiverId": "2",
+      "type": "call",
+      "content": "📞 Call declined",
+      "timestamp": "2024-12-31T22:29:42.522Z",
+      "read": true
+    },
+    {
+      "id": "n8bixgx2i",
+      "senderId": "1",
+      "senderName": "medaminer",
+      "receiverId": "2",
+      "type": "call",
+      "content": "📞 Call declined",
+      "timestamp": "2024-12-31T22:30:25.906Z",
+      "read": true
+    },
+    {
+      "id": "zsph6q9q2",
+      "senderId": "2",
+      "senderName": "safwane",
+      "receiverId": "1",
+      "type": "call",
+      "content": "📞 Call declined",
+      "timestamp": "2024-12-31T22:35:23.872Z",
+      "read": true
+    },
+    {
+      "id": "gbvz4zoe7",
+      "senderId": "2",
+      "senderName": "medaminer",
+      "receiverId": "1",
+      "type": "call",
+      "content": "📞 Started a call",
+      "timestamp": "2024-12-31T22:41:35.938Z",
+      "read": true
+    },
+    {
+      "id": "h7p4jpur5",
+      "senderId": "2",
+      "senderName": "medaminer",
+      "receiverId": "1",
+      "type": "call",
+      "content": "📞 Started a call",
+      "timestamp": "2024-12-31T22:41:51.553Z",
+      "read": true
+    },
+    {
+      "id": "te18ma983",
+      "senderId": "1",
+      "senderName": "medaminer",
+      "receiverId": "2",
+      "type": "call",
+      "content": "📞 Call declined",
+      "timestamp": "2024-12-31T22:41:53.670Z",
+      "read": true
+    },
+    {
+      "id": "kpiydq7w6",
+      "senderId": "2",
+      "senderName": "medaminer",
+      "receiverId": "1",
+      "type": "call",
+      "content": "📞 Started a call",
+      "timestamp": "2024-12-31T22:42:01.920Z",
+      "read": true
+    },
+    {
+      "senderId": "1",
+      "senderName": "medaminer",
+      "receiverId": "1",
+      "content": "📞 Mohamed Amine Riahi started a call",
+      "type": "text",
+      "timestamp": "2024-12-31T22:46:45.681Z",
+      "read": false,
+      "id": "NEVsX0l"
+    },
+    {
+      "senderId": "2",
+      "senderName": "safwane",
+      "receiverId": "2",
+      "content": "📞 Safwen Soker started a call",
+      "type": "text",
+      "timestamp": "2024-12-31T22:46:52.667Z",
+      "read": false,
+      "id": "mj5f7CY"
+    },
+    {
+      "senderId": "1",
+      "senderName": "medaminer",
+      "receiverId": "1",
+      "content": "📞 Call ended",
+      "type": "text",
+      "timestamp": "2024-12-31T22:46:59.608Z",
+      "read": false,
+      "id": "-wm7GFb"
+    },
+    {
+      "senderId": "1",
+      "senderName": "medaminer",
+      "receiverId": "1",
+      "content": "📞 Mohamed Amine Riahi started a call",
+      "type": "text",
+      "timestamp": "2024-12-31T22:47:02.209Z",
+      "read": false,
+      "id": "YZKuABM"
+    },
+    {
+      "senderId": "1",
+      "senderName": "medaminer",
+      "receiverId": "1",
+      "content": "📞 Call declined",
+      "type": "text",
+      "timestamp": "2024-12-31T22:47:03.484Z",
+      "read": false,
+      "id": "ARFceSJ"
+    },
+    {
+      "senderId": "1",
+      "senderName": "medaminer",
+      "receiverId": "1",
+      "content": "📞 Mohamed Amine Riahi started a call",
+      "type": "text",
+      "timestamp": "2024-12-31T22:47:12.881Z",
+      "read": false,
+      "id": "wQAaq4a"
+    },
+    {
+      "senderId": "2",
+      "senderName": "safwane",
+      "receiverId": "2",
+      "content": "📞 Safwen Soker started a call",
+      "type": "text",
+      "timestamp": "2024-12-31T22:48:13.184Z",
+      "read": false,
+      "id": "oobKwGa"
+    },
+    {
+      "senderId": "1",
+      "senderName": "medaminer",
+      "receiverId": "1",
+      "content": "📞 Mohamed Amine Riahi started a call",
+      "type": "text",
+      "timestamp": "2024-12-31T22:48:15.018Z",
+      "read": false,
+      "id": "1vJfNjO"
+    },
+    {
+      "senderId": "1",
+      "senderName": "medaminer",
+      "receiverId": "1",
+      "content": "📞 Call declined",
+      "type": "text",
+      "timestamp": "2024-12-31T22:48:16.847Z",
+      "read": false,
+      "id": "ris1DTZ"
+    },
+    {
+      "senderId": "2",
+      "senderName": "safwane",
+      "receiverId": "2",
+      "content": "📞 Call declined",
+      "type": "text",
+      "timestamp": "2024-12-31T22:48:18.703Z",
+      "read": false,
+      "id": "S8dv8km"
+    },
+    {
+      "senderId": "2",
+      "senderName": "safwane",
+      "receiverId": "2",
+      "content": "📞 Safwen Soker started a call",
+      "type": "text",
+      "timestamp": "2024-12-31T22:48:30.785Z",
+      "read": false,
+      "id": "K4oiNU9"
+    },
+    {
+      "senderId": "1",
+      "senderName": "medaminer",
+      "receiverId": "1",
+      "content": "📞 Mohamed Amine Riahi started a call",
+      "type": "text",
+      "timestamp": "2024-12-31T22:48:31.095Z",
+      "read": false,
+      "id": "EfZGpRd"
+    },
+    {
+      "senderId": "2",
+      "senderName": "safwane",
+      "receiverId": "2",
+      "content": "📞 Call declined",
+      "type": "text",
+      "timestamp": "2024-12-31T22:48:32.838Z",
+      "read": false,
+      "id": "nM2Sx8x"
+    },
+    {
+      "senderId": "1",
+      "senderName": "medaminer",
+      "receiverId": "1",
+      "content": "📞 Call declined",
+      "type": "text",
+      "timestamp": "2024-12-31T22:48:44.121Z",
+      "read": false,
+      "id": "mHb3MAw"
+    },
+    {
+      "senderId": "2",
+      "senderName": "safwane",
+      "receiverId": "2",
+      "content": "📞 Safwen Soker started a call",
+      "type": "text",
+      "timestamp": "2024-12-31T22:48:50.529Z",
+      "read": false,
+      "id": "lviJRot"
+    },
+    {
+      "senderId": "1",
+      "senderName": "medaminer",
+      "receiverId": "1",
+      "content": "📞 Call ended",
+      "type": "text",
+      "timestamp": "2024-12-31T22:49:08.698Z",
+      "read": false,
+      "id": "lNYxhS5"
+    },
+    {
+      "senderId": "1",
+      "senderName": "medaminer",
+      "receiverId": "1",
+      "content": "📞 Mohamed Amine Riahi started a call",
+      "type": "text",
+      "timestamp": "2024-12-31T22:49:19.654Z",
+      "read": false,
+      "id": "1p0TPPD"
+    },
+    {
+      "senderId": "1",
+      "senderName": "medaminer",
+      "receiverId": "1",
+      "content": "📞 Mohamed Amine Riahi started a call",
+      "type": "text",
+      "timestamp": "2024-12-31T22:49:32.183Z",
+      "read": false,
+      "id": "IB5Jplp"
+    },
+    {
+      "senderId": "1",
+      "senderName": "medaminer",
+      "receiverId": "1",
+      "content": "📞 Call declined",
+      "type": "text",
+      "timestamp": "2024-12-31T22:49:33.427Z",
+      "read": false,
+      "id": "CtMZpsH"
+    },
+    {
+      "senderId": "2",
+      "senderName": "safwane",
+      "receiverId": "2",
+      "content": "📞 Call ended",
+      "type": "text",
+      "timestamp": "2024-12-31T22:49:35.034Z",
+      "read": false,
+      "id": "eN7zLBP"
+    },
+    {
+      "senderId": "1",
+      "senderName": "medaminer",
+      "receiverId": "1",
+      "content": "📞 Mohamed Amine Riahi started a call",
+      "type": "text",
+      "timestamp": "2024-12-31T22:49:38.194Z",
+      "read": false,
+      "id": "_ZEF8Sn"
+    },
+    {
+      "senderId": "1",
+      "senderName": "medaminer",
+      "receiverId": "1",
+      "content": "📞 Call declined",
+      "type": "text",
+      "timestamp": "2024-12-31T22:49:39.195Z",
+      "read": false,
+      "id": "kp5gu3z"
+    },
+    {
+      "senderId": "1",
+      "senderName": "medaminer",
+      "receiverId": "1",
+      "content": "📞 Mohamed Amine Riahi started a call",
+      "type": "text",
+      "timestamp": "2024-12-31T22:49:42.450Z",
+      "read": false,
+      "id": "WK7bENU"
     }
   ],
   "conges": [
