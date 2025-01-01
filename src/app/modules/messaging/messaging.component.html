@@ -113,52 +113,6 @@
   </div>
 </div>
 
-<p-dialog
-  [visible]="showCallDialog"
-  [modal]="true"
-  [closable]="false"
-  [style]="{width: '300px'}"
-  [showHeader]="false">
-  <div class="call-dialog">
-    <!-- Calling State -->
-    <div *ngIf="callStatus.status === 'calling'" class="call-status">
-      <p-avatar [image]="selectedUser?.photoUrl" size="xlarge" shape="circle"></p-avatar>
-      <h3>Calling {{selectedUser?.username}}...</h3>
-      <button pButton icon="pi pi-phone-slash"
-              class="p-button-rounded p-button-danger"
-              (click)="endCall()">
-      </button>
-    </div>
-
-    <!-- Incoming Call State -->
-    <div *ngIf="callStatus.status === 'incoming'" class="call-status">
-      <p-avatar [image]="selectedUser?.photoUrl" size="xlarge" shape="circle"></p-avatar>
-      <h3>Incoming call from {{selectedUser?.username}}</h3>
-      <div class="call-actions">
-        <button pButton icon="pi pi-phone"
-                class="p-button-rounded p-button-success"
-                (click)="acceptCall()">
-        </button>
-        <button pButton icon="pi pi-phone-slash"
-                class="p-button-rounded p-button-danger"
-                (click)="rejectCall()">
-        </button>
-      </div>
-    </div>
-
-    <!-- Connected State -->
-    <div *ngIf="callStatus.status === 'connected'" class="call-status">
-      <p-avatar [image]="selectedUser?.photoUrl" size="xlarge" shape="circle"></p-avatar>
-      <h3>On call with {{selectedUser?.username}}</h3>
-      <div class="call-timer">{{callDuration}}</div>
-      <button pButton icon="pi pi-phone-slash"
-              class="p-button-rounded p-button-danger"
-              (click)="endCall()">
-      </button>
-    </div>
-  </div>
-</p-dialog>
-
 
 <ng-template #noUsersMessage>
   <div class="no-users-message">

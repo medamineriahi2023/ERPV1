@@ -31,7 +31,6 @@ import {
     DatePipe,
     InputText,
     ButtonModule,
-    Dialog,
   ],
   templateUrl: './messaging.component.html',
   styleUrls: ['./messaging.component.scss']
@@ -51,7 +50,6 @@ export class MessagingComponent implements OnInit, OnDestroy {
   callStatus: CallStatus = { status: 'idle' };
   videoCallStatus: VideoCallStatus = { status: 'idle' };
   showCallDialog: boolean = false;
-  showVideoCallDialog: boolean = false;
   private callStatusSubscription: Subscription | undefined;
   private videoCallStatusSubscription: Subscription | undefined;
   callDuration: string = '00:00';
@@ -126,10 +124,10 @@ export class MessagingComponent implements OnInit, OnDestroy {
           if (callingUser) {
             console.log('Incoming call from:', callingUser.username);
             this.selectedUser = callingUser;
-            this.showCallDialog = true;
+            this.voiceCallService.setShowVoiceCallDialog(true);
           }
         } else if (status.status === 'idle') {
-          this.showCallDialog = false;
+          this.voiceCallService.setShowVoiceCallDialog(false);
           this.stopCallTimer();
         } else if (status.status === 'connected') {
           console.log('Call connected, starting timer');
@@ -305,7 +303,7 @@ export class MessagingComponent implements OnInit, OnDestroy {
     if (this.selectedUser) {
       console.log('Initiating call to:', this.selectedUser.username);
       this.voiceCallService.startCall(this.selectedUser.userId, this.currentUserId);
-      this.showCallDialog = true;
+      this.voiceCallService.setShowVoiceCallDialog(true);
     }
   }
 
@@ -334,7 +332,7 @@ export class MessagingComponent implements OnInit, OnDestroy {
     if (this.callStatus.remoteUserId) {
       console.log('Rejecting call');
       this.voiceCallService.rejectCall(this.callStatus.remoteUserId);
-      this.showCallDialog = false;
+      this.voiceCallService.setShowVoiceCallDialog(false);
     }
   }
 
@@ -348,7 +346,7 @@ export class MessagingComponent implements OnInit, OnDestroy {
   endCall() {
     console.log('Ending call');
     this.voiceCallService.endCall();
-    this.showCallDialog = false;
+    this.voiceCallService.setShowVoiceCallDialog(false);
   }
 
   endVideoCall() {

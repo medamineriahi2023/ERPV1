@@ -33,9 +33,9 @@
         "endTime": "17:00",
         "lunchBreakDuration": 60
       },
-      "status": "ACTIVE",
+      "status": "OFFLINE",
       "contractType": "CDI",
-      "lastActive": "2025-01-01T13:21:15.712Z"
+      "lastActive": "2025-01-01T14:15:35.312Z"
     },
     {
       "username": "safwane",
@@ -61,10 +61,10 @@
         "lunchBreakDuration": 60
       },
       "rating": 4,
-      "status": "OFFLINE",
+      "status": "ACTIVE",
       "contractType": "CDI",
       "id": 2,
-      "lastActive": "2025-01-01T13:21:27.186Z"
+      "lastActive": "2025-01-01T14:40:25.002Z"
     },
     {
       "username": "aliriahi@gmail.com",

@@ -1,37 +1,91 @@
-<div class="voice-call-container">
-  <!-- Idle State -->
-  <div *ngIf="callStatus.status === 'idle'" class="call-controls">
-    <button mat-fab color="primary" (click)="initiateCall(targetUserId, currentUserId)">
-      <mat-icon>call</mat-icon>
-    </button>
-  </div>
+<p-dialog
+  [visible]="showCallDialog"
+  [modal]="true"
+  [closable]="false"
+  [style]="{width: '360px'}"
+  styleClass="voice-call-dialog"
+  [showHeader]="false">
+  <div class="call-dialog">
+    <!-- Calling State -->
+    <div *ngIf="callStatus.status === 'calling'" class="call-status">
+      <div class="avatar-wrapper">
+        <div class="ripple"></div>
+        <div class="avatar">
+          <i class="pi pi-user text-6xl"></i>
+        </div>
+      </div>
+      <div class="info">
+        <h3 class="caller-name">{{callStatus?.callerName}}</h3>
+        <p class="call-status-text">Calling...</p>
+      </div>
+      <div class="action-buttons actions">
+        <button pButton icon="pi pi-times"
+                class="p-button-rounded p-button-danger hang-up-btn"
+                pTooltip="End Call"
+                (click)="endCall()">
+        </button>
+      </div>
+    </div>
 
-  <!-- Calling State -->
-  <div *ngIf="callStatus.status === 'calling'" class="call-status">
-    <div class="status-text">Calling...</div>
-    <button mat-fab color="warn" (click)="endCall()">
-      <mat-icon>call_end</mat-icon>
-    </button>
-  </div>
-qsdfsdqfqdsf
-  <!-- Incoming Call State -->
-  <div *ngIf="callStatus.status === 'incoming'" class="incoming-call">
-    <div class="status-text">Incoming call...</div>
-    <div class="call-actions">
-      <button mat-fab color="primary" (click)="acceptCall(callStatus.remoteUserId!)">
-        <mat-icon>call</mat-icon>
-      </button>
-      <button mat-fab color="warn" (click)="rejectCall(callStatus.remoteUserId!)">
-        <mat-icon>call_end</mat-icon>
-      </button>
+    <!-- Incoming Call State -->
+    <div *ngIf="callStatus.status === 'incoming'" class="call-status">
+      <div class="avatar-wrapper incoming">
+        <div class="ripple"></div>
+        <div class="avatar">
+          <i class="pi pi-user text-6xl"></i>
+        </div>
+      </div>
+      <div class="info">
+        <h3 class="caller-name">{{callStatus?.callerName}}</h3>
+        <p class="call-status-text">Incoming call</p>
+      </div>
+      <div class="action-buttons actions">
+        <button pButton icon="pi pi-phone"
+                class="p-button-rounded p-button-success accept-btn"
+                pTooltip="Accept Call"
+                (click)="acceptCall()">
+        </button>
+        <button pButton icon="pi pi-times"
+                class="p-button-rounded p-button-danger reject-btn"
+                pTooltip="Reject Call"
+                (click)="rejectCall()">
+        </button>
+      </div>
+    </div>
+
+    <!-- Connected State -->
+    <div *ngIf="callStatus.status === 'connected'" class="call-status">
+      <div class="avatar-wrapper connected">
+        <div class="avatar">
+          <i class="pi pi-user text-6xl"></i>
+        </div>
+        <div class="wave-container audio-waves">
+          <div class="wave-visualization">
+            <div class="wave"></div>
+            <div class="wave"></div>
+            <div class="wave"></div>
+          </div>
+        </div>
+      </div>
+      <div class="info call-info">
+        <h3 class="caller-name">{{callStatus?.callerName}}</h3>
+        <div class="call-timer timer">{{callDuration$ | async}}</div>
+      </div>
+      <div class="action-buttons actions">
+        <button pButton icon="pi pi-volume-up"
+                class="p-button-rounded p-button-secondary volume-btn"
+                pTooltip="Volume">
+        </button>
+        <button pButton icon="pi pi-microphone"
+                class="p-button-rounded p-button-secondary mic-btn"
+                pTooltip="Microphone">
+        </button>
+        <button pButton icon="pi pi-times"
+                class="p-button-rounded p-button-danger hang-up-btn"
+                pTooltip="End Call"
+                (click)="endCall()">
+        </button>
+      </div>
     </div>
   </div>
-
-  <!-- Connected State -->
-  <div *ngIf="callStatus.status === 'connected'" class="call-active">
-    <div class="status-text">Call in progress</div>
-    <button mat-fab color="warn" (click)="endCall()">
-      <mat-icon>call_end</mat-icon>
-    </button>
-  </div>
-</div>
+</p-dialog>
