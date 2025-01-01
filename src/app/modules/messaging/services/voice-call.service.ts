@@ -150,6 +150,27 @@ export class VoiceCallService {
       });
     }
 
+    // Add ICE gathering state logging
+    this.peerConnection.onicegatheringstatechange = () => {
+      console.log('ICE gathering state:', this.peerConnection?.iceGatheringState);
+      
+      // Log all ICE candidates when gathering is complete
+      if (this.peerConnection?.iceGatheringState === 'complete') {
+        const receivers = this.peerConnection?.getReceivers() || [];
+        receivers.forEach(receiver => {
+          const stats = receiver.getStats();
+          stats.then(statsReport => {
+            statsReport.forEach(report => {
+              if (report.type === 'candidate-pair' && report.selected) {
+                console.log('Selected candidate pair:', report);
+                console.log('Using TURN server:', report.remoteCandidateId?.includes('relay'));
+              }
+            });
+          });
+        });
+      }
+    };
+
     // Handle ICE candidates
     this.peerConnection.onicecandidate = (event) => {
       if (event.candidate) {
