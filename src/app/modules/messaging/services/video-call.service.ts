@@ -26,7 +26,11 @@ export class VideoCallService {
   private answerHandler: any;
   private candidatesHandler: any;
   private rejectedHandler: any;
+  public showVideoCallDialogSubject = new BehaviorSubject<boolean>(false);
+  public showVideoCallDialog$ = this.showVideoCallDialogSubject.asObservable();
 
+  public callDurationSubject = new BehaviorSubject<string>('00:00');
+  public callDuration$ = this.callDurationSubject.asObservable();
   constructor(
     private authService: AuthService,
     private notificationService: NotificationService,
@@ -64,6 +68,20 @@ export class VideoCallService {
       });
     }
   }
+
+
+
+
+
+  setShowVideoCallDialog(value: boolean) {
+    this.showVideoCallDialogSubject.next(value);
+  }
+
+  setCallDuration(value: string) {
+    this.callDurationSubject.next(value);
+  }
+
+
 
   private async getUserInfo(userId: string): Promise<{ name: string } | null> {
     try {

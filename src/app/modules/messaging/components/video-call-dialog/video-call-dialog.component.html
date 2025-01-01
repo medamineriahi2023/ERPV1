@@ -1,66 +1,50 @@
-<div class="video-call-container" [class.visible]="visible" [class.fullscreen]="isFullscreen">
-  <div class="video-grid">
-    <!-- Remote Video -->
-    <div class="video-wrapper remote-video-wrapper" [class.connected]="callStatus.status === 'connected'">
-      <video #remoteVideo class="remote-video" autoplay playsinline></video>
-      <div class="video-overlay" *ngIf="callStatus.status !== 'connected'">
-        <div class="avatar-placeholder">
-          <i class="fas fa-user"></i>
+<p-dialog
+        [visible]="videoCallStatus.status === 'incoming'"
+        [modal]="true"
+        [closable]="false"
+        [style]="{width: '300px'}"
+        header="Incoming Video Call">
+    <p>{{ videoCallStatus.callerName }} is video calling you</p>
+    <div class="call-actions">
+        <button pButton class="p-button-success" icon="fas fa-video" (click)="acceptVideoCall()">Accept</button>
+        <button pButton class="p-button-danger" icon="fas fa-times" (click)="rejectVideoCall()">Reject</button>
+    </div>
+</p-dialog>
+
+<!-- Video Call Dialog -->
+<p-dialog
+        [visible]="videoCallStatus.status === 'connected' || videoCallStatus.status === 'calling'"
+        [modal]="true"
+        [closable]="false"
+        [style]="{width: '800px'}"
+        header="Video Call">
+    <div class="video-container">
+        <!-- Remote Video -->
+        <div class="remote-video-container">
+            <video #remoteVideo autoplay playsinline></video>
+            <div class="call-duration">{{ callDuration }}</div>
         </div>
-      </div>
-    </div>
 
-    <!-- Local Video -->
-    <div class="video-wrapper local-video-wrapper" (dblclick)="toggleFullscreen()">
-      <video #localVideo class="local-video" autoplay playsinline muted></video>
-      <div class="video-overlay" *ngIf="!videoCallService.getLocalStream()">
-        <div class="avatar-placeholder">
-          <i class="fas fa-user"></i>
+        <!-- Local Video -->
+        <div class="local-video-container">
+            <video #localVideo autoplay playsinline muted></video>
         </div>
-      </div>
     </div>
-  </div>
 
-  <!-- Call Status Overlay -->
-  <div class="call-status-overlay" *ngIf="callStatus.status !== 'connected'">
-    <div class="status-content">
-      <div class="status-icon" [ngClass]="callStatus.status">
-        <i class="fas" [ngClass]="{
-          'fa-phone-volume': callStatus.status === 'calling',
-          'fa-phone-incoming': callStatus.status === 'incoming'
-        }"></i>
-      </div>
-      <div class="status-text">
-        <ng-container [ngSwitch]="callStatus.status">
-          <span *ngSwitchCase="'calling'" class="calling">
-            Calling {{ callStatus.remoteUserId }}...
-          </span>
-          <span *ngSwitchCase="'incoming'" class="incoming">
-            Incoming call from {{ callStatus.callerName }}
-          </span>
-        </ng-container>
-      </div>
+    <div class="call-actions">
+        <button pButton class="p-button-danger" icon="fas fa-phone-slash" (click)="endCall()">End Call</button>
     </div>
-  </div>
+</p-dialog>
 
-  <!-- Call Controls -->
-  <div class="call-controls" [class.connected]="callStatus.status === 'connected'">
-    <div class="control-button" (click)="toggleMute()" [class.active]="isMuted">
-      <i class="fas" [ngClass]="isMuted ? 'fa-microphone-slash' : 'fa-microphone'"></i>
+<!-- Outgoing Call Dialog -->
+<p-dialog
+        [visible]="videoCallStatus.status === 'calling'"
+        [modal]="true"
+        [closable]="false"
+        [style]="{width: '300px'}"
+        header="Calling...">
+    <p>Calling {{ videoCallStatus.remoteUserId }}...</p>
+    <div class="call-actions">
+        <button pButton class="p-button-danger" icon="fas fa-phone-slash" (click)="endCall()">Cancel</button>
     </div>
-    <div class="control-button end-call" (click)="endCall()">
-      <i class="fas fa-phone-slash"></i>
-    </div>
-    <div class="control-button" (click)="toggleVideo()" [class.active]="!isVideoEnabled">
-      <i class="fas" [ngClass]="isVideoEnabled ? 'fa-video' : 'fa-video-slash'"></i>
-    </div>
-    <div class="control-button" (click)="toggleFullscreen()">
-      <i class="fas" [ngClass]="isFullscreen ? 'fa-compress' : 'fa-expand'"></i>
-    </div>
-  </div>
-
-  <!-- Call Duration -->
-  <div class="call-duration" *ngIf="callStatus.status === 'connected'">
-    {{ duration }}
-  </div>
-</div>
+</p-dialog>

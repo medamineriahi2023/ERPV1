@@ -159,23 +159,6 @@
   </div>
 </p-dialog>
 
-<app-video-call-dialog
-  [visible]="showVideoCallDialog"
-  [duration]="callDuration">
-</app-video-call-dialog>
-
-<p-dialog
-  [visible]="videoCallStatus.status === 'incoming'"
-  [modal]="true"
-  [closable]="false"
-  [style]="{width: '300px'}"
-  header="Incoming Video Call">
-  <p>{{ videoCallStatus.callerName }} is video calling you</p>
-  <div class="call-actions">
-    <button pButton class="p-button-success" icon="fas fa-video" (click)="acceptVideoCall()">Accept</button>
-    <button pButton class="p-button-danger" icon="fas fa-times" (click)="rejectVideoCall()">Reject</button>
-  </div>
-</p-dialog>
 
 <ng-template #noUsersMessage>
   <div class="no-users-message">

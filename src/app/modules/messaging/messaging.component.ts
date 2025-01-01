@@ -32,7 +32,6 @@ import {
     InputText,
     ButtonModule,
     Dialog,
-    VideoCallDialogComponent
   ],
   templateUrl: './messaging.component.html',
   styleUrls: ['./messaging.component.scss']
@@ -143,7 +142,7 @@ export class MessagingComponent implements OnInit, OnDestroy {
     this.videoCallStatusSubscription = this.videoCallService.callStatus$.subscribe(status => {
       this.videoCallStatus = status;
       if (status.status === 'idle') {
-        this.showVideoCallDialog = false;
+        this.videoCallService.setShowVideoCallDialog(false);
         this.stopCallTimer();
       } else if (status.status === 'connected' && !this.callTimer) {
         this.startCallTimer();
@@ -312,7 +311,7 @@ export class MessagingComponent implements OnInit, OnDestroy {
 
   startVideoCall() {
     if (this.selectedUser) {
-      this.showVideoCallDialog = true;
+      this.videoCallService.setShowVideoCallDialog(true)
       this.videoCallService.startCall(this.selectedUser.userId);
     }
   }
@@ -327,7 +326,7 @@ export class MessagingComponent implements OnInit, OnDestroy {
   acceptVideoCall() {
     if (this.videoCallStatus.remoteUserId) {
       this.videoCallService.acceptCall(this.videoCallStatus.remoteUserId);
-      this.showVideoCallDialog = true;
+      this.videoCallService.setShowVideoCallDialog(true);
     }
   }
 
@@ -342,7 +341,7 @@ export class MessagingComponent implements OnInit, OnDestroy {
   rejectVideoCall() {
     if (this.videoCallStatus.remoteUserId) {
       this.videoCallService.rejectCall(this.videoCallStatus.remoteUserId);
-      this.showVideoCallDialog = false;
+      this.videoCallService.setShowVideoCallDialog(false);
     }
   }
 
@@ -354,7 +353,7 @@ export class MessagingComponent implements OnInit, OnDestroy {
 
   endVideoCall() {
     this.videoCallService.endCall();
-    this.showVideoCallDialog = false;
+    this.videoCallService.setShowVideoCallDialog(false);
   }
 
   private startCallTimer() {

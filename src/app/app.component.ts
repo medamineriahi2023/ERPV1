@@ -6,12 +6,19 @@ import { ToastModule } from 'primeng/toast';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { MessageService, ConfirmationService } from 'primeng/api';
 import {AngularFireModule} from "@angular/fire/compat";
+import {VoiceCallService} from "@app/modules/messaging/services/voice-call.service";
+import {
+  VideoCallDialogComponent
+} from "@app/modules/messaging/components/video-call-dialog/video-call-dialog.component";
+import {VideoCallService} from "@app/modules/messaging/services/video-call.service";
 
 @Component({
   selector: 'app-root',
   template: `
     <main class="min-h-screen bg-gray-50">
       <router-outlet></router-outlet>
+      <app-video-call-dialog>
+      </app-video-call-dialog>
     </main>
   `,
   styleUrls: ['./app.component.scss'],
@@ -22,9 +29,14 @@ import {AngularFireModule} from "@angular/fire/compat";
     ButtonModule,
     ToastModule,
     ConfirmDialogModule,
-      AngularFireModule  ],
-  providers: [MessageService, ConfirmationService]
+    AngularFireModule,
+    VideoCallDialogComponent
+  ],
+  providers: [MessageService, ConfirmationService, VoiceCallService]
 })
 export class AppComponent {
+  showVideoCallDialog$ = this.videoCallService.showVideoCallDialog$;
+  callDuration$ = this.videoCallService.callDuration$;
 
+  constructor(private videoCallService: VideoCallService) {}
 }
