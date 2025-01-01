@@ -1,47 +1,128 @@
-.video-call-dialog {
+:host {
+  display: block;
+}
+
+.video-call-container {
   position: fixed;
   top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.9);
+  right: 0;
+  width: 300px;
+  height: 400px;
+  background: rgba(0, 0, 0, 0.9);
+  border-radius: 12px;
+  margin: 16px;
+  overflow: hidden;
+  opacity: 0;
+  transform: translateX(100%);
+  transition: all 0.3s ease-in-out;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
   z-index: 1000;
-  display: none;
-  
+
   &.visible {
-    display: block;
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  &.fullscreen {
+    width: 100%;
+    height: 100vh;
+    margin: 0;
+    border-radius: 0;
+
+    .video-wrapper {
+      &.local-video-wrapper {
+        width: 180px;
+        height: 240px;
+        bottom: 100px;
+        right: 24px;
+      }
+
+      &.remote-video-wrapper {
+        height: 100%;
+      }
+    }
+
+    .call-controls {
+      bottom: 32px;
+      .control-button {
+        width: 64px;
+        height: 64px;
+        
+        i {
+          font-size: 24px;
+        }
+      }
+    }
   }
 }
 
-.video-container {
+.video-grid {
   position: relative;
   width: 100%;
   height: 100%;
   display: flex;
-  justify-content: center;
-  align-items: center;
+  flex-direction: column;
 }
 
-.remote-video {
+.video-wrapper {
+  position: relative;
+  background: #1a1a1a;
+  border-radius: 8px;
+  overflow: hidden;
+
+  &.remote-video-wrapper {
+    flex: 1;
+    margin-bottom: 8px;
+  }
+
+  &.local-video-wrapper {
+    position: absolute;
+    bottom: 80px;
+    right: 16px;
+    width: 100px;
+    height: 150px;
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.3s ease;
+    cursor: pointer;
+    z-index: 2;
+
+    &:hover {
+      transform: scale(1.05);
+    }
+  }
+
+  video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    background: #000;
+  }
+}
+
+.video-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
   height: 100%;
-  object-fit: cover;
-}
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.6);
 
-.local-video {
-  position: absolute;
-  bottom: 100px;
-  right: 20px;
-  width: 240px;
-  height: 180px;
-  border-radius: 8px;
-  border: 2px solid #fff;
-  object-fit: cover;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease;
-  
-  &:hover {
-    transform: scale(1.05);
+  .avatar-placeholder {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    i {
+      font-size: 32px;
+      color: rgba(255, 255, 255, 0.8);
+    }
   }
 }
 
@@ -52,76 +133,123 @@
   width: 100%;
   height: 100%;
   display: flex;
-  justify-content: center;
   align-items: center;
-  background-color: rgba(0, 0, 0, 0.7);
-  
-  .status-message {
-    color: white;
-    font-size: 24px;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.7);
+  z-index: 3;
+
+  .status-content {
     text-align: center;
-    padding: 20px;
-    border-radius: 12px;
-    background-color: rgba(0, 0, 0, 0.5);
+    color: white;
+
+    .status-icon {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.1);
+      margin: 0 auto 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: pulse 1.5s infinite;
+
+      &.calling {
+        background: rgba(52, 152, 219, 0.2);
+        i { color: #3498db; }
+      }
+
+      &.incoming {
+        background: rgba(46, 204, 113, 0.2);
+        i { color: #2ecc71; }
+      }
+
+      i {
+        font-size: 32px;
+      }
+    }
+
+    .status-text {
+      font-size: 16px;
+      font-weight: 500;
+      margin-top: 8px;
+
+      .calling { color: #3498db; }
+      .incoming { color: #2ecc71; }
+    }
+  }
+}
+
+.call-controls {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  padding: 16px;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
+  z-index: 4;
+
+  .control-button {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.2);
+      transform: scale(1.1);
+    }
+
+    &.active {
+      background: rgba(255, 0, 0, 0.2);
+      i { color: #e74c3c; }
+    }
+
+    &.end-call {
+      background: rgba(231, 76, 60, 0.2);
+      &:hover { background: rgba(231, 76, 60, 0.4); }
+      i { color: #e74c3c; }
+    }
+
+    i {
+      font-size: 20px;
+      color: white;
+    }
   }
 }
 
 .call-duration {
   position: absolute;
-  top: 20px;
+  top: 16px;
   left: 50%;
   transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.5);
   color: white;
-  font-size: 18px;
-  padding: 8px 16px;
-  border-radius: 20px;
-  background-color: rgba(0, 0, 0, 0.5);
+  padding: 4px 12px;
+  border-radius: 16px;
+  font-size: 14px;
+  font-weight: 500;
+  z-index: 4;
 }
 
-.call-controls {
-  position: absolute;
-  bottom: 30px;
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  gap: 20px;
-  padding: 15px;
-  border-radius: 30px;
-  background-color: rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(10px);
-  
-  .control-btn {
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    border: none;
-    background-color: rgba(255, 255, 255, 0.2);
-    color: white;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    
-    i {
-      font-size: 20px;
-    }
-    
-    &:hover {
-      background-color: rgba(255, 255, 255, 0.3);
-      transform: scale(1.1);
-    }
-    
-    &.active {
-      background-color: #dc3545;
-    }
-    
-    &.end-call {
-      background-color: #dc3545;
-      
-      &:hover {
-        background-color: darken(#dc3545, 10%);
-      }
-    }
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
   }
 }

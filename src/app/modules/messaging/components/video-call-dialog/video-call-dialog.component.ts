@@ -1,14 +1,14 @@
 import { Component, OnInit, OnDestroy, ElementRef, ViewChild, ChangeDetectorRef, Input } from '@angular/core';
 import { VideoCallService, VideoCallStatus } from '../../services/video-call.service';
 import { Subscription } from 'rxjs';
-import { NgIf } from '@angular/common';
+import {NgClass, NgIf, NgSwitch, NgSwitchCase} from '@angular/common';
 
 @Component({
   selector: 'app-video-call-dialog',
   templateUrl: './video-call-dialog.component.html',
   styleUrls: ['./video-call-dialog.component.scss'],
   standalone: true,
-  imports: [NgIf]
+  imports: [NgIf, NgClass, NgSwitch, NgSwitchCase]
 })
 export class VideoCallDialogComponent implements OnInit, OnDestroy {
   @ViewChild('localVideo') localVideo!: ElementRef<HTMLVideoElement>;
@@ -20,9 +20,10 @@ export class VideoCallDialogComponent implements OnInit, OnDestroy {
   private callStatusSubscription?: Subscription;
   isMuted: boolean = false;
   isVideoEnabled: boolean = true;
+  isFullscreen: boolean = false;
 
   constructor(
-    private videoCallService: VideoCallService,
+    public videoCallService: VideoCallService,
     private cdr: ChangeDetectorRef
   ) {}
 
@@ -92,6 +93,11 @@ export class VideoCallDialogComponent implements OnInit, OnDestroy {
       });
       this.isVideoEnabled = !this.isVideoEnabled;
     }
+  }
+
+  toggleFullscreen() {
+    this.isFullscreen = !this.isFullscreen;
+    this.cdr.detectChanges();
   }
 
   endCall() {

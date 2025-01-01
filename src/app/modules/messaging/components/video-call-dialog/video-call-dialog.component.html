@@ -1,41 +1,66 @@
-<div class="video-call-dialog" [class.visible]="visible">
-  <div class="video-container">
+<div class="video-call-container" [class.visible]="visible" [class.fullscreen]="isFullscreen">
+  <div class="video-grid">
     <!-- Remote Video -->
-    <video #remoteVideo autoplay playsinline class="remote-video"></video>
-    
-    <!-- Local Video (Picture-in-Picture) -->
-    <video #localVideo autoplay playsinline muted class="local-video"></video>
-    
-    <!-- Call Status Overlay -->
-    <div class="call-status-overlay" *ngIf="callStatus.status !== 'connected'">
-      <div class="status-message">
-        <span *ngIf="callStatus.status === 'calling'">
-          Calling {{ callStatus.remoteUserId }}...
-        </span>
-        <span *ngIf="callStatus.status === 'incoming'">
-          Incoming call from {{ callStatus.callerName }}
-        </span>
+    <div class="video-wrapper remote-video-wrapper" [class.connected]="callStatus.status === 'connected'">
+      <video #remoteVideo class="remote-video" autoplay playsinline></video>
+      <div class="video-overlay" *ngIf="callStatus.status !== 'connected'">
+        <div class="avatar-placeholder">
+          <i class="fas fa-user"></i>
+        </div>
       </div>
     </div>
-    
-    <!-- Call Duration -->
-    <div class="call-duration" *ngIf="callStatus.status === 'connected'">
-      {{ duration }}
+
+    <!-- Local Video -->
+    <div class="video-wrapper local-video-wrapper" (dblclick)="toggleFullscreen()">
+      <video #localVideo class="local-video" autoplay playsinline muted></video>
+      <div class="video-overlay" *ngIf="!videoCallService.getLocalStream()">
+        <div class="avatar-placeholder">
+          <i class="fas fa-user"></i>
+        </div>
+      </div>
     </div>
-    
-    <!-- Call Controls -->
-    <div class="call-controls">
-      <button class="control-btn" [class.active]="isMuted" (click)="toggleMute()">
-        <i class="fas" [class.fa-microphone]="!isMuted" [class.fa-microphone-slash]="isMuted"></i>
-      </button>
-      
-      <button class="control-btn end-call" (click)="endCall()">
-        <i class="fas fa-phone-slash"></i>
-      </button>
-      
-      <button class="control-btn" [class.active]="!isVideoEnabled" (click)="toggleVideo()">
-        <i class="fas" [class.fa-video]="isVideoEnabled" [class.fa-video-slash]="!isVideoEnabled"></i>
-      </button>
+  </div>
+
+  <!-- Call Status Overlay -->
+  <div class="call-status-overlay" *ngIf="callStatus.status !== 'connected'">
+    <div class="status-content">
+      <div class="status-icon" [ngClass]="callStatus.status">
+        <i class="fas" [ngClass]="{
+          'fa-phone-volume': callStatus.status === 'calling',
+          'fa-phone-incoming': callStatus.status === 'incoming'
+        }"></i>
+      </div>
+      <div class="status-text">
+        <ng-container [ngSwitch]="callStatus.status">
+          <span *ngSwitchCase="'calling'" class="calling">
+            Calling {{ callStatus.remoteUserId }}...
+          </span>
+          <span *ngSwitchCase="'incoming'" class="incoming">
+            Incoming call from {{ callStatus.callerName }}
+          </span>
+        </ng-container>
+      </div>
     </div>
+  </div>
+
+  <!-- Call Controls -->
+  <div class="call-controls" [class.connected]="callStatus.status === 'connected'">
+    <div class="control-button" (click)="toggleMute()" [class.active]="isMuted">
+      <i class="fas" [ngClass]="isMuted ? 'fa-microphone-slash' : 'fa-microphone'"></i>
+    </div>
+    <div class="control-button end-call" (click)="endCall()">
+      <i class="fas fa-phone-slash"></i>
+    </div>
+    <div class="control-button" (click)="toggleVideo()" [class.active]="!isVideoEnabled">
+      <i class="fas" [ngClass]="isVideoEnabled ? 'fa-video' : 'fa-video-slash'"></i>
+    </div>
+    <div class="control-button" (click)="toggleFullscreen()">
+      <i class="fas" [ngClass]="isFullscreen ? 'fa-compress' : 'fa-expand'"></i>
+    </div>
+  </div>
+
+  <!-- Call Duration -->
+  <div class="call-duration" *ngIf="callStatus.status === 'connected'">
+    {{ duration }}
   </div>
 </div>

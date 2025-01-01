@@ -35,7 +35,7 @@
       },
       "status": "ACTIVE",
       "contractType": "CDI",
-      "lastActive": "2024-12-31T23:06:16.298Z"
+      "lastActive": "2025-01-01T02:12:58.509Z"
     },
     {
       "username": "safwane",
@@ -64,7 +64,7 @@
       "status": "ACTIVE",
       "contractType": "CDI",
       "id": 2,
-      "lastActive": "2024-12-31T23:06:15.560Z"
+      "lastActive": "2025-01-01T02:12:52.719Z"
     },
     {
       "username": "aliriahi@gmail.com",
@@ -689,6 +689,123 @@
       "timestamp": "2024-12-31T22:49:42.450Z",
       "read": false,
       "id": "WK7bENU"
+    },
+    {
+      "id": "1735694965485",
+      "senderId": "1",
+      "senderName": "medaminer",
+      "receiverId": "2",
+      "content": "📞 Call declined",
+      "timestamp": "2025-01-01T01:29:25.485Z",
+      "read": true
+    },
+    {
+      "id": "1735695065767",
+      "senderId": "2",
+      "senderName": "safwane",
+      "receiverId": "1",
+      "content": "📞 Call started",
+      "timestamp": "2025-01-01T01:31:05.767Z",
+      "read": true
+    },
+    {
+      "id": "1735695071236",
+      "senderId": "1",
+      "senderName": "medaminer",
+      "receiverId": "2",
+      "content": "📞 Call accepted",
+      "timestamp": "2025-01-01T01:31:11.236Z",
+      "read": true
+    },
+    {
+      "id": "1735695076928",
+      "senderId": "1",
+      "senderName": "medaminer",
+      "receiverId": "2",
+      "content": "📞 Call declined",
+      "timestamp": "2025-01-01T01:31:16.928Z",
+      "read": true
+    },
+    {
+      "id": "1735695085975",
+      "senderId": "1",
+      "senderName": "medaminer",
+      "receiverId": "2",
+      "content": "📞 Call started",
+      "timestamp": "2025-01-01T01:31:25.975Z",
+      "read": true
+    },
+    {
+      "id": "1735695090199",
+      "senderId": "2",
+      "senderName": "safwane",
+      "receiverId": "1",
+      "content": "📞 Call accepted",
+      "timestamp": "2025-01-01T01:31:30.199Z",
+      "read": true
+    },
+    {
+      "id": "1735695136062",
+      "senderId": "1",
+      "senderName": "medaminer",
+      "receiverId": "2",
+      "content": "📞 Call started",
+      "timestamp": "2025-01-01T01:32:16.062Z",
+      "read": true
+    },
+    {
+      "id": "1735695138235",
+      "senderId": "2",
+      "senderName": "safwane",
+      "receiverId": "1",
+      "content": "📞 Call accepted",
+      "timestamp": "2025-01-01T01:32:18.235Z",
+      "read": true
+    },
+    {
+      "id": "1735695204317",
+      "senderId": "1",
+      "senderName": "medaminer",
+      "receiverId": "2",
+      "content": "📞 Call started",
+      "timestamp": "2025-01-01T01:33:24.317Z",
+      "read": true
+    },
+    {
+      "id": "1735695297448",
+      "senderId": "2",
+      "senderName": "safwane",
+      "receiverId": "1",
+      "content": "📞 Call started",
+      "timestamp": "2025-01-01T01:34:57.448Z",
+      "read": true
+    },
+    {
+      "id": "1735695325409",
+      "senderId": "2",
+      "senderName": "safwane",
+      "receiverId": "1",
+      "content": "📞 Call started",
+      "timestamp": "2025-01-01T01:35:25.409Z",
+      "read": true
+    },
+    {
+      "id": "1735695345813",
+      "senderId": "2",
+      "senderName": "safwane",
+      "receiverId": "1",
+      "content": "📞 Call started",
+      "timestamp": "2025-01-01T01:35:45.813Z",
+      "read": true
+    },
+    {
+      "id": "1735695519763",
+      "senderId": "1",
+      "senderName": "medaminer",
+      "receiverId": "2",
+      "content": "📞 Call started",
+      "timestamp": "2025-01-01T01:38:39.763Z",
+      "read": true
     }
   ],
   "conges": [
