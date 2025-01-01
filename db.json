@@ -206,6 +206,18 @@
       "status": "present",
       "isLate": false,
       "id": 3
+    },
+    {
+      "userId": 2,
+      "date": "2025-01-01T16:53:22.134Z",
+      "checkIn": "17:53:22",
+      "checkOut": null,
+      "lunchStart": null,
+      "lunchEnd": null,
+      "totalHours": 0,
+      "status": "late",
+      "isLate": true,
+      "id": 4
     }
   ],
   "leave-requests": [],

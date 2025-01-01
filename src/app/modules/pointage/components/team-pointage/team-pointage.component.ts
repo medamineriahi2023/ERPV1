@@ -1,10 +1,10 @@
-import {Component, OnInit, OnDestroy, AfterViewInit} from '@angular/core';
+import { Component, OnInit, OnDestroy, AfterViewInit } from '@angular/core';
 import { TimeEntry, User } from '@app/core/interfaces/user.interface';
 import { AuthService } from '@app/core/services/auth.service';
 import { PointageService } from '@app/core/services/pointage.service';
 import { ApiService } from '@app/core/services/api.service';
 import { MessageService } from 'primeng/api';
-import { interval, Subscription, forkJoin, firstValueFrom, Subject } from 'rxjs';
+import {interval, Subscription, forkJoin, firstValueFrom, Subject, finalize} from 'rxjs';
 import { startWith, map, takeUntil } from 'rxjs/operators';
 import { TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
@@ -59,13 +59,43 @@ export class TeamPointageComponent implements OnInit, AfterViewInit, OnDestroy {
   selectedDateDetails: TimeEntryWithUser | null = null;
   monthlyHistory: TimeEntryWithUser[] = [];
   monthlyEntries: TimeEntryWithUser[] = [];
-  currentUser: User | null = null;
+  currentUser: any;
+  users: any[] = [];
+  managedUsers: any[] = []; 
   searchTerm: string = '';
   selectedStatus: string = '';
   private refreshInterval: Subscription | null = null;
-  private charts: Record<ChartType, Chart> = {} as Record<ChartType, Chart>;
+  private charts: Record<ChartType, Chart | null> = {
+    weekly: null,
+    status: null,
+    punctuality: null
+  };
   private destroy$ = new Subject<void>();
   loading = false;
+
+  selectedPeriod: 'month' | 'year' = 'month';
+  selectedYear: number = new Date().getFullYear();
+  selectedMonth: number = new Date().getMonth();
+
+  months = [
+    { value: 0, label: 'Janvier' },
+    { value: 1, label: 'Février' },
+    { value: 2, label: 'Mars' },
+    { value: 3, label: 'Avril' },
+    { value: 4, label: 'Mai' },
+    { value: 5, label: 'Juin' },
+    { value: 6, label: 'Juillet' },
+    { value: 7, label: 'Août' },
+    { value: 8, label: 'Septembre' },
+    { value: 9, label: 'Octobre' },
+    { value: 10, label: 'Novembre' },
+    { value: 11, label: 'Décembre' }
+  ];
+
+  yearOptions = Array.from({ length: 5 }, (_, i) => ({
+    label: (new Date().getFullYear() - i).toString(),
+    value: new Date().getFullYear() - i
+  }));
 
   statusOptions = [
     { label: 'Tous les statuts', value: '' },
@@ -76,7 +106,6 @@ export class TeamPointageComponent implements OnInit, AfterViewInit, OnDestroy {
     { label: 'En retard', value: 'late' }
   ];
 
-  // Chart Data
   weeklyAttendanceData: ChartConfiguration['data'] = {
     labels: ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi'],
     datasets: [
@@ -125,24 +154,25 @@ export class TeamPointageComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   };
 
-  // Nouvelles propriétés pour les graphiques
   private punctualityTrendChart: Chart | null = null;
   private absenceForecastChart: Chart | null = null;
   private workingHoursChart: Chart | null = null;
 
   constructor(
-      private pointageService: PointageService,
-      private authService: AuthService,
-      private apiService: ApiService,
-      private messageService: MessageService
-  ) {}
+    private apiService: ApiService,
+    private authService: AuthService,
+    private pointageService: PointageService,
+    private messageService: MessageService
+  ) {
+    this.charts = {
+      weekly: null,
+      status: null,
+      punctuality: null
+    };
+  }
 
-  async ngOnInit() {
-    this.currentUser = this.authService.getCurrentUser();
-    this.setupTimeUpdate();
-    await this.loadTeamEntries();
-    this.setupDataRefresh();
-    this.initializeCharts();
+  ngOnInit() {
+    this.loadCurrentUser();
   }
 
   ngOnDestroy() {
@@ -151,17 +181,57 @@ export class TeamPointageComponent implements OnInit, AfterViewInit, OnDestroy {
     }
     this.destroy$.next();
     this.destroy$.complete();
-    // Destroy charts
-    Object.values(this.charts).forEach(chart => chart.destroy());
-    if (this.punctualityTrendChart) {
-      this.punctualityTrendChart.destroy();
+  }
+
+  private loadCurrentUser() {
+    this.currentUser = this.authService.getCurrentUser();
+    if (this.currentUser?.managedEmployees?.length) {
+      // Charger les détails de tous les utilisateurs gérés
+      this.apiService.getUsers().subscribe(
+        (allUsers) => {
+          // Filtrer pour n'avoir que les utilisateurs gérés
+          this.managedUsers = allUsers.filter(user => 
+            this.currentUser?.managedEmployees.includes(user.id)
+          );
+          this.users = this.managedUsers;
+          this.loadTeamEntries();
+        },
+        (error) => {
+          console.error('Erreur lors du chargement des utilisateurs:', error);
+        }
+      );
     }
-    if (this.absenceForecastChart) {
-      this.absenceForecastChart.destroy();
+  }
+
+  getEmployeeFullName(entry: TimeEntryWithUser): string {
+    if (entry.user) {
+      return `${entry.user.firstName} ${entry.user.lastName}`;
     }
-    if (this.workingHoursChart) {
-      this.workingHoursChart.destroy();
+
+    // Si l'utilisateur n'est pas dans l'entrée, chercher dans managedUsers
+    const user = this.managedUsers.find(u => u.id === entry.userId);
+    if (user) {
+      return `${user.firstName} ${user.lastName}`;
     }
+
+    return 'Utilisateur inconnu';
+  }
+
+  private getUserName(userId: number): string {
+    // Chercher d'abord dans managedUsers
+    const user = this.managedUsers.find(u => u.id === userId);
+    if (user) {
+      return `${user.firstName} ${user.lastName}`;
+    }
+    
+    // Si non trouvé, chercher dans les entrées
+    const entry = this.monthlyEntries.find(e => e.userId === userId && e.user);
+    if (entry?.user) {
+      return `${entry.user.firstName} ${entry.user.lastName}`;
+    }
+    
+    // Si toujours pas trouvé, retourner un message plus descriptif
+    return `Utilisateur ${userId}`;
   }
 
   private initializeCharts() {
@@ -194,24 +264,20 @@ export class TeamPointageComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  private setupTimeUpdate(): void {
-    interval(1000).pipe(
-      takeUntil(this.destroy$)
-    ).subscribe(() => {
-      this.currentTime = new Date();
-      this.checkAbsences();
-    });
+  private setupTimeUpdate() {
+    interval(60000)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(() => {
+        this.currentTime = new Date();
+      });
   }
 
-  private setupDataRefresh(): void {
-    if (!this.currentUser?.managedEmployees?.length) return;
-
-    this.refreshInterval = interval(60000).pipe(
-      startWith(0),
-      takeUntil(this.destroy$)
-    ).subscribe(async () => {
-      await this.loadTeamEntries();
-    });
+  private setupDataRefresh() {
+    this.refreshInterval = interval(300000)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(() => {
+        this.loadTeamEntries();
+      });
   }
 
   private async checkAbsences(): Promise<void> {
@@ -236,35 +302,29 @@ export class TeamPointageComponent implements OnInit, AfterViewInit, OnDestroy {
     if (!entry.isLate || !entry.checkIn) return undefined;
 
     const checkInTime = new Date(`1970-01-01T${entry.checkIn}`);
-    const expectedTime = new Date(`1970-01-01T09:00:00`); // Assuming 9 AM is the start time
+    const expectedTime = new Date(`1970-01-01T09:00:00`);
 
     return Math.floor((checkInTime.getTime() - expectedTime.getTime()) / 60000);
   }
 
-  // Méthodes de comptage
   getPresentCount(): number {
     return this.teamEntries.filter(e => e.status === 'present').length;
   }
 
   getAbsentCount(): number {
-    if (!this.isWorkStarted() || !this.currentUser?.managedEmployees) {
-      return 0;
-    }
-
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
-    // Vérifier les entrées d'aujourd'hui
-    const todayEntries = this.teamEntries.filter(entry => {
+    // Filtrer les entrées d'aujourd'hui
+    const todayEntries = this.monthlyEntries.filter(entry => {
       const entryDate = new Date(entry.date);
       entryDate.setHours(0, 0, 0, 0);
       return entryDate.getTime() === today.getTime();
     });
 
+    // Compter les employés absents
     return this.currentUser.managedEmployees.filter(employeeId => {
       const employeeEntry = todayEntries.find(entry => entry.userId === employeeId);
-      
-      // Si pas d'entrée ou pas de checkIn, et pas en congé/férié
       return !employeeEntry || 
              (!employeeEntry.checkIn && 
               employeeEntry.status !== 'leave' && 
@@ -273,14 +333,20 @@ export class TeamPointageComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   getLateCount(): number {
-    return this.teamEntries.filter(e => e.status === 'late').length;
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    return this.monthlyEntries.filter(entry => {
+      const entryDate = new Date(entry.date);
+      entryDate.setHours(0, 0, 0, 0);
+      return entryDate.getTime() === today.getTime() && this.isLate(entry);
+    }).length;
   }
 
   getLeaveCount(): number {
     return this.teamEntries.filter(e => e.status === 'leave' || e.status === 'holiday').length;
   }
 
-  // Méthodes de formatage et d'affichage
   formatDate(date: Date | undefined): string {
     if (!date) return '-';
     try {
@@ -341,12 +407,6 @@ export class TeamPointageComponent implements OnInit, AfterViewInit, OnDestroy {
     return this.STATUS_COLORS[status as keyof typeof this.STATUS_COLORS] || this.STATUS_COLORS.default;
   }
 
-  getEmployeeFullName(entry: TimeEntryWithUser): string {
-    if (!entry.user) return `Employé #${entry.userId}`;
-    return `${entry.user.firstName} ${entry.user.lastName}`;
-  }
-
-  // Constantes pour le formatage
   private readonly STATUS_COLORS = {
     present: '#22c55e',
     absent: '#ef4444',
@@ -367,7 +427,6 @@ export class TeamPointageComponent implements OnInit, AfterViewInit, OnDestroy {
   private async loadMonthlyEntries() {
     this.loading = true;
     try {
-      // Get managed employees
       const managedEmployees = await this.authService.getManagedEmployees();
 
       if (!managedEmployees.length) {
@@ -381,7 +440,6 @@ export class TeamPointageComponent implements OnInit, AfterViewInit, OnDestroy {
       }
 
       const today = new Date();
-      // Fetch entries only for managed employees
       const entriesPromises = managedEmployees.map(employee =>
           firstValueFrom(this.pointageService.getMonthlyEntries(
               employee.id,
@@ -395,7 +453,6 @@ export class TeamPointageComponent implements OnInit, AfterViewInit, OnDestroy {
 
       console.log('Raw entries from API:', flatEntries);
 
-      // Create TimeEntryWithUser objects
       const entriesWithUser = flatEntries.map((entry: TimeEntry) => {
         const user = managedEmployees.find(emp => emp.id === entry.userId);
         if (!user) {
@@ -403,11 +460,9 @@ export class TeamPointageComponent implements OnInit, AfterViewInit, OnDestroy {
           return null;
         }
 
-        // Traitement des heures de pause déjeuner
         let lunchStart = entry.lunchStart;
         let lunchEnd = entry.lunchEnd;
 
-        // Si les heures sont au format ISO, les convertir en format HH:mm
         if (lunchStart && /^\d{4}-\d{2}-\d{2}T/.test(lunchStart)) {
           const date = new Date(lunchStart);
           lunchStart = `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
@@ -486,7 +541,6 @@ export class TeamPointageComponent implements OnInit, AfterViewInit, OnDestroy {
     this.pointageService.getTeamEntries(this.currentUser.managedEmployees)
         .subscribe({
           next: (entries) => {
-            // Convert TimeEntry to TimeEntryWithUser
             const entriesWithUser = entries.map(entry => ({
               ...entry,
               checkIn: entry.checkIn || undefined,
@@ -511,55 +565,57 @@ export class TeamPointageComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private async loadTeamEntries(): Promise<void> {
     if (!this.currentUser?.managedEmployees?.length) {
-      this.messageService.add({
-        severity: 'warn',
-        summary: 'Attention',
-        detail: 'Aucun employé à gérer'
-      });
       return;
     }
 
-    try {
-      this.loading = true;
-      
-      // Charger les entrées de l'équipe
-      const entries = await firstValueFrom(this.pointageService.getTeamEntries(this.currentUser.managedEmployees));
-      
-      // Charger les informations des utilisateurs
-      const users = await firstValueFrom(this.apiService.getUsers());
-      
-      // Traiter chaque entrée
-      const processedEntries = await Promise.all(entries.map(async entry => {
-        const user = users.find(u => u.id === entry.userId);
-        if (!user) return null;
+    const startDate = new Date(this.selectedYear,
+      this.selectedPeriod === 'month' ? this.selectedMonth : 0,
+      1);
+    const endDate = new Date(this.selectedYear,
+      this.selectedPeriod === 'month' ? this.selectedMonth + 1 : 12,
+      0);
 
-        const timeEntry: TimeEntryWithUser = {
-          ...entry,
-          date: new Date(entry.date),
-          user: user,
-          totalHours: entry.totalHours || 0
-        };
-
-        // Vérifier et mettre à jour le statut si nécessaire
-        await this.updateEntryStatus(timeEntry);
-        
-        return timeEntry;
-      }));
-
-      this.teamEntries = processedEntries.filter((entry): entry is TimeEntryWithUser => entry !== null);
-      this.filterEntries();
-      this.updateChartData();
-
-    } catch (error) {
-      console.error('Error loading team entries:', error);
-      this.messageService.add({
-        severity: 'error',
-        summary: 'Erreur',
-        detail: 'Impossible de charger les pointages de l\'équipe'
+    this.loading = true;
+    this.pointageService.getTeamEntries(this.currentUser.managedEmployees)
+      .pipe(
+        map((entries: TimeEntryWithUser[]) => {
+          // Enrichir les entrées avec les informations utilisateur
+          return entries.map(entry => {
+            if (!entry.user) {
+              const user = this.managedUsers.find(u => u.id === entry.userId);
+              if (user) {
+                entry.user = user;
+              }
+            }
+            return entry;
+          }).filter(entry => {
+            const entryDate = new Date(entry.date);
+            return entryDate >= startDate && entryDate <= endDate;
+          });
+        }),
+        takeUntil(this.destroy$)
+      )
+      .subscribe({
+        next: (entries) => {
+          this.monthlyEntries = entries;
+          this.teamEntries = entries;
+          this.filterEntries();
+          this.updateChartData();
+          this.loading = false;
+          this.setupTimeUpdate();
+          this.setupDataRefresh();
+          this.initializeCharts();
+        },
+        error: (error) => {
+          console.error('Erreur lors du chargement des entrées:', error);
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Erreur',
+            detail: 'Impossible de charger les entrées de pointage'
+          });
+          this.loading = false;
+        }
       });
-    } finally {
-      this.loading = false;
-    }
   }
 
   onDateSelect(date: Date) {
@@ -578,25 +634,28 @@ export class TeamPointageComponent implements OnInit, AfterViewInit, OnDestroy {
     this.selectedDateDetails = selectedEntry || null;
   }
 
-  // Méthodes de filtrage et de recherche
   filterEntries() {
+    if (!this.teamEntries) {
+      this.filteredEntries = [];
+      return;
+    }
+
     this.filteredEntries = this.teamEntries.filter(entry => {
       const matchesSearch = !this.searchTerm || 
         entry.user && (
           entry.user.firstName.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
           entry.user.lastName.toLowerCase().includes(this.searchTerm.toLowerCase())
         );
-      
+
       const matchesStatus = !this.selectedStatus || entry.status === this.selectedStatus;
-      
+
       const entryDate = new Date(entry.date);
       const matchesDate = !this.selectedDate || this.isToday(entryDate);
-      
+
       return matchesSearch && matchesStatus && matchesDate;
     });
   }
 
-  // Méthodes de gestion des filtres
   hasActiveFilters(): boolean {
     return !!(this.searchTerm || this.selectedStatus || this.selectedDate);
   }
@@ -639,7 +698,6 @@ export class TeamPointageComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private shouldBeMarkedAsAbsent(entry: TimeEntryWithUser, currentTime: Date = new Date()): boolean {
 
-    // Si déjà marqué comme en congé ou jour férié, ne pas marquer comme absent
     if (entry.status === 'leave' || entry.status === 'holiday') {
       return false;
     }
@@ -649,23 +707,19 @@ export class TeamPointageComponent implements OnInit, AfterViewInit, OnDestroy {
       return false;
     }
 
-    // Convertir startTime du format "HH:mm" en Date
     const [startHours, startMinutes] = workSchedule.startTime.split(':').map(Number);
     const entryDate = new Date(entry.date);
     const workStartTime = new Date(entryDate);
     workStartTime.setHours(startHours, startMinutes, 0);
 
-    // Ajouter une marge de grâce (par exemple 30 minutes)
     const graceTime = new Date(workStartTime);
     graceTime.setMinutes(graceTime.getMinutes() + 30);
 
-    // Si on est après l'heure de début + grâce et qu'il n'y a pas de checkIn
     return currentTime > graceTime && !entry.checkIn;
   }
 
   private async updateEntryStatus(entry: TimeEntryWithUser): Promise<void> {
     if (this.shouldBeMarkedAsAbsent(entry)) {
-      // Mettre à jour le statut dans la base de données
       await firstValueFrom(this.pointageService.updateTimeEntry(entry.id!, {
         ...entry,
         status: 'absent',
@@ -678,12 +732,10 @@ export class TeamPointageComponent implements OnInit, AfterViewInit, OnDestroy {
     if (!time) return null;
 
     try {
-      // Si c'est déjà au format HH:mm ou HH:mm:ss
       if (/^\d{2}:\d{2}(:\d{2})?$/.test(time)) {
         return time.substring(0, 5);
       }
 
-      // Si c'est une date ISO
       if (/^\d{4}-\d{2}-\d{2}T/.test(time)) {
         const date = new Date(time);
         if (!isNaN(date.getTime())) {
@@ -702,18 +754,16 @@ export class TeamPointageComponent implements OnInit, AfterViewInit, OnDestroy {
     if (!startTime || !endTime) return null;
 
     try {
-      // Convertir les heures en minutes depuis minuit
       const [startHour, startMinute] = startTime.split(':').map(Number);
       const [endHour, endMinute] = endTime.split(':').map(Number);
-      
+
       let startMinutes = startHour * 60 + startMinute;
       let endMinutes = endHour * 60 + endMinute;
-      
-      // Si l'heure de fin est avant l'heure de début, on considère que c'est le jour suivant
+
       if (endMinutes < startMinutes) {
-        endMinutes += 24 * 60; // Ajouter 24 heures
+        endMinutes += 24 * 60;
       }
-      
+
       const duration = endMinutes - startMinutes;
       return duration > 0 ? duration : null;
     } catch (error) {
@@ -723,15 +773,14 @@ export class TeamPointageComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private getExpectedWorkMinutes(entry: TimeEntryWithUser): number {
-    // Par défaut : 8 heures de travail
-    const DEFAULT_WORK_HOURS = 8 * 60; // en minutes
-    
+    const DEFAULT_WORK_HOURS = 8 * 60;
+
     if (!entry.user?.workSchedule) {
       return DEFAULT_WORK_HOURS;
     }
 
     const { startTime, endTime, lunchBreakDuration } = entry.user.workSchedule;
-    
+
     if (!startTime || !endTime) {
       return DEFAULT_WORK_HOURS;
     }
@@ -739,8 +788,7 @@ export class TeamPointageComponent implements OnInit, AfterViewInit, OnDestroy {
     try {
       const workDuration = this.calculateDuration(startTime, endTime);
       if (workDuration === null) return DEFAULT_WORK_HOURS;
-      
-      // Soustraire la pause déjeuner si définie
+
       return workDuration - (lunchBreakDuration || 60);
     } catch {
       return DEFAULT_WORK_HOURS;
@@ -750,11 +798,10 @@ export class TeamPointageComponent implements OnInit, AfterViewInit, OnDestroy {
   private getWorkStatus(entry: TimeEntryWithUser): string {
     if (!entry.checkIn) return 'Non pointé';
     if (!entry.checkOut) return 'En cours';
-    
+
     const duration = this.calculateDuration(entry.checkIn, entry.checkOut);
     if (duration === null) return 'Erreur';
 
-    // Soustraire la pause déjeuner si elle existe
     let actualWorkDuration = duration;
     if (entry.lunchStart && entry.lunchEnd) {
       const lunchDuration = this.calculateDuration(entry.lunchStart, entry.lunchEnd);
@@ -764,8 +811,7 @@ export class TeamPointageComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     const expectedMinutes = this.getExpectedWorkMinutes(entry);
-    
-    // Calculer le pourcentage du temps travaillé
+
     const completionPercentage = (actualWorkDuration / expectedMinutes) * 100;
 
     if (completionPercentage >= 100) return 'Terminé';
@@ -780,7 +826,6 @@ export class TeamPointageComponent implements OnInit, AfterViewInit, OnDestroy {
     const duration = this.calculateDuration(entry.checkIn, entry.checkOut);
     if (duration === null) return '-';
 
-    // Soustraire la pause déjeuner si elle existe
     let actualWorkDuration = duration;
     if (entry.lunchStart && entry.lunchEnd) {
       const lunchDuration = this.calculateDuration(entry.lunchStart, entry.lunchEnd);
@@ -799,104 +844,231 @@ export class TeamPointageComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private updateChartData(): void {
-    if (!this.monthlyEntries.length) return;
+    if (!this.currentUser?.managedEmployees) {
+      return;
+    }
 
-    const lateEntries = this.monthlyEntries.filter(entry => entry.isLate);
-    const presentEntries = this.monthlyEntries.filter(entry => entry.status === 'present');
-    const absentEntries = this.monthlyEntries.filter(entry => entry.status === 'absent');
-    const leaveEntries = this.monthlyEntries.filter(entry => entry.status === 'leave');
+    // Filtrer les entrées selon la période sélectionnée
+    const filteredEntries = this.monthlyEntries.filter(entry => {
+      const entryDate = new Date(entry.date);
+      if (this.selectedPeriod === 'year') {
+        return entryDate.getFullYear() === this.selectedYear;
+      } else {
+        return entryDate.getFullYear() === this.selectedYear && 
+               entryDate.getMonth() === this.selectedMonth;
+      }
+    });
 
-    // Update punctuality chart data
+    // Grouper les entrées par utilisateur
+    const userEntriesMap = new Map<number, TimeEntryWithUser[]>();
+    
+    // Initialiser la map avec tous les utilisateurs gérés
+    this.currentUser.managedEmployees.forEach(userId => {
+      userEntriesMap.set(userId, []);
+    });
+    
+    // Ajouter les entrées existantes
+    filteredEntries.forEach(entry => {
+      if (userEntriesMap.has(entry.userId)) {
+        userEntriesMap.get(entry.userId)!.push(entry);
+      }
+    });
+
+    // Calculer les statistiques pour chaque utilisateur
+    const userStatsList = Array.from(userEntriesMap.entries())
+      .map(([userId, entries]) => {
+        const userName = this.getUserName(userId);
+
+        if (entries.length === 0) {
+          return {
+            name: userName,
+            absenceRate: 100,
+            lateRate: 0
+          };
+        }
+
+        const stats = this.calculateAttendanceStats(entries);
+        const workingDays = this.getDaysInPeriod() - stats.leaveDays;
+        
+        return {
+          name: userName,
+          absenceRate: (stats.absentDays / workingDays) * 100,
+          lateRate: (stats.lateDays / workingDays) * 100
+        };
+      })
+      .sort((a, b) => (b.absenceRate + b.lateRate) - (a.absenceRate + a.lateRate));
+
+    // Mettre à jour le graphique de ponctualité
     const punctualityData = {
-      labels: ['0-15 min', '15-30 min', '30+ min'],
-      datasets: [{
-        data: [
-          lateEntries.filter(e => e.minutesLate && e.minutesLate <= 15).length,
-          lateEntries.filter(e => e.minutesLate && e.minutesLate > 15 && e.minutesLate <= 30).length,
-          lateEntries.filter(e => e.minutesLate && e.minutesLate > 30).length
-        ],
-        backgroundColor: ['#FFB1C1', '#FFD1C1', '#FFE1C1']
-      }]
-    };
-
-    if (this.charts.punctuality) {
-      this.charts.punctuality.data = punctualityData;
-      this.charts.punctuality.update();
-    }
-
-    // Update status distribution chart
-    const statusData = {
-      labels: ['Présent', 'En retard', 'Absent', 'En congé'],
-      datasets: [{
-        data: [
-          presentEntries.length,
-          lateEntries.length,
-          absentEntries.length,
-          leaveEntries.length
-        ],
-        backgroundColor: ['#4CAF50', '#FFC107', '#F44336', '#2196F3']
-      }]
-    };
-
-    if (this.charts.status) {
-      this.charts.status.data = statusData;
-      this.charts.status.update();
-    }
-
-    // Update weekly attendance chart
-    const weeklyData = {
-      labels: ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi'],
+      labels: userStatsList.map(stats => stats.name),
       datasets: [
         {
-          data: Array(5).fill(0).map((_, i) => 
-            this.monthlyEntries.filter(e => new Date(e.date).getDay() === i + 1 && e.status === 'present').length
-          ),
-          label: 'Présents',
-          borderColor: '#22c55e',
-          backgroundColor: 'rgba(34, 197, 94, 0.1)'
-        },
-        {
-          data: Array(5).fill(0).map((_, i) => 
-            this.monthlyEntries.filter(e => new Date(e.date).getDay() === i + 1 && e.status === 'late').length
-          ),
-          label: 'Retards',
+          label: 'Taux de retard (%)',
+          data: userStatsList.map(stats => Number(stats.lateRate.toFixed(1))),
+          backgroundColor: 'rgba(249, 115, 22, 0.7)',
           borderColor: '#f97316',
-          backgroundColor: 'rgba(249, 115, 22, 0.1)'
+          borderWidth: 1
         },
         {
-          data: Array(5).fill(0).map((_, i) => 
-            this.monthlyEntries.filter(e => new Date(e.date).getDay() === i + 1 && e.status === 'absent').length
-          ),
-          label: 'Absents',
+          label: 'Taux d\'absence (%)',
+          data: userStatsList.map(stats => Number(stats.absenceRate.toFixed(1))),
+          backgroundColor: 'rgba(239, 68, 68, 0.7)',
           borderColor: '#ef4444',
-          backgroundColor: 'rgba(239, 68, 68, 0.1)'
+          borderWidth: 1
         }
       ]
     };
 
-    if (this.charts.weekly) {
-      this.charts.weekly.data = weeklyData;
-      this.charts.weekly.update();
+    const punctualityOptions = {
+      responsive: true,
+      plugins: {
+        legend: {
+          position: 'top' as const,
+        },
+        title: {
+          display: true,
+          text: `Analyse des retards et absences - ${this.selectedPeriod === 'year' ? 
+            this.selectedYear : 
+            `${this.months[this.selectedMonth].label} ${this.selectedYear}`}`
+        }
+      },
+      scales: {
+        y: {
+          beginAtZero: true,
+          title: {
+            display: true,
+            text: 'Pourcentage (%)'
+          },
+          max: 100,
+          stacked: false
+        },
+        x: {
+          stacked: false,
+          ticks: {
+            autoSkip: false,
+            maxRotation: 45,
+            minRotation: 45
+          }
+        }
+      }
+    };
+
+    if (this.charts.punctuality) {
+      this.charts.punctuality.data = punctualityData as ChartData<'bar'>;
+      this.charts.punctuality.options = punctualityOptions;
+      this.charts.punctuality.update();
     }
+  }
+
+  private getDaysInPeriod(): number {
+    if (this.selectedPeriod === 'year') {
+      return this.isLeapYear(this.selectedYear) ? 366 : 365;
+    } else {
+      return new Date(this.selectedYear, this.selectedMonth + 1, 0).getDate();
+    }
+  }
+
+  private isLeapYear(year: number): boolean {
+    return (year % 4 === 0 && year % 100 !== 0) || (year % 400 === 0);
+  }
+
+  private calculateAttendanceStats(entries: TimeEntryWithUser[]): {
+    totalDays: number;
+    presentDays: number;
+    absentDays: number;
+    lateDays: number;
+    leaveDays: number;
+    attendanceRate: number;
+    absenceRate: number;
+    punctualityRate: number;
+  } {
+    if (!entries || entries.length === 0) {
+      return {
+        totalDays: 0,
+        presentDays: 0,
+        absentDays: 0,
+        lateDays: 0,
+        leaveDays: 0,
+        attendanceRate: 0,
+        absenceRate: 0,
+        punctualityRate: 0
+      };
+    }
+
+    const stats = entries.reduce((acc, entry) => {
+      acc.totalDays++;
+
+      if (entry.status === 'leave' || entry.status === 'holiday') {
+        acc.leaveDays++;
+      } else if (entry.status === 'absent') {
+        acc.absentDays++;
+      } else if (entry.status === 'present') {
+        if (this.isLate(entry)) {
+          acc.lateDays++;
+        } else {
+          acc.presentDays++;
+        }
+      }
+
+      return acc;
+    }, {
+      totalDays: 0,
+      presentDays: 0,
+      absentDays: 0,
+      lateDays: 0,
+      leaveDays: 0,
+      attendanceRate: 0,
+      absenceRate: 0,
+      punctualityRate: 0
+    });
+
+    const workingDays = stats.totalDays - stats.leaveDays;
+    
+    if (workingDays > 0) {
+      stats.attendanceRate = ((stats.presentDays + stats.lateDays) / workingDays) * 100;
+      stats.absenceRate = (stats.absentDays / workingDays) * 100;
+      const totalPresent = stats.presentDays + stats.lateDays;
+      stats.punctualityRate = totalPresent > 0 ? (stats.presentDays / totalPresent) * 100 : 0;
+    }
+
+    return stats;
+  }
+
+  private isLate(entry: TimeEntryWithUser): boolean {
+    if (!entry.checkIn) return false;
+
+    const [hours, minutes] = entry.checkIn.split(':').map(Number);
+    const checkInTime = hours * 60 + minutes;
+    
+    // Heure de début standard (9h00)
+    const startTime = 9 * 60;
+    
+    // Si l'employé a un horaire personnalisé
+    if (entry.user?.workSchedule?.startTime) {
+      const [scheduleHours, scheduleMinutes] = entry.user.workSchedule.startTime.split(':').map(Number);
+      const scheduleStartTime = scheduleHours * 60 + scheduleMinutes;
+      return checkInTime > scheduleStartTime;
+    }
+    
+    // Sinon, on utilise l'heure standard
+    return checkInTime > startTime;
   }
 
   formatTime(time: string | undefined): string {
     if (!time) return '--:--';
-    
+
     try {
-      // Si c'est déjà au format HH:mm ou HH:mm:ss
       if (/^\d{2}:\d{2}(:\d{2})?$/.test(time)) {
-        return time.substring(0, 5); // Retourne seulement HH:mm
+        return time.substring(0, 5);
       }
-      
-      // Si c'est une date ISO
+
       if (/^\d{4}-\d{2}-\d{2}T/.test(time)) {
         const date = new Date(time);
         if (!isNaN(date.getTime())) {
           return `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
         }
       }
-      
+
       return '--:--';
     } catch (error) {
       console.error('Error formatting time:', error, 'Input:', time);
@@ -911,20 +1083,17 @@ export class TeamPointageComponent implements OnInit, AfterViewInit, OnDestroy {
       const startTime = this.formatTime(entry.lunchStart);
       const endTime = this.formatTime(entry.lunchEnd);
 
-      // Si on a seulement l'heure de début
       if (entry.lunchStart && !entry.lunchEnd) {
         return `${startTime} - En cours`;
       }
 
-      // Si on a seulement l'heure de fin (cas peu probable)
       if (!entry.lunchStart && entry.lunchEnd) {
         return `??? - ${endTime}`;
       }
 
-      // Si on a les deux heures
       const duration = this.calculateDuration(entry.lunchStart, entry.lunchEnd);
       const expectedDuration = entry.user?.workSchedule?.lunchBreakDuration || 60;
-      
+
       let status = '';
       if (duration !== null) {
         if (duration > expectedDuration) {
@@ -968,4 +1137,19 @@ export class TeamPointageComponent implements OnInit, AfterViewInit, OnDestroy {
   private readonly LUNCH_BREAK_DURATION = 60;
 
   private readonly GRACE_TIME = 30;
+
+  onPeriodChange(period: 'month' | 'year'): void {
+    this.selectedPeriod = period;
+    this.loadTeamEntries();
+  }
+
+  onYearChange(year: number): void {
+    this.selectedYear = year;
+    this.loadTeamEntries();
+  }
+
+  onMonthChange(month: number): void {
+    this.selectedMonth = month;
+    this.loadTeamEntries();
+  }
 }

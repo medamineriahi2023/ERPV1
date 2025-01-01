@@ -64,6 +64,61 @@
         </div>
     </div>
 
+    <div class="bg-white rounded-xl shadow-sm p-6 mb-6">
+        <div class="flex flex-wrap gap-6">
+            <div class="flex items-center gap-3">
+                <label class="text-sm font-medium text-gray-700">Période :</label>
+                <p-dropdown
+                        [options]="[
+                        {label: 'Par mois', value: 'month'},
+                        {label: 'Par année', value: 'year'}
+                    ]"
+                        [(ngModel)]="selectedPeriod"
+                        (onChange)="onPeriodChange($event.value)"
+                        styleClass="!border-gray-200 !rounded-lg !shadow-none"
+                        [style]="{'min-width': '150px'}"
+                        appendTo="body">
+                </p-dropdown>
+            </div>
+
+            <div class="flex items-center gap-3" *ngIf="selectedPeriod === 'year'">
+                <label class="text-sm font-medium text-gray-700">Année :</label>
+                <p-dropdown
+                        [options]="yearOptions"
+                        [(ngModel)]="selectedYear"
+                        (onChange)="onYearChange($event.value)"
+                        styleClass="!border-gray-200 !rounded-lg !shadow-none"
+                        [style]="{'min-width': '120px'}"
+                        appendTo="body">
+                </p-dropdown>
+            </div>
+
+            <div class="flex items-center gap-3" *ngIf="selectedPeriod === 'month'">
+                <label class="text-sm font-medium text-gray-700">Mois :</label>
+                <p-dropdown
+                        [options]="months"
+                        [(ngModel)]="selectedMonth"
+                        (onChange)="onMonthChange($event.value)"
+                        styleClass="!border-gray-200 !rounded-lg !shadow-none"
+                        [style]="{'min-width': '150px'}"
+                        appendTo="body"
+                        optionLabel="label"
+                        optionValue="value">
+                </p-dropdown>
+
+                <label class="text-sm font-medium text-gray-700 ml-6">Année :</label>
+                <p-dropdown
+                        [options]="yearOptions"
+                        [(ngModel)]="selectedYear"
+                        (onChange)="onYearChange($event.value)"
+                        styleClass="!border-gray-200 !rounded-lg !shadow-none"
+                        [style]="{'min-width': '120px'}"
+                        appendTo="body">
+                </p-dropdown>
+            </div>
+        </div>
+    </div>
+
     <!-- Charts Section -->
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
         <!-- Weekly Attendance Chart -->
