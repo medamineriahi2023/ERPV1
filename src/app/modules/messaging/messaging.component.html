@@ -55,12 +55,9 @@
             <span class="user-status">{{selectedUser.status}}</span>
           </div>
         </div>
-        <div class="user-actions">
-          <button pButton type="button" icon="pi pi-phone" class="p-button-rounded p-button-success" 
-                  (click)="initiateCall()" 
-                  [disabled]="callStatus.status !== 'idle'">
-          </button>
-          <button pButton type="button" icon="pi pi-video" class="p-button-rounded p-button-text"></button>
+        <div class="user-actions" *ngIf="selectedUser">
+          <button pButton class="p-button-rounded p-button-text" icon="fas fa-phone" (click)="initiateCall()"></button>
+          <button pButton class="p-button-rounded p-button-text" icon="fas fa-video" (click)="initiateVideoCall()"></button>
           <button pButton type="button" icon="pi pi-ellipsis-v" class="p-button-rounded p-button-text"></button>
         </div>
       </div>
@@ -114,11 +111,12 @@
   </div>
 </div>
 
-<p-dialog [(visible)]="showCallDialog" 
-          [modal]="true" 
-          [closable]="false" 
-          [style]="{width: '300px'}" 
-          [showHeader]="false">
+<p-dialog
+  [visible]="showCallDialog" 
+  [modal]="true" 
+  [closable]="false" 
+  [style]="{width: '300px'}" 
+  [showHeader]="false">
   <div class="call-dialog">
     <!-- Calling State -->
     <div *ngIf="callStatus.status === 'calling'" class="call-status">
@@ -156,6 +154,24 @@
               (click)="endCall()">
       </button>
     </div>
+  </div>
+</p-dialog>
+
+<app-video-call-dialog
+  [visible]="showVideoCallDialog"
+  [duration]="callDuration">
+</app-video-call-dialog>
+
+<p-dialog
+  [visible]="videoCallStatus.status === 'incoming'"
+  [modal]="true"
+  [closable]="false"
+  [style]="{width: '300px'}"
+  header="Incoming Video Call">
+  <p>{{ videoCallStatus.callerName }} is video calling you</p>
+  <div class="call-actions">
+    <button pButton class="p-button-success" icon="fas fa-video" (click)="acceptVideoCall()">Accept</button>
+    <button pButton class="p-button-danger" icon="fas fa-times" (click)="rejectVideoCall()">Reject</button>
   </div>
 </p-dialog>
 

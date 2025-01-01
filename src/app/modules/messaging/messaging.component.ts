@@ -13,7 +13,11 @@ import { InputText } from "primeng/inputtext";
 import { ButtonModule } from 'primeng/button';
 import { ChangeDetectorRef } from '@angular/core';
 import { VoiceCallService, CallStatus } from './services/voice-call.service';
+import { VideoCallService, VideoCallStatus } from './services/video-call.service';
 import { Dialog } from 'primeng/dialog';
+import {
+  VideoCallDialogComponent
+} from "@app/modules/messaging/components/video-call-dialog/video-call-dialog.component";
 
 @Component({
   selector: 'app-messaging',
@@ -27,7 +31,8 @@ import { Dialog } from 'primeng/dialog';
     DatePipe,
     InputText,
     ButtonModule,
-    Dialog
+    Dialog,
+    VideoCallDialogComponent
   ],
   templateUrl: './messaging.component.html',
   styleUrls: ['./messaging.component.scss']
@@ -45,8 +50,11 @@ export class MessagingComponent implements OnInit, OnDestroy {
   private searchTermSubject = new BehaviorSubject<string>('');
   private subscriptions: Subscription[] = [];
   callStatus: CallStatus = { status: 'idle' };
+  videoCallStatus: VideoCallStatus = { status: 'idle' };
   showCallDialog: boolean = false;
+  showVideoCallDialog: boolean = false;
   private callStatusSubscription: Subscription | undefined;
+  private videoCallStatusSubscription: Subscription | undefined;
   callDuration: string = '00:00';
   private callTimer: any;
 
@@ -62,7 +70,8 @@ export class MessagingComponent implements OnInit, OnDestroy {
     private messagingService: MessagingService,
     private authService: AuthService,
     private cdr: ChangeDetectorRef,
-    private voiceCallService: VoiceCallService
+    private voiceCallService: VoiceCallService,
+    private videoCallService: VideoCallService
   ) {
     this.currentUserId = String(this.authService.getCurrentUser()?.id);
     this.checkScreenSize();
@@ -130,6 +139,17 @@ export class MessagingComponent implements OnInit, OnDestroy {
         this.cdr.detectChanges();
       }
     );
+
+    this.videoCallStatusSubscription = this.videoCallService.callStatus$.subscribe(status => {
+      this.videoCallStatus = status;
+      if (status.status === 'idle') {
+        this.showVideoCallDialog = false;
+        this.stopCallTimer();
+      } else if (status.status === 'connected' && !this.callTimer) {
+        this.startCallTimer();
+      }
+      this.cdr.detectChanges();
+    });
   }
 
   private sortUsersByStatus(users: UserStatusInfo[]): UserStatusInfo[] {
@@ -290,10 +310,24 @@ export class MessagingComponent implements OnInit, OnDestroy {
     }
   }
 
+  initiateVideoCall() {
+    if (this.selectedUser) {
+      this.videoCallService.initiateCall(this.selectedUser.userId);
+      this.showVideoCallDialog = true;
+    }
+  }
+
   async acceptCall() {
     if (this.callStatus.remoteUserId && this.selectedUser) {
       console.log('Accepting call from:', this.selectedUser.username);
       await this.voiceCallService.acceptCall(this.callStatus.remoteUserId);
+    }
+  }
+
+  acceptVideoCall() {
+    if (this.videoCallStatus.remoteUserId) {
+      this.videoCallService.acceptCall(this.videoCallStatus.remoteUserId);
+      this.showVideoCallDialog = true;
     }
   }
 
@@ -305,10 +339,22 @@ export class MessagingComponent implements OnInit, OnDestroy {
     }
   }
 
+  rejectVideoCall() {
+    if (this.videoCallStatus.remoteUserId) {
+      this.videoCallService.rejectCall(this.videoCallStatus.remoteUserId);
+      this.showVideoCallDialog = false;
+    }
+  }
+
   endCall() {
     console.log('Ending call');
     this.voiceCallService.endCall();
     this.showCallDialog = false;
+  }
+
+  endVideoCall() {
+    this.videoCallService.endCall();
+    this.showVideoCallDialog = false;
   }
 
   private startCallTimer() {
@@ -336,8 +382,10 @@ export class MessagingComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.subscriptions.forEach(sub => sub.unsubscribe());
     this.callStatusSubscription?.unsubscribe();
+    this.videoCallStatusSubscription?.unsubscribe();
     this.stopCallTimer();
     this.voiceCallService.endCall();
+    this.videoCallService.endCall();
   }
 
   backToUserList() {

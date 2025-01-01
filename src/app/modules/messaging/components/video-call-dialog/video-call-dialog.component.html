@@ -1,0 +1,41 @@
+<div class="video-call-dialog" [class.visible]="visible">
+  <div class="video-container">
+    <!-- Remote Video -->
+    <video #remoteVideo autoplay playsinline class="remote-video"></video>
+    
+    <!-- Local Video (Picture-in-Picture) -->
+    <video #localVideo autoplay playsinline muted class="local-video"></video>
+    
+    <!-- Call Status Overlay -->
+    <div class="call-status-overlay" *ngIf="callStatus.status !== 'connected'">
+      <div class="status-message">
+        <span *ngIf="callStatus.status === 'calling'">
+          Calling {{ callStatus.remoteUserId }}...
+        </span>
+        <span *ngIf="callStatus.status === 'incoming'">
+          Incoming call from {{ callStatus.callerName }}
+        </span>
+      </div>
+    </div>
+    
+    <!-- Call Duration -->
+    <div class="call-duration" *ngIf="callStatus.status === 'connected'">
+      {{ duration }}
+    </div>
+    
+    <!-- Call Controls -->
+    <div class="call-controls">
+      <button class="control-btn" [class.active]="isMuted" (click)="toggleMute()">
+        <i class="fas" [class.fa-microphone]="!isMuted" [class.fa-microphone-slash]="isMuted"></i>
+      </button>
+      
+      <button class="control-btn end-call" (click)="endCall()">
+        <i class="fas fa-phone-slash"></i>
+      </button>
+      
+      <button class="control-btn" [class.active]="!isVideoEnabled" (click)="toggleVideo()">
+        <i class="fas" [class.fa-video]="isVideoEnabled" [class.fa-video-slash]="!isVideoEnabled"></i>
+      </button>
+    </div>
+  </div>
+</div>

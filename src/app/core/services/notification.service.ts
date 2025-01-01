@@ -66,16 +66,11 @@ export class NotificationService {
         ]
       };
 
-      const notification = new Notification('Incoming Call', options);
+      if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+        await navigator.serviceWorker.ready.then((registration) => {
+          registration.showNotification('Incoming Call', options);
+        });
 
-      notification.onclick = (event) => {
-        event.preventDefault();
-        window.focus();
-        notification.close();
-      };
-
-      // Handle notification actions using the serviceWorker
-      if ('serviceWorker' in navigator) {
         navigator.serviceWorker.addEventListener('message', (event) => {
           if (event.data && event.data.type === 'NOTIFICATION_ACTION') {
             const action = event.data.action;
@@ -84,11 +79,21 @@ export class NotificationService {
             } else if (action === 'decline') {
               window.dispatchEvent(new CustomEvent('declineCall', { detail: callerInfo }));
             }
-            notification.close();
           }
         });
-      }
+      } else {
+        // Fallback for when service worker is not available
+        const simpleNotification = new Notification('Incoming Call', {
+          body: `Incoming call from ${callerInfo.name}`,
+          icon: '/assets/icons/call-icon.png',
+        });
 
+        simpleNotification.onclick = () => {
+          window.focus();
+          simpleNotification.close();
+          window.dispatchEvent(new CustomEvent('acceptCall', { detail: callerInfo }));
+        };
+      }
     } catch (error) {
       console.error('Error showing notification:', error);
     }
