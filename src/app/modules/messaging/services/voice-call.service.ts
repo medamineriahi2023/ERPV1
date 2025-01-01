@@ -124,15 +124,28 @@ export class VoiceCallService {
 
     const configuration: RTCConfiguration = {
       iceServers: [
-        { urls: 'stun:stun.l.google.com:19302' },
-        { urls: 'stun:stun1.l.google.com:19302' },
-        { urls: 'stun:stun2.l.google.com:19302' },
-        { urls: 'stun:stun3.l.google.com:19302' },
-        { urls: 'stun:stun4.l.google.com:19302' },
         {
-          urls: 'turns:197.15.18.165:5349',
-          username: 'medaminer',
-          credential: '21282925Aa'
+          urls: "stun:stun.relay.metered.ca:80"
+        },
+        {
+          urls: "turn:global.relay.metered.ca:80",
+          username: "f62b917dabb7524388421224",
+          credential: "ut/b3FhDJE9dFzX8"
+        },
+        {
+          urls: "turn:global.relay.metered.ca:80?transport=tcp",
+          username: "f62b917dabb7524388421224",
+          credential: "ut/b3FhDJE9dFzX8"
+        },
+        {
+          urls: "turn:global.relay.metered.ca:443",
+          username: "f62b917dabb7524388421224",
+          credential: "ut/b3FhDJE9dFzX8"
+        },
+        {
+          urls: "turns:global.relay.metered.ca:443?transport=tcp",
+          username: "f62b917dabb7524388421224",
+          credential: "ut/b3FhDJE9dFzX8"
         }
       ]
     };
