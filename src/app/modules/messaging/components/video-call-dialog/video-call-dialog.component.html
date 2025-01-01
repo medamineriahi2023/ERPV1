@@ -2,37 +2,76 @@
         [visible]="videoCallStatus.status === 'incoming'"
         [modal]="true"
         [closable]="false"
-        [style]="{width: '300px'}"
+        styleClass="modern-dialog incoming-call-dialog"
+        [style]="{width: '360px'}"
         header="Incoming Video Call">
-    <p>{{ videoCallStatus.callerName }} is video calling you</p>
-    <div class="call-actions">
-        <button pButton class="p-button-success" icon="fas fa-video" (click)="acceptVideoCall()">Accept</button>
-        <button pButton class="p-button-danger" icon="fas fa-times" (click)="rejectVideoCall()">Reject</button>
+    <div class="incoming-call-content">
+        <div class="caller-avatar">
+            <i class="fas fa-user-circle"></i>
+        </div>
+        <h3 class="caller-name">{{ videoCallStatus.callerName || 'Unknown Caller' }}</h3>
+        <p class="call-status">
+            <i class="fas fa-video"></i>
+            <span>Incoming video call...</span>
+        </p>
+        <div class="call-actions">
+            <button pButton class="p-button-success p-button-rounded"
+                    (click)="acceptVideoCall()">
+                <i class="fas fa-video"></i>
+                <span>Accept</span>
+            </button>
+            <button pButton class="p-button-danger p-button-rounded"
+                    (click)="rejectVideoCall()">
+                <i class="fas fa-times"></i>
+                <span>Decline</span>
+            </button>
+        </div>
     </div>
 </p-dialog>
 
-<!-- Video Call Dialog -->
 <p-dialog
         [visible]="videoCallStatus.status === 'connected' || videoCallStatus.status === 'calling'"
         [modal]="true"
         [closable]="false"
-        [style]="{width: '800px'}"
+        styleClass="modern-dialog video-call-dialog"
+        [style]="{width: '90vw', maxWidth: '1200px'}"
         header="Video Call">
     <div class="video-container">
         <!-- Remote Video -->
-        <div class="remote-video-container">
+        <div class="remote-video-wrapper">
             <video #remoteVideo autoplay playsinline></video>
-            <div class="call-duration">{{ callDuration }}</div>
+            <div class="video-overlay">
+                <div class="call-duration">
+                    <i class="fas fa-clock"></i>
+                    <span>{{ callDuration }}</span>
+                </div>
+                <div class="connection-status" *ngIf="videoCallStatus.status === 'calling'">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    <span>Connecting...</span>
+                </div>
+            </div>
         </div>
 
         <!-- Local Video -->
-        <div class="local-video-container">
+        <div class="local-video-wrapper">
             <video #localVideo autoplay playsinline muted></video>
+            <div class="video-controls">
+                <button class="control-btn" title="Toggle Camera">
+                    <i class="fas fa-video"></i>
+                </button>
+                <button class="control-btn" title="Toggle Microphone">
+                    <i class="fas fa-microphone"></i>
+                </button>
+            </div>
         </div>
     </div>
 
-    <div class="call-actions">
-        <button pButton class="p-button-danger" icon="fas fa-phone-slash" (click)="endCall()">End Call</button>
+    <div class="main-controls">
+        <button pButton class="p-button-rounded p-button-danger end-call-btn"
+                (click)="endCall()">
+            <i class="fas fa-phone-slash"></i>
+            <span>End Call</span>
+        </button>
     </div>
 </p-dialog>
 
@@ -41,10 +80,24 @@
         [visible]="videoCallStatus.status === 'calling'"
         [modal]="true"
         [closable]="false"
-        [style]="{width: '300px'}"
-        header="Calling...">
-    <p>Calling {{ videoCallStatus.remoteUserId }}...</p>
-    <div class="call-actions">
-        <button pButton class="p-button-danger" icon="fas fa-phone-slash" (click)="endCall()">Cancel</button>
+        styleClass="modern-dialog outgoing-call-dialog"
+        [style]="{width: '360px'}"
+        header="Outgoing Call">
+    <div class="outgoing-call-content">
+        <div class="callee-avatar">
+            <i class="fas fa-user-circle"></i>
+        </div>
+        <h3 class="callee-name">{{ videoCallStatus.remoteUserId }}</h3>
+        <p class="call-status">
+            <i class="fas fa-spinner fa-spin"></i>
+            Calling...
+        </p>
+        <div class="call-actions">
+            <button pButton class="p-button-danger p-button-rounded"
+                    (click)="endCall()">
+                <i class="fas fa-phone-slash"></i>
+                <span>Cancel</span>
+            </button>
+        </div>
     </div>
 </p-dialog>

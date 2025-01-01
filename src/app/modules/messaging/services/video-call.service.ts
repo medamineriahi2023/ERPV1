@@ -1,10 +1,11 @@
 import { Injectable, inject } from '@angular/core';
 import { Database, ref, set, onValue, remove, get, off } from '@angular/fire/database';
 import { Auth } from '@angular/fire/auth';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, firstValueFrom } from 'rxjs';
 import { AuthService } from '../../../core/services/auth.service';
 import { NotificationService } from '../../../core/services/notification.service';
 import { AudioService } from '../../../core/services/audio.service';
+import { ApiService } from '../../../core/services/api.service';
 
 export interface VideoCallStatus {
   status: 'idle' | 'calling' | 'incoming' | 'connected';
@@ -31,10 +32,12 @@ export class VideoCallService {
 
   public callDurationSubject = new BehaviorSubject<string>('00:00');
   public callDuration$ = this.callDurationSubject.asObservable();
+
   constructor(
     private authService: AuthService,
     private notificationService: NotificationService,
-    private audioService: AudioService
+    private audioService: AudioService,
+    private apiService: ApiService
   ) {
     if (this.authService.isLoggedIn()) {
       const currentUserId = String(this.authService.getCurrentUser()?.id);
@@ -46,24 +49,55 @@ export class VideoCallService {
         if (callData?.offer && !callData.answer && !callData.rejected) {
           console.log('Incoming video call detected:', callData);
           
-          // Get caller's information
-          const callerInfo = await this.getUserInfo(callData.callerId);
-          
-          // Play call sound
-          this.audioService.playCallSound();
-          
-          // Show notification
-          await this.notificationService.showCallNotification({
-            id: callData.callerId,
-            name: callerInfo?.name || callData.callerId,
-            isVideo: true
-          });
-          
-          this.callStatusSubject.next({
-            status: 'incoming',
-            remoteUserId: callData.callerId,
-            callerName: callerInfo?.name
-          });
+          try {
+            // Get caller's information
+            const callerInfo = await this.getUserInfo(callData.callerId);
+            console.log('Caller info retrieved:', callerInfo);
+            
+            // Get user from API as backup
+            let callerName = callerInfo?.name;
+            if (!callerName) {
+              try {
+                const user = await firstValueFrom(this.apiService.getUserById(parseInt(callData.callerId)));
+                callerName = user ? `${user.firstName} ${user.lastName}` : null;
+                console.log('Retrieved caller name from API:', callerName);
+              } catch (error) {
+                console.warn('Failed to get user from API:', error);
+              }
+            }
+            
+            // Set final caller name
+            callerName = callerName || 'Unknown Caller';
+            console.log('Final caller name:', callerName);
+            
+            // Play call sound
+            this.audioService.playCallSound();
+            
+            // Show notification
+            await this.notificationService.showCallNotification({
+              id: callData.callerId,
+              name: callerName,
+              isVideo: true
+            });
+            
+            // Update call status with caller information
+            const callStatus: VideoCallStatus = {
+              status: 'incoming',
+              remoteUserId: callData.callerId,
+              callerName: callerName
+            };
+            console.log('Setting call status:', callStatus);
+            this.callStatusSubject.next(callStatus);
+          } catch (error) {
+            console.error('Error handling incoming call:', error);
+            // Still show the call even if we can't get the caller info
+            const callStatus: VideoCallStatus = {
+              status: 'incoming',
+              remoteUserId: callData.callerId,
+              callerName: 'Unknown Caller'
+            };
+            this.callStatusSubject.next(callStatus);
+          }
         }
       });
     }
@@ -85,10 +119,44 @@ export class VideoCallService {
 
   private async getUserInfo(userId: string): Promise<{ name: string } | null> {
     try {
+      // First try to get user from API
+      const user = await firstValueFrom(this.apiService.getUserById(parseInt(userId)));
+      if (user) {
+        const fullName = user.firstName && user.lastName 
+          ? `${user.firstName} ${user.lastName}`
+          : user.name || user.username;
+        
+        console.log('Retrieved user info from API:', { userId, fullName, user });
+        return { name: fullName };
+      }
+
+      // If not found in API, try Firebase
       const userRef = ref(this.db, `users/${userId}`);
       const snapshot = await get(userRef);
       const userData = snapshot.val();
-      return userData ? { name: userData.name || userData.username || userId } : null;
+      
+      if (userData) {
+        const fullName = userData.firstName && userData.lastName 
+          ? `${userData.firstName} ${userData.lastName}`
+          : userData.name || userData.username || userId;
+        
+        console.log('Retrieved user info from Firebase:', { userId, fullName, userData });
+        return { name: fullName };
+      }
+      
+      // Finally, try auth service
+      const currentUser = this.authService.getCurrentUser();
+      if (currentUser && currentUser.id.toString() === userId) {
+        const fullName = currentUser.firstName && currentUser.lastName
+          ? `${currentUser.firstName} ${currentUser.lastName}`
+          : currentUser.name || currentUser.username;
+          
+        console.log('Retrieved user info from auth service:', { userId, fullName, currentUser });
+        return { name: fullName };
+      }
+      
+      console.log('No user data found for:', userId);
+      return null;
     } catch (error) {
       console.error('Error getting user info:', error);
       return null;

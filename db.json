@@ -35,7 +35,7 @@
       },
       "status": "ACTIVE",
       "contractType": "CDI",
-      "lastActive": "2025-01-01T02:12:58.509Z"
+      "lastActive": "2025-01-01T13:21:15.712Z"
     },
     {
       "username": "safwane",
@@ -61,10 +61,10 @@
         "lunchBreakDuration": 60
       },
       "rating": 4,
-      "status": "ACTIVE",
+      "status": "OFFLINE",
       "contractType": "CDI",
       "id": 2,
-      "lastActive": "2025-01-01T02:12:52.719Z"
+      "lastActive": "2025-01-01T13:21:27.186Z"
     },
     {
       "username": "aliriahi@gmail.com",
@@ -805,6 +805,24 @@
       "receiverId": "2",
       "content": "📞 Call started",
       "timestamp": "2025-01-01T01:38:39.763Z",
+      "read": true
+    },
+    {
+      "id": "1735699709642",
+      "senderId": "1",
+      "senderName": "medaminer",
+      "receiverId": "2",
+      "content": "slm",
+      "timestamp": "2025-01-01T02:48:29.642Z",
+      "read": true
+    },
+    {
+      "id": "1735699732661",
+      "senderId": "2",
+      "senderName": "safwane",
+      "receiverId": "1",
+      "content": "ahla",
+      "timestamp": "2025-01-01T02:48:52.661Z",
       "read": true
     }
   ],

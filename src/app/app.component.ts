@@ -11,6 +11,7 @@ import {
   VideoCallDialogComponent
 } from "@app/modules/messaging/components/video-call-dialog/video-call-dialog.component";
 import {VideoCallService} from "@app/modules/messaging/services/video-call.service";
+// import {VoiceCallComponent} from "@app/modules/messaging/components/voice-call/voice-call.component";
 
 @Component({
   selector: 'app-root',
@@ -19,6 +20,7 @@ import {VideoCallService} from "@app/modules/messaging/services/video-call.servi
       <router-outlet></router-outlet>
       <app-video-call-dialog>
       </app-video-call-dialog>
+<!--      <app-voice-call></app-voice-call>-->
     </main>
   `,
   styleUrls: ['./app.component.scss'],
@@ -30,7 +32,8 @@ import {VideoCallService} from "@app/modules/messaging/services/video-call.servi
     ToastModule,
     ConfirmDialogModule,
     AngularFireModule,
-    VideoCallDialogComponent
+    VideoCallDialogComponent,
+    // VoiceCallComponent
   ],
   providers: [MessageService, ConfirmationService, VoiceCallService]
 })
