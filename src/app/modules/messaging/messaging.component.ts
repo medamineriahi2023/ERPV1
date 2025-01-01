@@ -310,10 +310,10 @@ export class MessagingComponent implements OnInit, OnDestroy {
     }
   }
 
-  initiateVideoCall() {
+  startVideoCall() {
     if (this.selectedUser) {
-      this.videoCallService.initiateCall(this.selectedUser.userId);
       this.showVideoCallDialog = true;
+      this.videoCallService.startCall(this.selectedUser.userId);
     }
   }
 

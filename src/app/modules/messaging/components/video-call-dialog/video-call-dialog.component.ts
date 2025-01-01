@@ -1,49 +1,74 @@
-import { Component, Input, OnInit, OnDestroy, ElementRef, ViewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy, ElementRef, ViewChild, ChangeDetectorRef, Input } from '@angular/core';
 import { VideoCallService, VideoCallStatus } from '../../services/video-call.service';
 import { Subscription } from 'rxjs';
-import { NgIf } from "@angular/common";
+import { NgIf } from '@angular/common';
 
 @Component({
-    selector: 'app-video-call-dialog',
-    templateUrl: './video-call-dialog.component.html',
-    styleUrls: ['./video-call-dialog.component.scss'],
-    standalone: true,
-    imports: [NgIf]
+  selector: 'app-video-call-dialog',
+  templateUrl: './video-call-dialog.component.html',
+  styleUrls: ['./video-call-dialog.component.scss'],
+  standalone: true,
+  imports: [NgIf]
 })
 export class VideoCallDialogComponent implements OnInit, OnDestroy {
-  @Input() visible: boolean = false;
-  @Input() duration: string = '00:00';
   @ViewChild('localVideo') localVideo!: ElementRef<HTMLVideoElement>;
   @ViewChild('remoteVideo') remoteVideo!: ElementRef<HTMLVideoElement>;
-
+  @Input() visible: boolean = false;
+  @Input() duration: string = '00:00';
+  
   callStatus: VideoCallStatus = { status: 'idle' };
   private callStatusSubscription?: Subscription;
   isMuted: boolean = false;
   isVideoEnabled: boolean = true;
 
-  constructor(private videoCallService: VideoCallService) {}
+  constructor(
+    private videoCallService: VideoCallService,
+    private cdr: ChangeDetectorRef
+  ) {}
 
   ngOnInit() {
     this.callStatusSubscription = this.videoCallService.callStatus$.subscribe(
       status => {
+        console.log('Call status changed:', status);
         this.callStatus = status;
+        this.visible = status.status !== 'idle';
+        
         if (status.status === 'connected') {
           this.setupVideoStreams();
+        } else if (status.status === 'idle') {
+          this.cleanupVideoStreams();
         }
+        
+        this.cdr.detectChanges();
       }
     );
   }
 
   private async setupVideoStreams() {
+    console.log('Setting up video streams');
     const localStream = this.videoCallService.getLocalStream();
     const remoteStream = this.videoCallService.getRemoteStream();
 
     if (localStream && this.localVideo?.nativeElement) {
+      console.log('Setting up local video stream');
       this.localVideo.nativeElement.srcObject = localStream;
+      await this.localVideo.nativeElement.play().catch(err => console.error('Error playing local video:', err));
     }
 
     if (remoteStream && this.remoteVideo?.nativeElement) {
+      console.log('Setting up remote video stream');
       this.remoteVideo.nativeElement.srcObject = remoteStream;
+      await this.remoteVideo.nativeElement.play().catch(err => console.error('Error playing remote video:', err));
+    }
+  }
+
+  private cleanupVideoStreams() {
+    console.log('Cleaning up video streams');
+    if (this.localVideo?.nativeElement) {
+      this.localVideo.nativeElement.srcObject = null;
+    }
+    if (this.remoteVideo?.nativeElement) {
+      this.remoteVideo.nativeElement.srcObject = null;
     }
   }
 
@@ -75,5 +100,6 @@ export class VideoCallDialogComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.callStatusSubscription?.unsubscribe();
+    this.cleanupVideoStreams();
   }
 }

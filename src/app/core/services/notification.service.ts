@@ -7,6 +7,12 @@ interface CallNotificationAction {
   icon?: string;
 }
 
+interface CallNotificationData {
+  id: string;
+  name: string;
+  isVideo?: boolean;
+}
+
 interface NotificationOptions {
   body: string;
   icon: string;
@@ -39,7 +45,7 @@ export class NotificationService {
     }
   }
 
-  async showCallNotification(callerInfo: { id: string; name: string }): Promise<void> {
+  async showCallNotification(callerInfo: CallNotificationData): Promise<void> {
     if (!await this.requestPermission()) {
       console.warn('Notification permission not granted');
       return;

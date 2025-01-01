@@ -57,7 +57,9 @@
         </div>
         <div class="user-actions" *ngIf="selectedUser">
           <button pButton class="p-button-rounded p-button-text" icon="fas fa-phone" (click)="initiateCall()"></button>
-          <button pButton class="p-button-rounded p-button-text" icon="fas fa-video" (click)="initiateVideoCall()"></button>
+          <button class="video-call-btn" (click)="startVideoCall()">
+            <i class="fas fa-video"></i>
+          </button>
           <button pButton type="button" icon="pi pi-ellipsis-v" class="p-button-rounded p-button-text"></button>
         </div>
       </div>
