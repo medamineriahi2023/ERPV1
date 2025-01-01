@@ -75,7 +75,7 @@
           <div *ngFor="let leave of recentLeaves" 
                class="flex items-center p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
             <div class="flex-1">
-              <p class="text-sm font-medium text-gray-900">{{ getTypeLabel(leave.type) }}</p>
+              <p class="text-sm font-medium text-gray-900">{{ leave.type.label }}</p>
               <p class="text-sm text-gray-500">{{ leave.startDate | date:'shortDate' }} - {{ leave.endDate | date:'shortDate' }}</p>
             </div>
             <span [class]="'px-3 py-1 rounded-full text-xs font-medium ' + getStatusColor(leave.status)">
@@ -157,37 +157,31 @@
                 formControlName="startDate"
                 [minDate]="minDate"
                 [showIcon]="true"
-                [disabledDates]="publicHolidays"
-                [disabledDays]="[0,6]"
                 dateFormat="dd/mm/yy"
-                [style]="{'width': '100%'}"
-                styleClass="w-full"
-                [readonlyInput]="true"
-                placeholder="Sélectionnez une date"
+                [style]="{ width: '100%' }"
               ></p-calendar>
-              <p class="text-sm text-gray-500" *ngIf="leaveForm.get('startDate')?.value">
-                {{ leaveForm.get('startDate')?.value | date:'EEEE d MMMM yyyy' }}
-              </p>
             </div>
-
             <div class="space-y-2">
               <label class="block text-sm font-medium text-gray-700">Date de fin *</label>
               <p-calendar
                 formControlName="endDate"
-                [minDate]="leaveForm.get('startDate')?.value || minDate"
+                [minDate]="minDate"
                 [showIcon]="true"
-                [disabledDates]="publicHolidays"
-                [disabledDays]="[0,6]"
                 dateFormat="dd/mm/yy"
-                [style]="{'width': '100%'}"
-                styleClass="w-full"
-                [readonlyInput]="true"
-                placeholder="Sélectionnez une date"
+                [style]="{ width: '100%' }"
               ></p-calendar>
-              <p class="text-sm text-gray-500" *ngIf="leaveForm.get('endDate')?.value">
-                {{ leaveForm.get('endDate')?.value | date:'EEEE d MMMM yyyy' }}
-              </p>
             </div>
+          </div>
+            
+          <!-- Affichage de la durée calculée -->
+          <div class="mt-4 p-4 bg-blue-50 rounded-lg">
+            <p class="text-sm text-blue-700">
+              <span class="font-medium">Durée du congé :</span>
+              {{ calculatedDays }} jour(s)
+              <span *ngIf="calculatedDays > 0" class="text-xs text-blue-600">
+                (weekends et jours fériés exclus)
+              </span>
+            </p>
           </div>
 
           <!-- Duration Info -->

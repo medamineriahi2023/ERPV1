@@ -211,10 +211,10 @@
       "userId": 2,
       "date": "2025-01-01T16:53:22.134Z",
       "checkIn": "17:53:22",
-      "checkOut": null,
+      "checkOut": "19:28:50",
       "lunchStart": null,
       "lunchEnd": null,
-      "totalHours": 0,
+      "totalHours": 1.59,
       "status": "late",
       "isLate": true,
       "id": 4
@@ -274,6 +274,31 @@
       "createdAt": "2024-12-28T16:04:00.438Z",
       "updatedAt": "2024-12-28T16:05:36.294Z",
       "id": 2,
+      "approverComment": ""
+    },
+    {
+      "employeeId": 2,
+      "managerId": 1,
+      "type": {
+        "label": "Congé payé",
+        "value": "CONGE_PAYE",
+        "icon": "pi pi-calendar",
+        "color": "#22C55E"
+      },
+      "startDate": "2025-01-12T23:00:00.000Z",
+      "endDate": "2025-01-16T23:00:00.000Z",
+      "duration": 0,
+      "status": "REFUSE",
+      "reason": "sdqfdsqfsdqfsdqf",
+      "urgencyLevel": {
+        "label": "Normal",
+        "value": "NORMAL",
+        "icon": "pi pi-clock"
+      },
+      "attachments": [],
+      "createdAt": "2025-01-01T18:34:15.263Z",
+      "updatedAt": "2025-01-01T18:35:39.071Z",
+      "id": 3,
       "approverComment": ""
     }
   ]

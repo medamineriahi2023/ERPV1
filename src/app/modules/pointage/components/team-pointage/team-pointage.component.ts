@@ -240,27 +240,120 @@ export class TeamPointageComponent implements OnInit, AfterViewInit, OnDestroy {
     const punctualityCtx = document.getElementById('punctualityChart') as HTMLCanvasElement;
 
     if (weeklyCtx) {
-      this.charts['weekly'] = new Chart(weeklyCtx, {
-        type: 'line',
-        data: this.weeklyAttendanceData,
-        options: this.chartOptions
+      this.charts.weekly = new Chart(weeklyCtx, {
+        type: 'bar',
+        data: {} as ChartData<'bar'>,
+        options: {}
       });
     }
 
     if (statusCtx) {
-      this.charts['status'] = new Chart(statusCtx, {
-        type: 'pie',
-        data: this.statusDistributionData,
-        options: this.chartOptions
+      this.charts.status = new Chart(statusCtx, {
+        type: 'doughnut',
+        data: {} as ChartData<'doughnut'>,
+        options: {}
       });
     }
 
     if (punctualityCtx) {
-      this.charts['punctuality'] = new Chart(punctualityCtx, {
+      this.charts.punctuality = new Chart(punctualityCtx, {
         type: 'bar',
-        data: this.punctualityTrendData,
-        options: this.chartOptions
+        data: {} as ChartData<'bar'>,
+        options: {}
       });
+    }
+
+    this.updateChartData();
+    this.updateWeeklyChart();
+    this.updateStatusChart();
+  }
+
+  private updateStatusChart() {
+    // Obtenir les entrées d'aujourd'hui
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const todayEntries = this.monthlyEntries.filter(entry => {
+      const entryDate = new Date(entry.date);
+      entryDate.setHours(0, 0, 0, 0);
+      return entryDate.getTime() === today.getTime();
+    });
+
+    // Calculer le nombre total d'employés
+    const totalEmployees = this.currentUser?.managedEmployees?.length || 0;
+
+    // Compter les différents statuts
+    const presentCount = todayEntries.filter(entry => 
+      entry.status === 'present' && !this.isLate(entry)
+    ).length;
+
+    const lateCount = todayEntries.filter(entry => 
+      this.isLate(entry)
+    ).length;
+
+    const leaveCount = todayEntries.filter(entry => 
+      entry.status === 'leave'
+    ).length;
+
+    const holidayCount = todayEntries.filter(entry => 
+      entry.status === 'holiday'
+    ).length;
+
+    // Les employés absents sont ceux qui n'ont pas d'entrée ou qui sont marqués comme absents
+    const absentCount = totalEmployees - (presentCount + lateCount + leaveCount + holidayCount);
+
+    // Configurer les données pour le graphique en anneau
+    const statusData = {
+      labels: ['Présents', 'En retard', 'Absents', 'En congé', 'Jour férié'],
+      datasets: [{
+        data: [presentCount, lateCount, absentCount, leaveCount, holidayCount],
+        backgroundColor: [
+          'rgba(34, 197, 94, 0.7)',  // Vert pour présents
+          'rgba(249, 115, 22, 0.7)', // Orange pour retards
+          'rgba(239, 68, 68, 0.7)',  // Rouge pour absents
+          'rgba(59, 130, 246, 0.7)', // Bleu pour congés
+          'rgba(168, 85, 247, 0.7)'  // Violet pour jours fériés
+        ],
+        borderColor: [
+          '#22c55e', // Vert
+          '#f97316', // Orange
+          '#ef4444', // Rouge
+          '#3b82f6', // Bleu
+          '#a855f7'  // Violet
+        ],
+        borderWidth: 1
+      }]
+    };
+
+    const statusOptions = {
+      responsive: true,
+      plugins: {
+        legend: {
+          position: 'right' as const,
+        },
+        title: {
+          display: true,
+          text: 'Distribution des Statuts'
+        },
+        tooltip: {
+          callbacks: {
+            label: function(context: any) {
+              const label = context.label || '';
+              const value = context.raw || 0;
+              const total = context.dataset.data.reduce((a: number, b: number) => a + b, 0);
+              const percentage = ((value / total) * 100).toFixed(1);
+              return `${label}: ${value} (${percentage}%)`;
+            }
+          }
+        }
+      },
+      cutout: '50%'
+    };
+
+    if (this.charts.status) {
+      this.charts.status.data = statusData as ChartData<'doughnut'>;
+      this.charts.status.options = statusOptions;
+      this.charts.status.update();
     }
   }
 
@@ -1151,5 +1244,116 @@ export class TeamPointageComponent implements OnInit, AfterViewInit, OnDestroy {
   onMonthChange(month: number): void {
     this.selectedMonth = month;
     this.loadTeamEntries();
+  }
+
+  private updateWeeklyChart() {
+    // Obtenir la date de début de la semaine (lundi)
+    const today = new Date();
+    const startOfWeek = new Date(today);
+    startOfWeek.setDate(today.getDate() - today.getDay() + (today.getDay() === 0 ? -6 : 1));
+    startOfWeek.setHours(0, 0, 0, 0);
+
+    // Créer un tableau pour les 7 jours de la semaine
+    const weekDays = Array.from({ length: 7 }, (_, i) => {
+      const date = new Date(startOfWeek);
+      date.setDate(startOfWeek.getDate() + i);
+      return date;
+    });
+
+    // Préparer les données pour chaque jour
+    const dailyStats = weekDays.map(date => {
+      const dayEntries = this.monthlyEntries.filter(entry => {
+        const entryDate = new Date(entry.date);
+        return entryDate.getDate() === date.getDate() &&
+               entryDate.getMonth() === date.getMonth() &&
+               entryDate.getFullYear() === date.getFullYear();
+      });
+
+      const totalEmployees = this.currentUser?.managedEmployees?.length || 0;
+      const presentCount = dayEntries.filter(entry => entry.status === 'present' || entry.status === 'late').length;
+      const absentCount = totalEmployees - presentCount;
+      const lateCount = dayEntries.filter(entry => this.isLate(entry)).length;
+      const leaveCount = dayEntries.filter(entry => entry.status === 'leave').length;
+
+      return {
+        date,
+        presentCount,
+        absentCount,
+        lateCount,
+        leaveCount
+      };
+    });
+
+    // Configurer les données du graphique
+    const weeklyData = {
+      labels: dailyStats.map(stat => this.formatDayLabel(stat.date)),
+      datasets: [
+        {
+          label: 'Présents',
+          data: dailyStats.map(stat => stat.presentCount),
+          backgroundColor: 'rgba(34, 197, 94, 0.7)',
+          borderColor: '#22c55e',
+          borderWidth: 1
+        },
+        {
+          label: 'Absents',
+          data: dailyStats.map(stat => stat.absentCount),
+          backgroundColor: 'rgba(239, 68, 68, 0.7)',
+          borderColor: '#ef4444',
+          borderWidth: 1
+        },
+        {
+          label: 'En retard',
+          data: dailyStats.map(stat => stat.lateCount),
+          backgroundColor: 'rgba(249, 115, 22, 0.7)',
+          borderColor: '#f97316',
+          borderWidth: 1
+        },
+        {
+          label: 'En congé',
+          data: dailyStats.map(stat => stat.leaveCount),
+          backgroundColor: 'rgba(59, 130, 246, 0.7)',
+          borderColor: '#3b82f6',
+          borderWidth: 1
+        }
+      ]
+    };
+
+    const weeklyOptions = {
+      responsive: true,
+      plugins: {
+        legend: {
+          position: 'top' as const,
+        },
+        title: {
+          display: true,
+          text: 'Tendance de Présence Hebdomadaire'
+        }
+      },
+      scales: {
+        y: {
+          beginAtZero: true,
+          title: {
+            display: true,
+            text: 'Nombre d\'employés'
+          },
+          stacked: true
+        },
+        x: {
+          stacked: true
+        }
+      }
+    };
+
+    if (this.charts.weekly) {
+      this.charts.weekly.data = weeklyData as ChartData<'bar'>;
+      this.charts.weekly.options = weeklyOptions;
+      this.charts.weekly.update();
+    }
+  }
+
+  private formatDayLabel(date: Date): string {
+    const days = ['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam'];
+    return `${days[date.getDay()]} ${date.getDate()}/${date.getMonth() + 1}`;
   }
 }

@@ -102,6 +102,15 @@ export class DemandeCongeComponent implements OnInit {
       urgencyLevel: ['NORMAL', Validators.required],
       reason: ['', [Validators.required, Validators.minLength(10)]]
     });
+
+    // Écouter les changements de dates
+    this.leaveForm.get('startDate')?.valueChanges.subscribe(() => {
+      this.calculateDuration();
+    });
+
+    this.leaveForm.get('endDate')?.valueChanges.subscribe(() => {
+      this.calculateDuration();
+    });
   }
 
   async ngOnInit() {
@@ -151,6 +160,39 @@ export class DemandeCongeComponent implements OnInit {
         .filter(leave => new Date(leave.startDate) > now)
         .sort((a, b) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime())
         .slice(0, 5);
+    }
+  }
+
+  // Calcule la durée entre deux dates en excluant les weekends et jours fériés
+  private calculateDuration() {
+    const startDate = this.leaveForm.get('startDate')?.value;
+    const endDate = this.leaveForm.get('endDate')?.value;
+
+    if (startDate && endDate) {
+      const start = new Date(startDate);
+      const end = new Date(endDate);
+      let duration = 0;
+      const current = new Date(start);
+
+      while (current <= end) {
+        // Exclure les weekends (0 = Dimanche, 6 = Samedi)
+        if (current.getDay() !== 0 && current.getDay() !== 6) {
+          // Vérifier si ce n'est pas un jour férié
+          const isHoliday = this.publicHolidays.some(holiday => 
+            holiday.getDate() === current.getDate() &&
+            holiday.getMonth() === current.getMonth() &&
+            holiday.getFullYear() === current.getFullYear()
+          );
+
+          if (!isHoliday) {
+            duration++;
+          }
+        }
+        current.setDate(current.getDate() + 1);
+      }
+      this.calculatedDays = duration;
+    } else {
+      this.calculatedDays = 0;
     }
   }
 

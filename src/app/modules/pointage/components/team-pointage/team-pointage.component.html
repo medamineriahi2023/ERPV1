@@ -1,322 +1,222 @@
-<div class="min-h-screen bg-gray-50/50 p-6">
+<div class="min-h-screen bg-gray-50/50 p-3 sm:p-6">
     <!-- Header -->
-    <div class="mb-8">
-        <h1 class="text-2xl font-bold text-gray-800">Suivi de Pointage d'Équipe</h1>
-        <p class="text-gray-600 mt-1">Gérez et suivez la présence de votre équipe</p>
+    <div class="mb-4 sm:mb-8">
+        <h1 class="text-xl sm:text-2xl font-bold text-gray-800">Suivi de Pointage d'Équipe</h1>
+        <p class="text-sm sm:text-base text-gray-600 mt-1">Gérez et suivez la présence de votre équipe</p>
     </div>
 
     <!-- Stats Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 mb-4 sm:mb-6">
         <!-- Present Today -->
-        <div class="bg-white rounded-xl shadow-sm p-6">
-            <div class="flex items-center justify-between mb-4">
-                <div class="bg-green-50 rounded-lg p-3">
-                    <i class="pi pi-users text-green-500 text-xl"></i>
+        <div class="bg-white rounded-xl shadow-sm p-4 sm:p-6">
+            <div class="flex items-center justify-between mb-3 sm:mb-4">
+                <div class="bg-green-50 rounded-lg p-2 sm:p-3">
+                    <i class="pi pi-users text-green-500 text-lg sm:text-xl"></i>
                 </div>
-                <span class="text-sm font-medium text-green-500 bg-green-50 px-2.5 py-0.5 rounded-full">
-          Présents
-        </span>
+                <span class="text-xs sm:text-sm font-medium text-green-500 bg-green-50 px-2 py-0.5 rounded-full">
+                    Présents
+                </span>
             </div>
-            <h3 class="text-2xl font-bold text-gray-700 mb-2">{{getPresentCount()}}</h3>
-            <p class="text-gray-500 text-sm">Employés présents aujourd'hui</p>
+            <h3 class="text-xl sm:text-2xl font-bold text-gray-700 mb-1 sm:mb-2">{{getPresentCount()}}</h3>
+            <p class="text-xs sm:text-sm text-gray-500">Employés présents aujourd'hui</p>
         </div>
 
         <!-- Absent Today -->
-        <div class="bg-white rounded-xl shadow-sm p-6">
-            <div class="flex items-center justify-between mb-4">
-                <div class="bg-red-50 rounded-lg p-3">
-                    <i class="pi pi-user-minus text-red-500 text-xl"></i>
+        <div class="bg-white rounded-xl shadow-sm p-4 sm:p-6">
+            <div class="flex items-center justify-between mb-3 sm:mb-4">
+                <div class="bg-red-50 rounded-lg p-2 sm:p-3">
+                    <i class="pi pi-user-minus text-red-500 text-lg sm:text-xl"></i>
                 </div>
-                <span class="text-sm font-medium text-red-500 bg-red-50 px-2.5 py-0.5 rounded-full">
-          Absents
-        </span>
+                <span class="text-xs sm:text-sm font-medium text-red-500 bg-red-50 px-2 py-0.5 rounded-full">
+                    Absents
+                </span>
             </div>
-            <h3 class="text-2xl font-bold text-gray-700 mb-2">{{getAbsentCount()}}</h3>
-            <p class="text-gray-500 text-sm">Employés absents aujourd'hui</p>
+            <h3 class="text-xl sm:text-2xl font-bold text-gray-700 mb-1 sm:mb-2">{{getAbsentCount()}}</h3>
+            <p class="text-xs sm:text-sm text-gray-500">Employés absents aujourd'hui</p>
         </div>
 
         <!-- Late Today -->
-        <div class="bg-white rounded-xl shadow-sm p-6">
-            <div class="flex items-center justify-between mb-4">
-                <div class="bg-orange-50 rounded-lg p-3">
-                    <i class="pi pi-clock text-orange-500 text-xl"></i>
+        <div class="bg-white rounded-xl shadow-sm p-4 sm:p-6">
+            <div class="flex items-center justify-between mb-3 sm:mb-4">
+                <div class="bg-orange-50 rounded-lg p-2 sm:p-3">
+                    <i class="pi pi-clock text-orange-500 text-lg sm:text-xl"></i>
                 </div>
-                <span class="text-sm font-medium text-orange-500 bg-orange-50 px-2.5 py-0.5 rounded-full">
-          En retard
-        </span>
+                <span class="text-xs sm:text-sm font-medium text-orange-500 bg-orange-50 px-2 py-0.5 rounded-full">
+                    En retard
+                </span>
             </div>
-            <h3 class="text-2xl font-bold text-gray-700 mb-2">{{getLateCount()}}</h3>
-            <p class="text-gray-500 text-sm">Employés en retard aujourd'hui</p>
+            <h3 class="text-xl sm:text-2xl font-bold text-gray-700 mb-1 sm:mb-2">{{getLateCount()}}</h3>
+            <p class="text-xs sm:text-sm text-gray-500">Employés en retard aujourd'hui</p>
         </div>
 
         <!-- On Leave -->
-        <div class="bg-white rounded-xl shadow-sm p-6">
-            <div class="flex items-center justify-between mb-4">
-                <div class="bg-blue-50 rounded-lg p-3">
-                    <i class="pi pi-calendar text-blue-500 text-xl"></i>
+        <div class="bg-white rounded-xl shadow-sm p-4 sm:p-6">
+            <div class="flex items-center justify-between mb-3 sm:mb-4">
+                <div class="bg-blue-50 rounded-lg p-2 sm:p-3">
+                    <i class="pi pi-calendar text-blue-500 text-lg sm:text-xl"></i>
                 </div>
-                <span class="text-sm font-medium text-blue-500 bg-blue-50 px-2.5 py-0.5 rounded-full">
-          En congé
-        </span>
+                <span class="text-xs sm:text-sm font-medium text-blue-500 bg-blue-50 px-2 py-0.5 rounded-full">
+                    En congé
+                </span>
             </div>
-            <h3 class="text-2xl font-bold text-gray-700 mb-2">{{getLeaveCount()}}</h3>
-            <p class="text-gray-500 text-sm">Employés en congé aujourd'hui</p>
+            <h3 class="text-xl sm:text-2xl font-bold text-gray-700 mb-1 sm:mb-2">{{getLeaveCount()}}</h3>
+            <p class="text-xs sm:text-sm text-gray-500">Employés en congé aujourd'hui</p>
         </div>
     </div>
 
-    <div class="bg-white rounded-xl shadow-sm p-6 mb-6">
-        <div class="flex flex-wrap gap-6">
-            <div class="flex items-center gap-3">
+    <!-- Period Selection -->
+    <div class="bg-white rounded-xl shadow-sm p-4 sm:p-6 mb-4 sm:mb-6">
+        <div class="flex flex-col sm:flex-row sm:flex-wrap gap-4 sm:gap-6">
+            <div class="flex items-center gap-2 sm:gap-3">
                 <label class="text-sm font-medium text-gray-700">Période :</label>
                 <p-dropdown
-                        [options]="[
-                        {label: 'Par mois', value: 'month'},
-                        {label: 'Par année', value: 'year'}
-                    ]"
-                        [(ngModel)]="selectedPeriod"
-                        (onChange)="onPeriodChange($event.value)"
-                        styleClass="!border-gray-200 !rounded-lg !shadow-none"
-                        [style]="{'min-width': '150px'}"
-                        appendTo="body">
+                    [options]="[
+                    {label: 'Par mois', value: 'month'},
+                    {label: 'Par année', value: 'year'}
+                ]"
+                    [(ngModel)]="selectedPeriod"
+                    (onChange)="onPeriodChange($event.value)"
+                    styleClass="!border-gray-200 !rounded-lg !shadow-none w-full sm:w-auto"
+                    [style]="{'min-width': '150px'}"
+                    appendTo="body">
                 </p-dropdown>
             </div>
 
-            <div class="flex items-center gap-3" *ngIf="selectedPeriod === 'year'">
-                <label class="text-sm font-medium text-gray-700">Année :</label>
-                <p-dropdown
-                        [options]="yearOptions"
-                        [(ngModel)]="selectedYear"
-                        (onChange)="onYearChange($event.value)"
-                        styleClass="!border-gray-200 !rounded-lg !shadow-none"
-                        [style]="{'min-width': '120px'}"
-                        appendTo="body">
-                </p-dropdown>
-            </div>
-
-            <div class="flex items-center gap-3" *ngIf="selectedPeriod === 'month'">
+            <div class="flex items-center gap-2 sm:gap-3" *ngIf="selectedPeriod === 'month'">
                 <label class="text-sm font-medium text-gray-700">Mois :</label>
                 <p-dropdown
-                        [options]="months"
-                        [(ngModel)]="selectedMonth"
-                        (onChange)="onMonthChange($event.value)"
-                        styleClass="!border-gray-200 !rounded-lg !shadow-none"
-                        [style]="{'min-width': '150px'}"
-                        appendTo="body"
-                        optionLabel="label"
-                        optionValue="value">
+                    [options]="months"
+                    [(ngModel)]="selectedMonth"
+                    (onChange)="onMonthChange($event.value)"
+                    styleClass="!border-gray-200 !rounded-lg !shadow-none w-full sm:w-auto"
+                    [style]="{'min-width': '150px'}"
+                    appendTo="body"
+                    optionLabel="label"
+                    optionValue="value">
                 </p-dropdown>
 
-                <label class="text-sm font-medium text-gray-700 ml-6">Année :</label>
+                <label class="text-sm font-medium text-gray-700 ml-0 sm:ml-6">Année :</label>
                 <p-dropdown
-                        [options]="yearOptions"
-                        [(ngModel)]="selectedYear"
-                        (onChange)="onYearChange($event.value)"
-                        styleClass="!border-gray-200 !rounded-lg !shadow-none"
-                        [style]="{'min-width': '120px'}"
-                        appendTo="body">
+                    [options]="yearOptions"
+                    [(ngModel)]="selectedYear"
+                    (onChange)="onYearChange($event.value)"
+                    styleClass="!border-gray-200 !rounded-lg !shadow-none w-full sm:w-auto"
+                    [style]="{'min-width': '120px'}"
+                    appendTo="body">
                 </p-dropdown>
             </div>
         </div>
     </div>
 
     <!-- Charts Section -->
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 mb-4 sm:mb-6">
         <!-- Weekly Attendance Chart -->
-        <div class="bg-white rounded-xl shadow-sm p-6 lg:col-span-2">
+        <div class="bg-white rounded-xl shadow-sm p-4 sm:p-6">
             <div class="flex items-center justify-between mb-4">
-                <h3 class="text-lg font-semibold text-gray-800">Tendance de Présence Hebdomadaire</h3>
+                <h3 class="text-base sm:text-lg font-semibold text-gray-800">Tendance de Présence Hebdomadaire</h3>
                 <div class="bg-blue-50 rounded-lg p-2">
                     <i class="pi pi-chart-line text-blue-500"></i>
                 </div>
             </div>
-            <div class="h-[300px]">
+            <div class="relative h-[300px] sm:h-[400px] w-full">
                 <canvas id="weeklyChart"></canvas>
             </div>
         </div>
 
         <!-- Status Distribution Chart -->
-        <div class="bg-white rounded-xl shadow-sm p-6">
+        <div class="bg-white rounded-xl shadow-sm p-4 sm:p-6">
             <div class="flex items-center justify-between mb-4">
-                <h3 class="text-lg font-semibold text-gray-800">Distribution des Statuts</h3>
+                <h3 class="text-base sm:text-lg font-semibold text-gray-800">Distribution des Statuts</h3>
                 <div class="bg-green-50 rounded-lg p-2">
                     <i class="pi pi-chart-pie text-green-500"></i>
                 </div>
             </div>
-            <div class="h-[300px]">
+            <div class="relative h-[300px] sm:h-[400px] w-full flex items-center justify-center">
                 <canvas id="statusChart"></canvas>
             </div>
         </div>
 
         <!-- Punctuality Analysis -->
-        <div class="bg-white rounded-xl shadow-sm p-6 lg:col-span-3">
+        <div class="bg-white rounded-xl shadow-sm p-4 sm:p-6 lg:col-span-2">
             <div class="flex items-center justify-between mb-4">
-                <h3 class="text-lg font-semibold text-gray-800">Analyse de Ponctualité</h3>
+                <h3 class="text-base sm:text-lg font-semibold text-gray-800">Analyse de Ponctualité</h3>
                 <div class="bg-orange-50 rounded-lg p-2">
                     <i class="pi pi-chart-bar text-orange-500"></i>
                 </div>
             </div>
-            <div class="h-[300px]">
+            <div class="relative h-[300px] sm:h-[400px] w-full">
                 <canvas id="punctualityChart"></canvas>
-            </div>
-        </div>
-    </div>
-
-    <!-- Filters -->
-    <div class="bg-white rounded-xl shadow-sm mb-6">
-        <div class="border-b border-gray-100 bg-gray-50/50 px-6 py-4">
-            <div class="flex items-center justify-between">
-                <h3 class="text-lg font-semibold text-gray-800">Filtres</h3>
-            </div>
-        </div>
-
-        <div class="p-6">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <!-- Search Input -->
-                <div class="relative">
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Rechercher un employé</label>
-                    <div class="relative">
-                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            <i class="pi pi-search text-gray-400"></i>
-                        </div>
-                        <input
-                                type="text"
-                                class="block w-full pl-10 pr-4 py-2.5 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
-                                placeholder="Nom, prénom..."
-                                [(ngModel)]="searchTerm"
-                                (input)="filterEntries()">
-                    </div>
-                </div>
-
-                <!-- Status Dropdown -->
-                <div class="relative">
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Statut</label>
-                    <p-dropdown
-                            [options]="statusOptions"
-                            [(ngModel)]="selectedStatus"
-                            placeholder="Tous les statuts"
-                            styleClass="w-full !border-gray-200 !rounded-lg !shadow-none"
-                            [style]="{'height': '42px'}"
-                            [panelStyle]="{'z-index': '9999'}"
-                            appendTo="body"
-                            (onChange)="filterEntries()">
-                        <ng-template pTemplate="selectedItem">
-                            <div class="flex items-center">
-                                <i class="pi" [class]="getStatusIcon(selectedStatus)" [style.color]="getStatusColor(selectedStatus)"></i>
-                                <span class="ml-2">{{getStatusLabel(selectedStatus)}}</span>
-                            </div>
-                        </ng-template>
-                        <ng-template let-option pTemplate="item">
-                            <div class="flex items-center py-1">
-                                <i class="pi" [class]="getStatusIcon(option.value)" [style.color]="getStatusColor(option.value)"></i>
-                                <span class="ml-2">{{option.label}}</span>
-                            </div>
-                        </ng-template>
-                    </p-dropdown>
-                </div>
-
-                <!-- Date Picker -->
-                <div class="relative">
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Date</label>
-                    <p-calendar
-                            [(ngModel)]="selectedDate"
-                            [showIcon]="true"
-                            placeholder="Sélectionner une date"
-                            styleClass="w-full !border-gray-200 !rounded-lg !shadow-none"
-                            [style]="{'height': '42px'}"
-                            [inputStyle]="{'border': 'none', 'padding-left': '1rem'}"
-                            [panelStyle]="{'z-index': '9999'}"
-                            appendTo="body"
-                            (onSelect)="onDateSelect($event)">
-                    </p-calendar>
-                </div>
-            </div>
-
-            <!-- Active Filters -->
-            <div class="flex flex-wrap gap-2 mt-4" *ngIf="hasActiveFilters()">
-                <div class="text-sm text-gray-500 flex items-center">
-                    <i class="pi pi-filter mr-2"></i>
-                    Filtres actifs:
-                </div>
-
-                <div *ngIf="searchTerm"
-                     class="inline-flex items-center px-3 py-1 rounded-full text-sm bg-blue-50 text-blue-700">
-                    <span>{{searchTerm}}</span>
-                    <button class="ml-2 focus:outline-none" (click)="clearSearch()">
-                        <i class="pi pi-times"></i>
-                    </button>
-                </div>
-
-                <div *ngIf="selectedStatus"
-                     class="inline-flex items-center px-3 py-1 rounded-full text-sm"
-                     [ngClass]="getStatusBadgeClass(selectedStatus)">
-                    <span>{{getStatusLabel(selectedStatus)}}</span>
-                    <button class="ml-2 focus:outline-none" (click)="clearStatus()">
-                        <i class="pi pi-times"></i>
-                    </button>
-                </div>
-
-                <div *ngIf="selectedDate"
-                     class="inline-flex items-center px-3 py-1 rounded-full text-sm bg-purple-50 text-purple-700">
-                    <span>{{selectedDate | date:'mediumDate'}}</span>
-                    <button class="ml-2 focus:outline-none" (click)="clearDate()">
-                        <i class="pi pi-times"></i>
-                    </button>
-                </div>
-
-                <button
-                        *ngIf="hasActiveFilters()"
-                        class="inline-flex items-center px-3 py-1 rounded-full text-sm bg-gray-50 text-gray-700 hover:bg-gray-100 transition-colors duration-150"
-                        (click)="clearAllFilters()">
-                    <i class="pi pi-trash mr-1"></i>
-                    Effacer tous les filtres
-                </button>
             </div>
         </div>
     </div>
 
     <!-- Team Members List -->
     <div class="bg-white rounded-xl shadow-sm overflow-hidden">
-        <div class="p-6 border-b border-gray-200">
-            <h3 class="text-lg font-semibold text-gray-800">Membres de l'équipe</h3>
+        <div class="p-4 sm:p-6 border-b border-gray-200">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <h3 class="text-base sm:text-lg font-semibold text-gray-800">Membres de l'équipe</h3>
+                
+                <!-- Search and Filters -->
+                <div class="flex flex-col sm:flex-row gap-4">
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <i class="pi pi-search text-gray-400"></i>
+                        </div>
+                        <input
+                            type="text"
+                            class="block w-full pl-10 pr-4 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                            placeholder="Rechercher..."
+                            [(ngModel)]="searchTerm"
+                            (input)="filterEntries()">
+                    </div>
+                    
+                    <p-dropdown
+                        [options]="statusOptions"
+                        [(ngModel)]="selectedStatus"
+                        placeholder="Tous les statuts"
+                        styleClass="w-full sm:w-auto !border-gray-200 !rounded-lg !shadow-none"
+                        [style]="{'min-width': '150px'}"
+                        (onChange)="filterEntries()"
+                        appendTo="body">
+                    </p-dropdown>
+                </div>
+            </div>
         </div>
 
+        <!-- Team Members Grid -->
         <div class="grid grid-cols-1 divide-y divide-gray-200">
             <div *ngFor="let entry of filteredEntries"
-                 class="p-6 hover:bg-gray-50 transition-colors duration-150">
-                <div class="flex items-center justify-between">
+                 class="p-4 sm:p-6 hover:bg-gray-50 transition-colors duration-150">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                     <!-- Employee Info -->
                     <div class="flex items-center space-x-4">
-                        <div class="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden">
-              <span class="text-xl font-medium text-gray-600">
-                {{entry.userId}}
-              </span>
+                        <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden">
+                            <span class="text-base sm:text-xl font-medium text-gray-600">
+                                {{entry.user?.firstName?.charAt(0)}}{{entry.user?.lastName?.charAt(0)}}
+                            </span>
                         </div>
                         <div>
-                            <h4 class="text-lg font-medium text-gray-900">{{getEmployeeFullName(entry)}}</h4>
-                            <p class="text-sm text-gray-500">{{formatDate(entry.date)}}</p>
+                            <h4 class="text-base sm:text-lg font-medium text-gray-900">{{getEmployeeFullName(entry)}}</h4>
+                            <p class="text-xs sm:text-sm text-gray-500">{{formatDate(entry.date)}}</p>
                         </div>
                     </div>
 
-                    <!-- Today's Status -->
-                    <div class="flex items-center space-x-6">
+                    <!-- Status and Times -->
+                    <div class="flex flex-wrap items-center gap-4 sm:gap-6">
                         <div class="text-right">
-                            <div class="text-sm text-gray-500">Arrivée</div>
-                            <div class="font-medium" [class.text-red-500]="entry.isLate">
+                            <div class="text-xs sm:text-sm text-gray-500">Arrivée</div>
+                            <div class="text-sm sm:text-base font-medium" [class.text-red-500]="entry.isLate">
                                 {{formatTime(entry.checkIn) || '--:--'}}
                             </div>
                         </div>
                         <div class="text-right">
-                            <div class="text-sm text-gray-500">Départ</div>
-                            <div class="font-medium">{{formatTime(entry.checkOut) || '--:--'}}</div>
-                        </div>
-                        <div class="text-right">
-                            <div class="text-sm text-gray-500">Total</div>
-                            <div class="font-medium">{{entry.totalHours || 0}}h</div>
+                            <div class="text-xs sm:text-sm text-gray-500">Départ</div>
+                            <div class="text-sm sm:text-base font-medium">{{formatTime(entry.checkOut) || '--:--'}}</div>
                         </div>
                         <div>
-              <span [class]="getStatusBadgeClass(entry.status)">
-                {{getStatusLabel(entry.status)}}
-              </span>
+                            <span [class]="getStatusBadgeClass(entry.status)">
+                                {{getStatusLabel(entry.status)}}
+                            </span>
                         </div>
                     </div>
                 </div>
