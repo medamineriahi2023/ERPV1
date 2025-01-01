@@ -247,18 +247,28 @@ export class TeamPointageComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   getAbsentCount(): number {
-    if (!this.isWorkStarted()) {
+    if (!this.isWorkStarted() || !this.currentUser?.managedEmployees) {
       return 0;
     }
 
-    return this.teamEntries.filter(entry => {
-      const entryDate = new Date(entry.date);
-      const isEntryToday = this.isToday(entryDate);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
 
-      return isEntryToday && 
-             !entry.checkIn && 
-             entry.status !== 'holiday' && 
-             entry.status !== 'leave';
+    // Vérifier les entrées d'aujourd'hui
+    const todayEntries = this.teamEntries.filter(entry => {
+      const entryDate = new Date(entry.date);
+      entryDate.setHours(0, 0, 0, 0);
+      return entryDate.getTime() === today.getTime();
+    });
+
+    return this.currentUser.managedEmployees.filter(employeeId => {
+      const employeeEntry = todayEntries.find(entry => entry.userId === employeeId);
+      
+      // Si pas d'entrée ou pas de checkIn, et pas en congé/férié
+      return !employeeEntry || 
+             (!employeeEntry.checkIn && 
+              employeeEntry.status !== 'leave' && 
+              employeeEntry.status !== 'holiday');
     }).length;
   }
 
@@ -613,7 +623,6 @@ export class TeamPointageComponent implements OnInit, AfterViewInit, OnDestroy {
     this.filterEntries();
   }
 
-  // Méthodes utilitaires
   isWorkStarted(): boolean {
     const now = new Date();
     const workStart = new Date();

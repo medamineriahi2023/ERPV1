@@ -182,6 +182,15 @@ export class PointageService {
     return this.http.patch<TimeEntry>(`${this.apiUrl}/${id}`, entry);
   }
 
+  createTimeEntry(entry: Partial<TimeEntry>): Observable<TimeEntry> {
+    return this.http.post<TimeEntry>(`${this.apiUrl}`, entry);
+  }
+
+  getTimeEntriesByDate(date: Date): Observable<TimeEntry[]> {
+    const formattedDate = date.toISOString().split('T')[0];
+    return this.http.get<TimeEntry[]>(`${this.apiUrl}?date=${formattedDate}`);
+  }
+
   private formatTime(date: Date): string {
     return date.toTimeString().split(' ')[0];
   }

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { User } from '../interfaces/user.interface';
 import { LeaveRequest } from '../interfaces/leave-request.interface';
@@ -12,7 +12,7 @@ import { Position } from '../interfaces/position.interface';
   providedIn: 'root'
 })
 export class ApiService {
-  private readonly API_URL = 'https://e985-197-15-18-165.ngrok-free.app';
+  private readonly API_URL = 'http://localhost:3000';
 
   constructor(private http: HttpClient) {}
 
@@ -31,6 +31,11 @@ export class ApiService {
 
   updateUser(id: number, user: Partial<User>): Observable<User> {
     return this.http.patch<User>(`${this.API_URL}/users/${id}`, user);
+  }
+
+  getUsersByIds(ids: number[]): Observable<User[]> {
+    const params = new HttpParams().set('ids', ids.join(','));
+    return this.http.get<User[]>(`${this.API_URL}/users`, { params });
   }
 
 }

@@ -51,7 +51,7 @@ export interface CongeBalance {
   providedIn: 'root'
 })
 export class CongeService {
-  private apiUrl = 'https://e985-197-15-18-165.ngrok-free.app/conges';
+  private apiUrl = 'http://localhost:3000/conges';
 
   constructor(private http: HttpClient) {}
 
