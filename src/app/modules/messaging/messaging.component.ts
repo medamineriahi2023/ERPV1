@@ -18,6 +18,7 @@ import { Dialog } from 'primeng/dialog';
 import {
   VideoCallDialogComponent
 } from "@app/modules/messaging/components/video-call-dialog/video-call-dialog.component";
+import {User} from "@core/interfaces/user.interface";
 
 @Component({
   selector: 'app-messaging',
@@ -54,6 +55,7 @@ export class MessagingComponent implements OnInit, OnDestroy {
   private videoCallStatusSubscription: Subscription | undefined;
   callDuration: string = '00:00';
   private callTimer: any;
+  currentUser : User;
 
   get searchTermValue(): string {
     return this.searchTermSubject.value;
@@ -71,6 +73,7 @@ export class MessagingComponent implements OnInit, OnDestroy {
     private videoCallService: VideoCallService
   ) {
     this.currentUserId = String(this.authService.getCurrentUser()?.id);
+    this.currentUser = this.authService.getCurrentUser();
     this.checkScreenSize();
   }
 
@@ -111,42 +114,6 @@ export class MessagingComponent implements OnInit, OnDestroy {
         this.filterUsers();
       })
     );
-
-    // Subscribe to call status
-    this.callStatusSubscription = this.voiceCallService.callStatus$.subscribe(
-      status => {
-        console.log('Call status changed:', status);
-        this.callStatus = status;
-        
-        if (status.status === 'incoming') {
-          // Find and select the calling user
-          const callingUser = this.userStatuses.find(user => user.userId === status.remoteUserId);
-          if (callingUser) {
-            console.log('Incoming call from:', callingUser.username);
-            this.selectedUser = callingUser;
-            this.voiceCallService.setShowVoiceCallDialog(true);
-          }
-        } else if (status.status === 'idle') {
-          this.voiceCallService.setShowVoiceCallDialog(false);
-          this.stopCallTimer();
-        } else if (status.status === 'connected') {
-          console.log('Call connected, starting timer');
-          this.startCallTimer();
-        }
-        this.cdr.detectChanges();
-      }
-    );
-
-    this.videoCallStatusSubscription = this.videoCallService.callStatus$.subscribe(status => {
-      this.videoCallStatus = status;
-      if (status.status === 'idle') {
-        this.videoCallService.setShowVideoCallDialog(false);
-        this.stopCallTimer();
-      } else if (status.status === 'connected' && !this.callTimer) {
-        this.startCallTimer();
-      }
-      this.cdr.detectChanges();
-    });
   }
 
   private sortUsersByStatus(users: UserStatusInfo[]): UserStatusInfo[] {
@@ -302,7 +269,8 @@ export class MessagingComponent implements OnInit, OnDestroy {
   initiateCall() {
     if (this.selectedUser) {
       console.log('Initiating call to:', this.selectedUser.username);
-      this.voiceCallService.startCall(this.selectedUser.userId, this.currentUserId);
+      this.voiceCallService.startCall(this.selectedUser.userId, this.currentUserId, this.currentUser.firstName +" "+ this.currentUser.lastName
+          , this.currentUser.photoUrl, this.selectedUser.username, this.selectedUser.photoUrl);
       this.voiceCallService.setShowVoiceCallDialog(true);
     }
   }

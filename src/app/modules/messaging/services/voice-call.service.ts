@@ -10,6 +10,9 @@ export interface CallStatus {
   status: 'idle' | 'calling' | 'incoming' | 'connected';
   remoteUserId?: string;
   callerName?: string;
+  photoUrl?: string;
+  receiverName?: string,
+  receiverPhotoUrl?:string
 }
 
 @Injectable({
@@ -59,13 +62,14 @@ export class VoiceCallService {
           // Show notification
           await this.notificationService.showCallNotification({
             id: callData.callerId,
-            name: callerInfo?.name || callData.callerId
+            name: callerInfo?.name || callData.callerName || 'Unknown'
           });
           
           this.callStatusSubject.next({
             status: 'incoming',
             remoteUserId: callData.callerId,
-            callerName: callerInfo?.name
+            callerName: callerInfo?.name || callData.callerName || 'Unknown',
+            photoUrl: callData.photoUrl
           });
         }
       });
@@ -228,9 +232,11 @@ export class VoiceCallService {
         case 'failed':
           console.log('Peer connection failed or disconnected');
           this.endCall();
+          this.setShowVoiceCallDialog(false);
           break;
         case 'closed':
           console.log('Peer connection closed');
+          this.setShowVoiceCallDialog(false);
           break;
       }
     };
@@ -289,7 +295,8 @@ export class VoiceCallService {
     console.log('Remote audio element created and added to DOM');
   }
 
-  async startCall(targetUserId: string, currentUserId: string) {
+  async startCall(targetUserId: string, currentUserId: string, callerName: string, photoUrl?: string ,
+                  receiverName?: string, receiverPhotoUrl?:string) {
     try {
       if (!await this.checkAuth()) return;
 
@@ -329,13 +336,17 @@ export class VoiceCallService {
           sdp: offer.sdp
         },
         callerId: currentUserId,
+        callerName: callerName,
+        photoUrl: photoUrl,
+        receiverName: receiverName,
+        receiverPhotoUrl: receiverPhotoUrl,
         timestamp: Date.now()
       };
       
       await set(ref(this.db, `calls/${targetUserId}`), callData);
       console.log('Stored offer in Firebase:', callData);
 
-      this.callStatusSubject.next({ status: 'calling', remoteUserId: targetUserId });
+      this.callStatusSubject.next({ status: 'calling', remoteUserId: targetUserId, callerName: callerName,photoUrl: photoUrl,receiverName: receiverName, receiverPhotoUrl: receiverPhotoUrl });
 
       // Listen for answer in the caller's node
       this.answerHandler = `calls/${currentUserId}/answer`;
@@ -349,9 +360,10 @@ export class VoiceCallService {
             console.log('Set remote description from answer');
             
             // Start timer when answer is received and connection is established
-            await this.handleCallConnected(targetUserId, this.callStatusSubject.value.callerName || 'Unknown');
+            await this.handleCallConnected(targetUserId, callerName,photoUrl);
           } catch (error) {
             console.error('Error setting remote description:', error);
+            this.setShowVoiceCallDialog(false);
           }
         }
       });
@@ -382,86 +394,19 @@ export class VoiceCallService {
     } catch (error) {
       console.error('Error starting call:', error);
       this.endCall();
+      this.setShowVoiceCallDialog(false);
     }
   }
 
-  private async handleCallConnected(userId: string, userName: string) {
+  private async handleCallConnected(userId: string, userName: string, photoUrl?: string) {
     console.log('Call connected, starting timer');
     this.callStatusSubject.next({
       status: 'connected',
       remoteUserId: userId,
-      callerName: userName
+      callerName: userName,
+      photoUrl: photoUrl
     });
     this.startCallTimer();
-  }
-
-  async handleIncomingCall(callerId: string, offer: RTCSessionDescriptionInit) {
-    try {
-      if (!await this.checkAuth()) return;
-
-      console.log('Handling incoming call from:', callerId);
-      
-      // Get local media stream
-      this.localStream = await navigator.mediaDevices.getUserMedia({ 
-        audio: true,
-        video: false
-      });
-      console.log('Got local stream');
-
-      // Setup WebRTC peer connection
-      await this.setupPeerConnection();
-      
-      this.callStatusSubject.next({ status: 'incoming', remoteUserId: callerId });
-
-      // Set remote description (offer)
-      await this.peerConnection!.setRemoteDescription(new RTCSessionDescription(offer));
-      console.log('Set remote description (offer)');
-
-      // Create and set local description (answer)
-      const answer = await this.peerConnection!.createAnswer();
-      await this.peerConnection!.setLocalDescription(answer);
-      console.log('Created and set local description (answer)');
-
-      // Store the answer in Firebase
-      const callerRef = ref(this.db, `calls/${callerId}/answer`);
-      await set(callerRef, {
-        type: answer.type,
-        sdp: answer.sdp
-      });
-      console.log('Stored answer in Firebase');
-
-      // Listen for ICE candidates
-      this.candidatesHandler = `calls/${callerId}/candidates`;
-      onValue(ref(this.db, this.candidatesHandler), async (snapshot) => {
-        const candidates = snapshot.val();
-        if (candidates && this.peerConnection) {
-          Object.values(candidates).forEach(async (data: any) => {
-            if (!data.candidate) return;
-            
-            try {
-              const candidate = new RTCIceCandidate(data.candidate);
-              await this.peerConnection!.addIceCandidate(candidate);
-              console.log('Added ICE candidate');
-            } catch (error) {
-              console.error('Error adding ICE candidate:', error);
-            }
-          });
-        }
-      });
-
-      // Listen for call end
-      this.rejectedHandler = `calls/${callerId}`;
-      onValue(ref(this.db, this.rejectedHandler), (snapshot) => {
-        if (!snapshot.exists()) {
-          console.log('Call ended by caller');
-          this.endCall();
-        }
-      });
-
-    } catch (error) {
-      console.error('Error handling incoming call:', error);
-      this.endCall();
-    }
   }
 
   async acceptCall(remoteUserId: string | undefined) {
@@ -562,11 +507,16 @@ export class VoiceCallService {
       console.error('Error rejecting call:', error);
       this.audioService.stopCallSound();
       this.endCall();
+      this.setShowVoiceCallDialog(false);
+
     }
   }
 
   endCall() {
     // Stop the timer
+
+    this.setShowVoiceCallDialog(false);
+
     this.stopCallTimer();
 
     console.log('Ending call');
@@ -606,6 +556,8 @@ export class VoiceCallService {
     // Reset call status
     this.callStatusSubject.next({ status: 'idle' });
     console.log('Call ended and cleaned up');
+
+
   }
 
   private startCallTimer() {

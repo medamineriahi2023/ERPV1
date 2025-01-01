@@ -11,11 +11,14 @@
       <div class="avatar-wrapper">
         <div class="ripple"></div>
         <div class="avatar">
-          <i class="pi pi-user text-6xl"></i>
+          <img *ngIf="callStatus?.receiverPhotoUrl" [src]="callStatus?.receiverPhotoUrl" 
+               [alt]="callStatus?.receiverName"
+               class="user-avatar">
+          <i *ngIf="!callStatus?.receiverPhotoUrl" class="pi pi-user"></i>
         </div>
       </div>
       <div class="info">
-        <h3 class="caller-name">{{callStatus?.callerName}}</h3>
+        <h3 class="caller-name">{{callStatus?.receiverName}}</h3>
         <p class="call-status-text">Calling...</p>
       </div>
       <div class="action-buttons actions">
@@ -32,7 +35,10 @@
       <div class="avatar-wrapper incoming">
         <div class="ripple"></div>
         <div class="avatar">
-          <i class="pi pi-user text-6xl"></i>
+          <img *ngIf="callStatus?.photoUrl" [src]="callStatus?.photoUrl" 
+               [alt]="callStatus?.callerName"
+               class="user-avatar">
+          <i *ngIf="!callStatus?.photoUrl" class="pi pi-user"></i>
         </div>
       </div>
       <div class="info">
@@ -57,28 +63,33 @@
     <div *ngIf="callStatus.status === 'connected'" class="call-status">
       <div class="avatar-wrapper connected">
         <div class="avatar">
-          <i class="pi pi-user text-6xl"></i>
+          <img *ngIf="callStatus?.receiverPhotoUrl" [src]="callStatus?.receiverPhotoUrl" 
+               [alt]="callStatus?.receiverName"
+               class="user-avatar">
+          <i *ngIf="!callStatus?.receiverPhotoUrl" class="pi pi-user"></i>
         </div>
-        <div class="wave-container audio-waves">
-          <div class="wave-visualization">
-            <div class="wave"></div>
-            <div class="wave"></div>
-            <div class="wave"></div>
-          </div>
+        <div class="audio-waves">
+          <span></span>
+          <span></span>
+          <span></span>
         </div>
       </div>
-      <div class="info call-info">
-        <h3 class="caller-name">{{callStatus?.callerName}}</h3>
-        <div class="call-timer timer">{{callDuration$ | async}}</div>
+      <div class="info">
+        <h3 class="caller-name">{{callStatus?.receiverName}}</h3>
+        <div class="timer">{{callDuration$ | async}}</div>
       </div>
       <div class="action-buttons actions">
         <button pButton icon="pi pi-volume-up"
                 class="p-button-rounded p-button-secondary volume-btn"
-                pTooltip="Volume">
+                [class.p-button-outlined]="isVolumeOff"
+                pTooltip="Volume"
+                (click)="toggleVolume()">
         </button>
         <button pButton icon="pi pi-microphone"
                 class="p-button-rounded p-button-secondary mic-btn"
-                pTooltip="Microphone">
+                [class.p-button-outlined]="isMuted"
+                pTooltip="Microphone"
+                (click)="toggleMute()">
         </button>
         <button pButton icon="pi pi-times"
                 class="p-button-rounded p-button-danger hang-up-btn"

@@ -33,9 +33,9 @@
         "endTime": "17:00",
         "lunchBreakDuration": 60
       },
-      "status": "OFFLINE",
+      "status": "ACTIVE",
       "contractType": "CDI",
-      "lastActive": "2025-01-01T14:15:35.312Z"
+      "lastActive": "2025-01-01T17:48:42.153Z"
     },
     {
       "username": "safwane",
@@ -64,7 +64,7 @@
       "status": "ACTIVE",
       "contractType": "CDI",
       "id": 2,
-      "lastActive": "2025-01-01T14:40:25.002Z"
+      "lastActive": "2025-01-01T17:48:41.551Z"
     },
     {
       "username": "aliriahi@gmail.com",
@@ -177,7 +177,7 @@
       "contractType": "CDI",
       "photoUrl": "https://i.imgur.com/BQfIQJN.jpeg",
       "id": 6,
-      "lastActive": "2024-12-31T19:38:04.214Z"
+      "lastActive": "2025-01-01T15:57:00.871Z"
     },
     {
       "username": "kamel@gmail.com",
@@ -319,6 +319,30 @@
       "status": "present",
       "isLate": false,
       "id": 7
+    },
+    {
+      "userId": 1,
+      "date": "2025-01-01T15:13:46.091Z",
+      "checkIn": "16:13:46",
+      "checkOut": "16:14:20",
+      "lunchStart": null,
+      "lunchEnd": null,
+      "totalHours": 0.02,
+      "status": "late",
+      "isLate": true,
+      "id": 8
+    },
+    {
+      "userId": 2,
+      "date": "2025-01-01T15:27:26.787Z",
+      "checkIn": "16:27:26",
+      "checkOut": null,
+      "lunchStart": null,
+      "lunchEnd": null,
+      "totalHours": 0,
+      "status": "late",
+      "isLate": true,
+      "id": 9
     }
   ],
   "leave-requests": [],
@@ -823,6 +847,15 @@
       "receiverId": "1",
       "content": "ahla",
       "timestamp": "2025-01-01T02:48:52.661Z",
+      "read": true
+    },
+    {
+      "id": "1735744897521",
+      "senderId": "2",
+      "senderName": "safwane",
+      "receiverId": "1",
+      "content": "ahla bik",
+      "timestamp": "2025-01-01T15:21:37.521Z",
       "read": true
     }
   ],

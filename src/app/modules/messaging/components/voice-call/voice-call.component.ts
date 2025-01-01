@@ -41,7 +41,6 @@ export class VoiceCallComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.statusSubscription = this.voiceCallService.callStatus$.subscribe(
       status => {
-        console.log('Call status changed:', status);
         this.callStatus = status;
       }
     );
@@ -62,8 +61,9 @@ export class VoiceCallComponent implements OnInit, OnDestroy {
 
   endCall() {
     console.log('Ending call');
-    this.voiceCallService.endCall();
     this.voiceCallService.setShowVoiceCallDialog(false);
+    this.voiceCallService.endCall();
+
   }
 
   async acceptCall() {
@@ -73,8 +73,8 @@ export class VoiceCallComponent implements OnInit, OnDestroy {
   rejectCall() {
     if (this.callStatus.remoteUserId) {
       console.log('Rejecting call');
-      this.voiceCallService.rejectCall(this.callStatus.remoteUserId);
       this.voiceCallService.setShowVoiceCallDialog(false);
+      this.voiceCallService.rejectCall(this.callStatus.remoteUserId);
     }
   }
 }
