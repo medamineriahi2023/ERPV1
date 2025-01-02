@@ -228,7 +228,6 @@ export class EmployeeFormComponent implements OnInit {
   }
 
   async onSubmit() {
-    console.log("submitting form");
     try {
       this.submitting = true;
       const formData = this.employeeForm.value;

@@ -33,9 +33,9 @@
         "endTime": "17:00",
         "lunchBreakDuration": 60
       },
-      "status": "ACTIVE",
+      "status": "OFFLINE",
       "contractType": "CDI",
-      "lastActive": "2025-01-01T17:48:42.153Z"
+      "lastActive": "2025-01-02T23:35:05.313Z"
     },
     {
       "username": "safwane",
@@ -64,7 +64,7 @@
       "status": "ACTIVE",
       "contractType": "CDI",
       "id": 2,
-      "lastActive": "2025-01-01T17:48:41.551Z"
+      "lastActive": "2025-01-02T23:34:59.694Z"
     },
     {
       "username": "aliriahi@gmail.com",
@@ -177,7 +177,7 @@
       "contractType": "CDI",
       "photoUrl": "https://i.imgur.com/BQfIQJN.jpeg",
       "id": 6,
-      "lastActive": "2025-01-01T15:57:00.871Z"
+      "lastActive": "2025-01-02T22:24:11.067Z"
     },
     {
       "username": "kamel@gmail.com",
@@ -336,10 +336,10 @@
       "userId": 2,
       "date": "2025-01-01T15:27:26.787Z",
       "checkIn": "16:27:26",
-      "checkOut": null,
+      "checkOut": "23:43:00",
       "lunchStart": null,
       "lunchEnd": null,
-      "totalHours": 0,
+      "totalHours": 7.27,
       "status": "late",
       "isLate": true,
       "id": 9

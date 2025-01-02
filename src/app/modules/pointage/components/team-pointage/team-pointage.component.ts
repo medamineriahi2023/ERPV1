@@ -560,12 +560,10 @@ export class TeamPointageComponent implements OnInit, AfterViewInit, OnDestroy {
       const allEntries = await Promise.all(entriesPromises);
       const flatEntries = allEntries.flat();
 
-      console.log('Raw entries from API:', flatEntries);
 
       const entriesWithUser = flatEntries.map((entry: TimeEntry) => {
         const user = managedEmployees.find(emp => emp.id === entry.userId);
         if (!user) {
-          console.log('No user found for entry:', entry);
           return null;
         }
 
@@ -615,14 +613,12 @@ export class TeamPointageComponent implements OnInit, AfterViewInit, OnDestroy {
           }
         };
 
-        console.log('Processed entry:', timeEntry);
         return timeEntry;
       });
 
       this.monthlyEntries = entriesWithUser.filter((entry): entry is TimeEntryWithUser => entry !== null);
       this.monthlyEntries.sort((a, b) => b.date.getTime() - a.date.getTime());
 
-      console.log('Final monthlyEntries:', this.monthlyEntries);
 
       this.updateChartData();
     } catch (error) {

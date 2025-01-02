@@ -268,7 +268,6 @@ export class MessagingComponent implements OnInit, OnDestroy {
 
   initiateCall() {
     if (this.selectedUser) {
-      console.log('Initiating call to:', this.selectedUser.username);
       this.voiceCallService.startCall(this.selectedUser.userId, this.currentUserId, this.currentUser.firstName +" "+ this.currentUser.lastName
           , this.currentUser.photoUrl, this.selectedUser.username, this.selectedUser.photoUrl);
       this.voiceCallService.setShowVoiceCallDialog(true);
@@ -284,7 +283,6 @@ export class MessagingComponent implements OnInit, OnDestroy {
 
   async acceptCall() {
     if (this.callStatus.remoteUserId && this.selectedUser) {
-      console.log('Accepting call from:', this.selectedUser.username);
       await this.voiceCallService.acceptCall(this.callStatus.remoteUserId);
     }
   }
@@ -298,7 +296,6 @@ export class MessagingComponent implements OnInit, OnDestroy {
 
   rejectCall() {
     if (this.callStatus.remoteUserId) {
-      console.log('Rejecting call');
       this.voiceCallService.rejectCall(this.callStatus.remoteUserId);
       this.voiceCallService.setShowVoiceCallDialog(false);
     }
@@ -312,7 +309,6 @@ export class MessagingComponent implements OnInit, OnDestroy {
   }
 
   endCall() {
-    console.log('Ending call');
     this.voiceCallService.endCall();
     this.voiceCallService.setShowVoiceCallDialog(false);
   }
@@ -332,7 +328,6 @@ export class MessagingComponent implements OnInit, OnDestroy {
       this.callDuration = `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
       this.cdr.detectChanges();
     }, 1000);
-    console.log('Call timer started');
   }
 
   private stopCallTimer() {
@@ -340,7 +335,6 @@ export class MessagingComponent implements OnInit, OnDestroy {
       clearInterval(this.callTimer);
       this.callTimer = null;
       this.callDuration = '00:00';
-      console.log('Call timer stopped');
     }
   }
 

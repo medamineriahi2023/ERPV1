@@ -48,7 +48,6 @@ export class AppComponent {
   ) {
     // Listen for voice call status changes
     this.voiceCallService.callStatus$.subscribe(status => {
-      console.log('App Component - Call Status:', status);
       if (status.status === 'incoming') {
         this.voiceCallService.setShowVoiceCallDialog(true);
       }

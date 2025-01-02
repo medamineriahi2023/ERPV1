@@ -47,20 +47,17 @@ export class VideoCallService {
       onValue(userCallsRef, async (snapshot) => {
         const callData = snapshot.val();
         if (callData?.offer && !callData.answer && !callData.rejected) {
-          console.log('Incoming video call detected:', callData);
-          
+
           try {
             // Get caller's information
             const callerInfo = await this.getUserInfo(callData.callerId);
-            console.log('Caller info retrieved:', callerInfo);
-            
+
             // Get user from API as backup
             let callerName = callerInfo?.name;
             if (!callerName) {
               try {
                 const user = await firstValueFrom(this.apiService.getUserById(parseInt(callData.callerId)));
                 callerName = user ? `${user.firstName} ${user.lastName}` : null;
-                console.log('Retrieved caller name from API:', callerName);
               } catch (error) {
                 console.warn('Failed to get user from API:', error);
               }
@@ -68,8 +65,7 @@ export class VideoCallService {
             
             // Set final caller name
             callerName = callerName || 'Unknown Caller';
-            console.log('Final caller name:', callerName);
-            
+
             // Play call sound
             this.audioService.playCallSound();
             
@@ -220,8 +216,8 @@ export class VideoCallService {
     };
 
     this.peerConnection = new RTCPeerConnection(configuration);
-    console.log('Created new peer connection');
-
+    console.log("----------------------------------------");
+    console.log(this.peerConnection);
     // Add local tracks to the connection
     if (this.localStream) {
       this.localStream.getTracks().forEach(track => {

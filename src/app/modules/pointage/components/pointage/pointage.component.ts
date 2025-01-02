@@ -201,12 +201,10 @@ export class PointageComponent implements OnInit, OnDestroy {
       // Create a promise to handle image loading
       await new Promise((resolve, reject) => {
         this.referenceImage!.onload = () => {
-          console.log('Reference image loaded successfully');
           resolve(true);
         };
         
         this.referenceImage!.onerror = (error) => {
-          console.error('Error loading reference image:', error);
           reject(error);
         };
 

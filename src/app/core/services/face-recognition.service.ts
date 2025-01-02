@@ -22,7 +22,6 @@ export class FaceRecognitionService {
       ]);
 
       this.modelsLoaded = true;
-      console.log('Face recognition models loaded successfully');
     } catch (error) {
       console.error('Error loading face recognition models:', error);
       throw error;
@@ -41,7 +40,6 @@ export class FaceRecognitionService {
         .withFaceDescriptor();
 
       if (!detection) {
-        console.log('No face detected');
         return null;
       }
 
@@ -85,7 +83,6 @@ export class FaceRecognitionService {
       const THRESHOLD = 0.6;
       const isMatch = distance < THRESHOLD;
 
-      console.log('Face verification distance:', distance, 'Match:', isMatch);
       return isMatch;
 
     } catch (error) {

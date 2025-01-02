@@ -480,6 +480,5 @@ export class ManagerHistoriqueComponent implements OnInit {
 
   exportData(format: 'pdf' | 'excel') {
     // TODO: Implement export functionality
-    console.log(`Exporting data in ${format} format`);
   }
 }

@@ -19,5 +19,4 @@ server.use(router);
 
 // Start HTTPS server
 https.createServer(options, server).listen(3000, () => {
-  console.log('JSON Server is running on https://localhost:3000');
 });

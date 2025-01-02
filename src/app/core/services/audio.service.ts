@@ -43,7 +43,6 @@ export class AudioService {
       await this.audio.play();
       this.isPlaying = true;
       this.pendingPlay = false;
-      console.log('Call sound started playing');
     } catch (error) {
       console.error('Error playing call sound:', error);
       this.stopCallSound();
@@ -58,7 +57,6 @@ export class AudioService {
       this.audio.currentTime = 0;
       this.isPlaying = false;
       this.pendingPlay = false;
-      console.log('Call sound stopped');
     } catch (error) {
       console.error('Error stopping call sound:', error);
     }

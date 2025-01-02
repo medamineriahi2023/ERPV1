@@ -51,8 +51,7 @@ export class VoiceCallService {
       onValue(userCallsRef, async (snapshot) => {
         const callData = snapshot.val();
         if (callData?.offer && !callData.answer && !callData.rejected) {
-          console.log('Incoming call detected:', callData);
-          
+
           // Get caller's information
           const callerInfo = await this.getUserInfo(callData.callerId);
           
@@ -142,39 +141,46 @@ export class VoiceCallService {
     }
 
     const configuration: RTCConfiguration = {
-      iceServers: [{
-        urls: [ "stun:fr-turn1.xirsys.com" ]
-      }, {
-        username: "Wv-mSGEE-ILOUk_kyhlfn2w39Zq9jMmTCH3ife2YMljfX_ZK6Eb10QEiMB7N1sLhAAAAAGd3B6dtZWRhbWluZXI=",
-        credential: "18b4c574-c952-11ef-b6d6-0242ac120004",
-        urls: [
-          "turn:fr-turn1.xirsys.com:80?transport=udp",
-          "turn:fr-turn1.xirsys.com:3478?transport=udp",
-          "turn:fr-turn1.xirsys.com:80?transport=tcp",
-          "turn:fr-turn1.xirsys.com:3478?transport=tcp",
-          "turns:fr-turn1.xirsys.com:443?transport=tcp",
-          "turns:fr-turn1.xirsys.com:5349?transport=tcp"
-        ]
-      }]
+      iceServers: [
+        {
+          urls: "stun:stun.relay.metered.ca:80",
+        },
+        {
+          urls: "turn:eu-west.relay.metered.ca:80",
+          username: "f62b917dabb7524388421224",
+          credential: "ut/b3FhDJE9dFzX8",
+        },
+        {
+          urls: "turn:eu-west.relay.metered.ca:80?transport=tcp",
+          username: "f62b917dabb7524388421224",
+          credential: "ut/b3FhDJE9dFzX8",
+        },
+        {
+          urls: "turn:eu-west.relay.metered.ca:443",
+          username: "f62b917dabb7524388421224",
+          credential: "ut/b3FhDJE9dFzX8",
+        },
+        {
+          urls: "turns:eu-west.relay.metered.ca:443?transport=tcp",
+          username: "f62b917dabb7524388421224",
+          credential: "ut/b3FhDJE9dFzX8",
+        },
+      ],
     };
 
     this.peerConnection = new RTCPeerConnection(configuration);
-    console.log('Created new peer connection');
-    
+    console.log('Peer connection created for voice:', this.peerConnection);
     // Add local tracks to the connection
-    if (this.localStream) {
       this.localStream.getTracks().forEach(track => {
         if (this.localStream) {
-          console.log('Adding local track to peer connection:', track.kind);
           this.peerConnection?.addTrack(track, this.localStream);
         }
       });
-    }
+
 
     // Add ICE gathering state logging
     this.peerConnection.onicegatheringstatechange = () => {
-      console.log('ICE gathering state:', this.peerConnection?.iceGatheringState);
-      
+
       // Log all ICE candidates when gathering is complete
       if (this.peerConnection?.iceGatheringState === 'complete') {
         const receivers = this.peerConnection?.getReceivers() || [];
@@ -183,8 +189,6 @@ export class VoiceCallService {
           stats.then(statsReport => {
             statsReport.forEach(report => {
               if (report.type === 'candidate-pair' && report.selected) {
-                console.log('Selected candidate pair:', report);
-                console.log('Using TURN server:', report.remoteCandidateId?.includes('relay'));
               }
             });
           });
@@ -197,7 +201,6 @@ export class VoiceCallService {
       if (event.candidate) {
         const remoteUserId = this.callStatusSubject.value.remoteUserId;
         if (remoteUserId) {
-          console.log('Sending ICE candidate to remote peer');
           const candidateRef = ref(this.db, `calls/${remoteUserId}/candidates/${Date.now()}`);
           set(candidateRef, {
             candidate: event.candidate.toJSON()
@@ -208,23 +211,22 @@ export class VoiceCallService {
 
     // Handle connection state changes
     this.peerConnection.onconnectionstatechange = () => {
-      console.log('Connection state changed:', this.peerConnection?.connectionState);
       switch (this.peerConnection?.connectionState) {
         case 'connected':
-          console.log('Peers connected!');
           this.callStatusSubject.next({
             status: 'connected',
             remoteUserId: this.callStatusSubject.value.remoteUserId
           });
+          console.log("connected to voice")
           break;
         case 'disconnected':
+          console.log("disconnected from voice")
+              break;
         case 'failed':
-          console.log('Peer connection failed or disconnected');
           this.endCall();
           this.setShowVoiceCallDialog(false);
           break;
         case 'closed':
-          console.log('Peer connection closed');
           this.setShowVoiceCallDialog(false);
           break;
       }
@@ -232,9 +234,7 @@ export class VoiceCallService {
 
     // Handle ICE connection state changes
     this.peerConnection.oniceconnectionstatechange = () => {
-      console.log('ICE connection state:', this.peerConnection?.iceConnectionState);
       if (this.peerConnection?.iceConnectionState === 'connected') {
-        console.log('ICE connection established');
         this.callStatusSubject.next({
           status: 'connected',
           remoteUserId: this.callStatusSubject.value.remoteUserId
@@ -244,13 +244,11 @@ export class VoiceCallService {
 
     // Handle receiving remote tracks
     this.peerConnection.ontrack = (event) => {
-      console.log('Received remote track:', event.track.kind);
       if (!this.remoteStream) {
         this.remoteStream = new MediaStream();
       }
       event.streams[0].getTracks().forEach(track => {
         if (this.remoteStream) {
-          console.log('Adding remote track to stream:', track.kind);
           this.remoteStream.addTrack(track);
         }
       });
@@ -261,8 +259,7 @@ export class VoiceCallService {
   }
 
   private handleRemoteStream(stream: MediaStream) {
-    console.log('Handling remote stream');
-    
+
     // Remove existing audio element if it exists
     if (this.remoteAudio) {
       this.remoteAudio.remove();
@@ -281,7 +278,6 @@ export class VoiceCallService {
       console.error('Error playing remote audio:', error);
     });
 
-    console.log('Remote audio element created and added to DOM');
   }
 
   async startCall(targetUserId: string, currentUserId: string, callerName: string, photoUrl?: string ,
@@ -289,8 +285,7 @@ export class VoiceCallService {
     try {
       if (!await this.checkAuth()) return;
 
-      console.log('Starting call to:', targetUserId);
-      
+
       // Clean up any existing call state
       this.cleanupCallHandlers();
       if (this.peerConnection) {
@@ -303,20 +298,17 @@ export class VoiceCallService {
         audio: true,
         video: false
       });
-      console.log('Got local stream');
 
       // Setup WebRTC peer connection
-      await this.setupPeerConnection();
+      this.peerConnection = await this.setupPeerConnection();
       
       // Create and set local description
       const offer = await this.peerConnection!.createOffer({
         offerToReceiveAudio: true,
         offerToReceiveVideo: false
       });
-      console.log('Created offer');
-      
-      await this.peerConnection!.setLocalDescription(offer);
-      console.log('Set local description');
+
+      await this.peerConnection.setLocalDescription(offer);
 
       // Store the offer in Firebase under the target user's node
       const callData = {
@@ -333,7 +325,6 @@ export class VoiceCallService {
       };
       
       await set(ref(this.db, `calls/${targetUserId}`), callData);
-      console.log('Stored offer in Firebase:', callData);
 
       this.callStatusSubject.next({ status: 'calling', remoteUserId: targetUserId, callerName: callerName,photoUrl: photoUrl,receiverName: receiverName, receiverPhotoUrl: receiverPhotoUrl });
 
@@ -342,12 +333,10 @@ export class VoiceCallService {
       onValue(ref(this.db, this.answerHandler), async (snapshot) => {
         const answer = snapshot.val();
         if (answer && this.peerConnection?.currentRemoteDescription === null) {
-          console.log('Received answer:', answer);
           try {
             const remoteDesc = new RTCSessionDescription(answer);
             await this.peerConnection!.setRemoteDescription(remoteDesc);
-            console.log('Set remote description from answer');
-            
+
             // Start timer when answer is received and connection is established
             await this.handleCallConnected(targetUserId, callerName,photoUrl);
           } catch (error) {
@@ -367,14 +356,11 @@ export class VoiceCallService {
             
             try {
               if (!this.peerConnection!.remoteDescription) {
-                console.log('Waiting for remote description before adding ICE candidate');
                 return;
               }
               const candidate = new RTCIceCandidate(data.candidate);
               await this.peerConnection!.addIceCandidate(candidate);
-              console.log('Added ICE candidate');
             } catch (error) {
-              console.error('Error adding ICE candidate:', error);
             }
           });
         }
@@ -388,7 +374,6 @@ export class VoiceCallService {
   }
 
   private async handleCallConnected(userId: string, userName: string, photoUrl?: string) {
-    console.log('Call connected, starting timer');
     this.callStatusSubject.next({
       status: 'connected',
       remoteUserId: userId,
@@ -405,7 +390,6 @@ export class VoiceCallService {
       this.audioService.stopCallSound();
       if (!await this.checkAuth()) return;
 
-      console.log('Accepting call from:', remoteUserId);
       // Clean up any existing call state
       this.cleanupCallHandlers();
       if (this.peerConnection) {
@@ -418,8 +402,7 @@ export class VoiceCallService {
       const snapshot = await get(callRef);
       const data = snapshot.val();
       
-      console.log('Retrieved call data:', data);
-      
+
       if (!data?.offer) {
         console.error('No offer found for incoming call');
         this.endCall();
@@ -431,21 +414,17 @@ export class VoiceCallService {
         audio: true,
         video: false
       });
-      console.log('Got local stream');
 
       // Setup peer connection
-      await this.setupPeerConnection();
-      console.log('Peer connection set up');
+      this.peerConnection = await this.setupPeerConnection();
 
       // Set remote description (offer)
       const remoteDesc = new RTCSessionDescription(data.offer);
       await this.peerConnection!.setRemoteDescription(remoteDesc);
-      console.log('Set remote description (offer)');
 
       // Create and set local description (answer)
       const answer = await this.peerConnection!.createAnswer();
       await this.peerConnection!.setLocalDescription(answer);
-      console.log('Created and set local description (answer)');
 
       // Store the answer in Firebase under the caller's node
       const answerData = {
@@ -453,7 +432,6 @@ export class VoiceCallService {
         sdp: answer.sdp
       };
       await set(ref(this.db, `calls/${remoteUserId}/answer`), answerData);
-      console.log('Stored answer in Firebase:', answerData);
 
       // Set up ICE candidate handling
       this.candidatesHandler = `calls/${remoteUserId}/candidates`;
@@ -465,7 +443,6 @@ export class VoiceCallService {
             try {
               const candidate = new RTCIceCandidate(data.candidate);
               await this.peerConnection!.addIceCandidate(candidate);
-              console.log('Added ICE candidate');
             } catch (error) {
               console.error('Error adding ICE candidate:', error);
             }
@@ -488,7 +465,6 @@ export class VoiceCallService {
       this.audioService.stopCallSound();
       if (!await this.checkAuth()) return;
 
-      console.log('Rejecting call from:', remoteUserId);
       const callRef = ref(this.db, `calls/${remoteUserId}/rejected`);
       await set(callRef, true);
       this.endCall();
@@ -508,8 +484,7 @@ export class VoiceCallService {
 
     this.stopCallTimer();
 
-    console.log('Ending call');
-    
+
     // Stop all tracks in the local stream
     if (this.localStream) {
       this.localStream.getTracks().forEach(track => track.stop());
@@ -544,13 +519,11 @@ export class VoiceCallService {
 
     // Reset call status
     this.callStatusSubject.next({ status: 'idle' });
-    console.log('Call ended and cleaned up');
 
 
   }
 
   private startCallTimer() {
-    console.log('Starting call timer');
     // Clear any existing timer
     this.stopCallTimer();
     
@@ -561,14 +534,12 @@ export class VoiceCallService {
         const minutes = Math.floor(duration / 60);
         const seconds = duration % 60;
         const formattedDuration = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-        console.log('Updating call duration:', formattedDuration);
         this.callDurationSubject.next(formattedDuration);
       }
     }, 1000);
   }
 
   private stopCallTimer() {
-    console.log('Stopping call timer');
     if (this.timerInterval) {
       clearInterval(this.timerInterval);
       this.timerInterval = null;

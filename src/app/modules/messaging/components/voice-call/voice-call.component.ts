@@ -28,7 +28,8 @@ export class VoiceCallComponent implements OnInit, OnDestroy, AfterViewInit {
   screenShareState: ScreenShareState = { 
     isSharing: false, 
     remoteScreenStream: null,
-    localScreenStream: null 
+    localScreenStream: null,
+    remoteUserId: null
   };
   private statusSubscription: Subscription | undefined;
   private screenShareSubscription: Subscription | undefined;
@@ -46,7 +47,6 @@ export class VoiceCallComponent implements OnInit, OnDestroy, AfterViewInit {
   ) {
     this.dialogSubscription = this.voiceCallService.showVioceCallDialog$.subscribe(
       show => {
-        console.log('Dialog visibility changed:', show);
         this.showCallDialog = show;
       }
     );
@@ -66,40 +66,32 @@ export class VoiceCallComponent implements OnInit, OnDestroy, AfterViewInit {
     // Set up observers for video elements
     this.screenShareSubscription = this.screenShareService.screenShareState$.subscribe(
       state => {
-        console.log('Screen share state updated:', state);
         this.screenShareState = state;
         
         // Handle local screen video
         if (this.localScreenVideo?.nativeElement && state.localScreenStream) {
-          console.log('Setting up local screen video');
           this.localScreenVideo.nativeElement.srcObject = state.localScreenStream;
           this.localScreenVideo.nativeElement.onloadedmetadata = () => {
-            console.log('Local video metadata loaded');
             this.localScreenVideo.nativeElement.play().catch(e => console.error('Error playing local video:', e));
           };
         }
         
         // Handle remote screen video
         if (this.remoteScreenVideo?.nativeElement && state.remoteScreenStream) {
-          console.log('Setting up remote screen video');
-          console.log('Remote stream tracks:', state.remoteScreenStream.getTracks());
-          
+
           // Force video track to be enabled
           const videoTrack = state.remoteScreenStream.getVideoTracks()[0];
           if (videoTrack) {
             videoTrack.enabled = true;
-            console.log('Video track settings:', videoTrack.getSettings());
-            
+
             // Create a new stream with just the video track
             const newStream = new MediaStream([videoTrack]);
             this.remoteScreenVideo.nativeElement.srcObject = newStream;
             
             // Set up video element
             this.remoteScreenVideo.nativeElement.onloadedmetadata = () => {
-              console.log('Remote video metadata loaded');
               this.remoteScreenVideo.nativeElement.play()
                 .then(() => {
-                  console.log('Remote video playback started');
                   // Force a repaint
                   this.remoteScreenVideo.nativeElement.style.display = 'none';
                   setTimeout(() => {
@@ -110,17 +102,10 @@ export class VoiceCallComponent implements OnInit, OnDestroy, AfterViewInit {
                 })
                 .catch(e => console.error('Error playing remote video:', e));
             };
-            
-            // Additional event handlers
-            this.remoteScreenVideo.nativeElement.onplay = () => console.log('Remote video play event fired');
-            this.remoteScreenVideo.nativeElement.onplaying = () => console.log('Remote video playing event fired');
-            this.remoteScreenVideo.nativeElement.onwaiting = () => console.log('Remote video waiting for data');
-            this.remoteScreenVideo.nativeElement.onstalled = () => console.log('Remote video stalled');
           } else {
             console.error('No video track in remote stream');
           }
         } else if (!state.remoteScreenStream && this.remoteScreenVideo?.nativeElement) {
-          console.log('Clearing remote video element');
           this.remoteScreenVideo.nativeElement.srcObject = null;
         }
       }
@@ -150,7 +135,6 @@ export class VoiceCallComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   async endCall() {
-    console.log('Ending call');
     this.voiceCallService.setShowVoiceCallDialog(false);
     this.voiceCallService.endCall();
     await this.screenShareService.stopScreenShare(this.callStatus.remoteUserId);
@@ -163,7 +147,6 @@ export class VoiceCallComponent implements OnInit, OnDestroy, AfterViewInit {
 
   rejectCall() {
     if (this.callStatus.remoteUserId) {
-      console.log('Rejecting call');
       this.voiceCallService.setShowVoiceCallDialog(false);
       this.voiceCallService.rejectCall(this.callStatus.remoteUserId);
     }
@@ -200,14 +183,10 @@ export class VoiceCallComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   onRemoteVideoLoaded(event: Event) {
-    console.log('Remote video loaded:', event);
     const video = event.target as HTMLVideoElement;
-    console.log('Remote video ready state:', video.readyState);
-    console.log('Remote video size:', video.videoWidth, 'x', video.videoHeight);
-    
+
     // Force play the video
     video.play().then(() => {
-      console.log('Remote video playing successfully');
     }).catch(error => {
       console.error('Error playing remote video:', error);
     });

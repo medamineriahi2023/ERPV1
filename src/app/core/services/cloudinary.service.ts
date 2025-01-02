@@ -25,14 +25,12 @@ export class CloudinaryService {
 
     // Log FormData for debugging
     for (const pair of (formData as any).entries()) {
-      console.log(pair[0], pair[1]);
     }
 
     return this.http
         .post<any>(`https://api.cloudinary.com/v1_1/${this.cloudName}/image/upload`, formData)
         .pipe(
             map((response) => {
-              console.log('Upload response:', response);
               return response.secure_url; // Return the secure URL of the uploaded image
             }),
             catchError((error) => {

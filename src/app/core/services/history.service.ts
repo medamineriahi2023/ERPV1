@@ -71,14 +71,11 @@ export class HistoryService {
    * Traite les données mensuelles
    */
   private processMonthlyData(entries: UserTimeEntry[], month: number, year: number): MonthlyStats {
-    console.log('Entrées brutes:', entries);
     const processedEntries = entries.map(entry => {
       const processed = this.processTimeEntry(entry);
-      console.log('Entrée traitée:', processed);
       return processed;
     });
     const stats = this.calculateMonthlyStats(processedEntries, month, year);
-    console.log('Statistiques calculées:', stats);
 
     return {
       month,
