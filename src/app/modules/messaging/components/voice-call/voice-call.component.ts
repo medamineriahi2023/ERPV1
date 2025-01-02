@@ -149,10 +149,11 @@ export class VoiceCallComponent implements OnInit, OnDestroy, AfterViewInit {
     this.isVolumeOff = !this.isVolumeOff;
   }
 
-  endCall() {
+  async endCall() {
     console.log('Ending call');
     this.voiceCallService.setShowVoiceCallDialog(false);
     this.voiceCallService.endCall();
+    await this.screenShareService.stopScreenShare(this.callStatus.remoteUserId);
 
   }
 
