@@ -1,4 +1,4 @@
-import { Injectable, inject, OnDestroy } from '@angular/core';
+import { Injectable, inject, OnDestroy, NgZone } from '@angular/core';
 import { Database, ref, set, onValue, remove, off } from '@angular/fire/database';
 import { BehaviorSubject } from 'rxjs';
 import { AuthService } from '../../../core/services/auth.service';
@@ -10,7 +10,7 @@ export interface ScreenShareState {
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ScreenShareService implements OnDestroy {
   private db: Database = inject(Database);
@@ -18,13 +18,15 @@ export class ScreenShareService implements OnDestroy {
   private screenPeerConnection: RTCPeerConnection | null = null;
   private offerHandler: any;
   private candidatesHandler: any;
+  private iceCandidateQueue: RTCIceCandidate[] = [];
+  private ngZone = inject(NgZone);
 
   private screenShareStateSubject = new BehaviorSubject<ScreenShareState>({
     isSharing: false,
     remoteScreenStream: null,
-    localScreenStream: null
+    localScreenStream: null,
   });
-  
+
   screenShareState$ = this.screenShareStateSubject.asObservable();
 
   constructor(private authService: AuthService) {
@@ -52,9 +54,16 @@ export class ScreenShareService implements OnDestroy {
       if (candidates && this.screenPeerConnection) {
         for (const [, candidate] of Object.entries(candidates)) {
           try {
-            await this.screenPeerConnection.addIceCandidate(
-              new RTCIceCandidate(candidate as RTCIceCandidateInit)
-            );
+            if (this.screenPeerConnection.remoteDescription) {
+              await this.screenPeerConnection.addIceCandidate(
+                  new RTCIceCandidate(candidate as RTCIceCandidateInit)
+              );
+              console.log('Successfully added ICE candidate:', candidate);
+            } else {
+              // Queue the candidate if remote description is not set
+              this.iceCandidateQueue.push(new RTCIceCandidate(candidate));
+              console.log('Queued ICE candidate:', candidate);
+            }
           } catch (error) {
             console.error('Error adding ICE candidate:', error);
           }
@@ -77,14 +86,14 @@ export class ScreenShareService implements OnDestroy {
   async startScreenShare(remoteUserId: string): Promise<void> {
     try {
       console.log('Starting screen share for remote user:', remoteUserId);
-      
+
       // Get screen stream with specific constraints
-      this.screenStream = await navigator.mediaDevices.getDisplayMedia({ 
+      this.screenStream = await navigator.mediaDevices.getDisplayMedia({
         video: {
           frameRate: { ideal: 30 },
           width: { ideal: 1920 },
-          height: { ideal: 1080 }
-        }
+          height: { ideal: 1080 },
+        },
       });
 
       console.log('Got screen stream:', this.screenStream);
@@ -93,29 +102,29 @@ export class ScreenShareService implements OnDestroy {
       const configuration = {
         iceServers: [
           {
-            urls: "stun:stun.relay.metered.ca:80"
+            urls: 'stun:stun.relay.metered.ca:80',
           },
           {
-            urls: "turn:global.relay.metered.ca:80",
-            username: "f62b917dabb7524388421224",
-            credential: "ut/b3FhDJE9dFzX8"
+            urls: 'turn:global.relay.metered.ca:80',
+            username: 'f62b917dabb7524388421224',
+            credential: 'ut/b3FhDJE9dFzX8',
           },
           {
-            urls: "turn:global.relay.metered.ca:80?transport=tcp",
-            username: "f62b917dabb7524388421224",
-            credential: "ut/b3FhDJE9dFzX8"
+            urls: 'turn:global.relay.metered.ca:80?transport=tcp',
+            username: 'f62b917dabb7524388421224',
+            credential: 'ut/b3FhDJE9dFzX8',
           },
           {
-            urls: "turn:global.relay.metered.ca:443",
-            username: "f62b917dabb7524388421224",
-            credential: "ut/b3FhDJE9dFzX8"
+            urls: 'turn:global.relay.metered.ca:443',
+            username: 'f62b917dabb7524388421224',
+            credential: 'ut/b3FhDJE9dFzX8',
           },
           {
-            urls: "turns:global.relay.metered.ca:443?transport=tcp",
-            username: "f62b917dabb7524388421224",
-            credential: "ut/b3FhDJE9dFzX8"
-          }
-        ]
+            urls: 'turns:global.relay.metered.ca:443?transport=tcp',
+            username: 'f62b917dabb7524388421224',
+            credential: 'ut/b3FhDJE9dFzX8',
+          },
+        ],
       };
 
       // Close existing connection
@@ -130,7 +139,7 @@ export class ScreenShareService implements OnDestroy {
       this.screenShareStateSubject.next({
         ...this.screenShareStateSubject.value,
         isSharing: true,
-        localScreenStream: this.screenStream
+        localScreenStream: this.screenStream,
       });
 
       // Add tracks to peer connection
@@ -151,12 +160,14 @@ export class ScreenShareService implements OnDestroy {
 
           console.log('Sending offer to remote user');
           const currentUserId = this.authService.getCurrentUser()?.id;
-          await set(ref(this.db, `screenShare/${remoteUserId}`), {
-            offer: {
-              type: offer.type,
-              sdp: offer.sdp
-            },
-            sharerId: currentUserId
+          this.ngZone.run(() => {
+            set(ref(this.db, `screenShare/${remoteUserId}`), {
+              offer: {
+                type: offer.type,
+                sdp: offer.sdp,
+              },
+              sharerId: currentUserId,
+            });
           });
         } catch (error) {
           console.error('Error during negotiation:', error);
@@ -167,9 +178,11 @@ export class ScreenShareService implements OnDestroy {
       this.screenPeerConnection.onicecandidate = async (event) => {
         if (event.candidate) {
           console.log('New ICE candidate:', event.candidate);
-          await set(ref(this.db, `screenShare/${remoteUserId}/candidates/${Date.now()}`), 
-            event.candidate.toJSON()
-          );
+          this.ngZone.run(() => {
+            set(ref(this.db, `screenShare/${remoteUserId}/candidates/${Date.now()}`), event.candidate.toJSON());
+          });
+        } else {
+          console.log('All ICE candidates have been generated.');
         }
       };
 
@@ -203,7 +216,6 @@ export class ScreenShareService implements OnDestroy {
         console.log('Screen share stopped by user');
         this.stopScreenShare(remoteUserId);
       };
-
     } catch (error) {
       console.error('Error starting screen share:', error);
       this.stopScreenShare(remoteUserId);
@@ -217,29 +229,29 @@ export class ScreenShareService implements OnDestroy {
       const configuration = {
         iceServers: [
           {
-            urls: "stun:stun.relay.metered.ca:80"
+            urls: 'stun:stun.relay.metered.ca:80',
           },
           {
-            urls: "turn:global.relay.metered.ca:80",
-            username: "f62b917dabb7524388421224",
-            credential: "ut/b3FhDJE9dFzX8"
+            urls: 'turn:global.relay.metered.ca:80',
+            username: 'f62b917dabb7524388421224',
+            credential: 'ut/b3FhDJE9dFzX8',
           },
           {
-            urls: "turn:global.relay.metered.ca:80?transport=tcp",
-            username: "f62b917dabb7524388421224",
-            credential: "ut/b3FhDJE9dFzX8"
+            urls: 'turn:global.relay.metered.ca:80?transport=tcp',
+            username: 'f62b917dabb7524388421224',
+            credential: 'ut/b3FhDJE9dFzX8',
           },
           {
-            urls: "turn:global.relay.metered.ca:443",
-            username: "f62b917dabb7524388421224",
-            credential: "ut/b3FhDJE9dFzX8"
+            urls: 'turn:global.relay.metered.ca:443',
+            username: 'f62b917dabb7524388421224',
+            credential: 'ut/b3FhDJE9dFzX8',
           },
           {
-            urls: "turns:global.relay.metered.ca:443?transport=tcp",
-            username: "f62b917dabb7524388421224",
-            credential: "ut/b3FhDJE9dFzX8"
-          }
-        ]
+            urls: 'turns:global.relay.metered.ca:443?transport=tcp',
+            username: 'f62b917dabb7524388421224',
+            credential: 'ut/b3FhDJE9dFzX8',
+          },
+        ],
       };
 
       if (this.screenPeerConnection) {
@@ -253,34 +265,12 @@ export class ScreenShareService implements OnDestroy {
       // Set up track handler
       this.screenPeerConnection.ontrack = (event) => {
         console.log('Received track:', event.track.kind, event.track.id);
-        console.log('Track settings:', event.track.getSettings());
-        
         if (event.track.kind === 'video') {
-          // Create a new stream with the received track
           const stream = new MediaStream([event.track]);
-          
-          // Update the state with the stream
           this.screenShareStateSubject.next({
             ...this.screenShareStateSubject.value,
-            remoteScreenStream: stream
+            remoteScreenStream: stream,
           });
-
-          // Log track state changes
-          event.track.onmute = () => {
-            console.log('Track muted');
-            this.screenShareStateSubject.next({
-              ...this.screenShareStateSubject.value,
-              remoteScreenStream: null
-            });
-          };
-          
-          event.track.onunmute = () => {
-            console.log('Track unmuted');
-            this.screenShareStateSubject.next({
-              ...this.screenShareStateSubject.value,
-              remoteScreenStream: stream
-            });
-          };
         }
       };
 
@@ -288,25 +278,8 @@ export class ScreenShareService implements OnDestroy {
       this.screenPeerConnection.onicecandidate = async (event) => {
         if (event.candidate) {
           console.log('Generated ICE candidate');
-          await set(ref(this.db, `screenShare/${sharerId}/candidates/${Date.now()}`), 
-            event.candidate.toJSON()
-          );
-        }
-      };
-
-      // Set up connection monitoring
-      this.screenPeerConnection.oniceconnectionstatechange = () => {
-        console.log('ICE connection state:', this.screenPeerConnection?.iceConnectionState);
-      };
-
-      this.screenPeerConnection.onconnectionstatechange = () => {
-        const state = this.screenPeerConnection?.connectionState;
-        console.log('Connection state:', state);
-        
-        if (state === 'failed' || state === 'closed') {
-          this.screenShareStateSubject.next({
-            ...this.screenShareStateSubject.value,
-            remoteScreenStream: null
+          this.ngZone.run(() => {
+            set(ref(this.db, `screenShare/${sharerId}/candidates/${Date.now()}`), event.candidate.toJSON());
           });
         }
       };
@@ -315,6 +288,15 @@ export class ScreenShareService implements OnDestroy {
       console.log('Setting remote description');
       await this.screenPeerConnection.setRemoteDescription(new RTCSessionDescription(offer));
 
+      // Process queued ICE candidates
+      while (this.iceCandidateQueue.length > 0) {
+        const candidate = this.iceCandidateQueue.shift();
+        if (candidate) {
+          await this.screenPeerConnection.addIceCandidate(candidate);
+          console.log('Added queued ICE candidate:', candidate);
+        }
+      }
+
       // Create and set the answer
       console.log('Creating answer');
       const answer = await this.screenPeerConnection.createAnswer();
@@ -322,52 +304,39 @@ export class ScreenShareService implements OnDestroy {
       await this.screenPeerConnection.setLocalDescription(answer);
 
       // Send the answer
-      await set(ref(this.db, `screenShare/${sharerId}/answer`), {
-        type: answer.type,
-        sdp: answer.sdp
+      this.ngZone.run(() => {
+        set(ref(this.db, `screenShare/${sharerId}/answer`), {
+          type: answer.type,
+          sdp: answer.sdp,
+        });
       });
-
-      // Handle incoming ICE candidates
-      const candidatesRef = ref(this.db, `screenShare/${sharerId}/candidates`);
-      onValue(candidatesRef, async (snapshot) => {
-        const candidates = snapshot.val();
-        if (candidates && this.screenPeerConnection) {
-          for (const [, candidate] of Object.entries(candidates)) {
-            try {
-              await this.screenPeerConnection.addIceCandidate(new RTCIceCandidate(candidate));
-              console.log('Added ICE candidate');
-            } catch (error) {
-              console.error('Error adding ICE candidate:', error);
-            }
-          }
-        }
-      });
-
     } catch (error) {
       console.error('Error in handleIncomingScreenShare:', error);
       this.screenShareStateSubject.next({
         ...this.screenShareStateSubject.value,
-        remoteScreenStream: null
+        remoteScreenStream: null,
       });
     }
   }
 
   async stopScreenShare(remoteUserId: string): Promise<void> {
-    this.screenStream?.getTracks().forEach(track => track.stop());
+    this.screenStream?.getTracks().forEach((track) => track.stop());
     this.screenPeerConnection?.close();
-    
+
     this.screenStream = null;
     this.screenPeerConnection = null;
 
     // Clean up Firebase
     const currentUserId = this.authService.getCurrentUser()?.id;
-    await remove(ref(this.db, `screenShare/${remoteUserId}`));
-    await remove(ref(this.db, `screenShare/${currentUserId}`));
+    this.ngZone.run(() => {
+      remove(ref(this.db, `screenShare/${remoteUserId}`));
+      remove(ref(this.db, `screenShare/${currentUserId}`));
+    });
 
     this.screenShareStateSubject.next({
       isSharing: false,
       remoteScreenStream: null,
-      localScreenStream: null
+      localScreenStream: null,
     });
   }
 }
