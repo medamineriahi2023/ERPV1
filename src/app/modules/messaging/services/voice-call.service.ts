@@ -144,9 +144,6 @@ export class VoiceCallService {
     const configuration: RTCConfiguration = {
       iceServers: [
         {
-          urls: "stun:stun.relay.metered.ca:80"
-        },
-        {
           urls: "turn:global.relay.metered.ca:80",
           username: "f62b917dabb7524388421224",
           credential: "ut/b3FhDJE9dFzX8"

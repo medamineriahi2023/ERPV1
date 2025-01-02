@@ -90,7 +90,7 @@ export class ScreenShareService implements OnDestroy {
       // Get screen stream with specific constraints
       this.screenStream = await navigator.mediaDevices.getDisplayMedia({
         video: {
-          frameRate: { ideal: 30 },
+          frameRate: { ideal: 15 },
           width: { ideal: 1920 },
           height: { ideal: 1080 },
         },
@@ -101,8 +101,6 @@ export class ScreenShareService implements OnDestroy {
 
       const configuration = {
         iceServers: [{
-          urls: [ "stun:fr-turn1.xirsys.com" ]
-        }, {
           username: "Wv-mSGEE-ILOUk_kyhlfn2w39Zq9jMmTCH3ife2YMljfX_ZK6Eb10QEiMB7N1sLhAAAAAGd3B6dtZWRhbWluZXI=",
           credential: "18b4c574-c952-11ef-b6d6-0242ac120004",
           urls: [
@@ -217,8 +215,6 @@ export class ScreenShareService implements OnDestroy {
 
       const configuration = {
         iceServers: [{
-          urls: [ "stun:fr-turn1.xirsys.com" ]
-        }, {
           username: "Wv-mSGEE-ILOUk_kyhlfn2w39Zq9jMmTCH3ife2YMljfX_ZK6Eb10QEiMB7N1sLhAAAAAGd3B6dtZWRhbWluZXI=",
           credential: "18b4c574-c952-11ef-b6d6-0242ac120004",
           urls: [
