@@ -91,11 +91,57 @@
                 pTooltip="Microphone"
                 (click)="toggleMute()">
         </button>
+        <button pButton icon="pi pi-desktop"
+                class="p-button-rounded p-button-secondary screen-share-btn"
+                [class.p-button-outlined]="!screenShareState.isSharing"
+                pTooltip="Share Screen"
+                (click)="toggleScreenShare()"
+                [disabled]="screenShareState.remoteScreenStream"
+                >
+        </button>
         <button pButton icon="pi pi-times"
                 class="p-button-rounded p-button-danger hang-up-btn"
                 pTooltip="End Call"
                 (click)="endCall()">
         </button>
+      </div>
+
+      <!-- Screen Share Videos -->
+      <div class="screen-share-videos">
+        <div *ngIf="screenShareState.localScreenStream" class="screen-share-container local-screen">
+          <video #localScreenVideo 
+                 [srcObject]="screenShareState.localScreenStream" 
+                 autoplay 
+                 playsinline 
+                 muted
+                 style="width: 100%; height: 100%; object-fit: contain;">
+          </video>
+          <span class="video-label">Your Screen</span>
+          <button pButton icon="pi pi-window-maximize"
+                  class="p-button-rounded p-button-secondary fullscreen-btn"
+                  [class.p-button-outlined]="!isLocalScreenFullscreen"
+                  pTooltip="Toggle Fullscreen"
+                  (click)="toggleLocalScreenFullscreen()">
+          </button>
+        </div>
+
+        <div *ngIf="screenShareState.remoteScreenStream" class="screen-share-container remote-screen">
+          <video #remoteScreenVideo 
+                 [srcObject]="screenShareState.remoteScreenStream" 
+                 autoplay 
+                 playsinline
+                 style="width: 100%; height: 100%; object-fit: contain;"
+                 (loadedmetadata)="onRemoteVideoLoaded($event)"
+                 (error)="onRemoteVideoError($event)">
+          </video>
+          <span class="video-label">Shared Screen</span>
+          <button pButton icon="pi pi-window-maximize"
+                  class="p-button-rounded p-button-secondary fullscreen-btn"
+                  [class.p-button-outlined]="!isRemoteScreenFullscreen"
+                  pTooltip="Toggle Fullscreen"
+                  (click)="toggleRemoteScreenFullscreen()">
+          </button>
+        </div>
       </div>
     </div>
   </div>
