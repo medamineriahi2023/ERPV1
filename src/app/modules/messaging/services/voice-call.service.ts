@@ -39,15 +39,15 @@ export class VoiceCallService {
   private timerInterval: any;
 
   constructor(
-    private authService: AuthService,
-    private notificationService: NotificationService,
-    private audioService: AudioService,
-    private ngZone: NgZone
+      private authService: AuthService,
+      private notificationService: NotificationService,
+      private audioService: AudioService,
+      private ngZone: NgZone
   ) {
     if (this.authService.isLoggedIn()) {
       const currentUserId = String(this.authService.getCurrentUser()?.id);
       const userCallsRef = ref(this.db, `calls/${currentUserId}`);
-      
+
       // Listen for incoming calls
       onValue(userCallsRef, async (snapshot) => {
         const callData = snapshot.val();
@@ -55,16 +55,16 @@ export class VoiceCallService {
 
           // Get caller's information
           const callerInfo = await this.getUserInfo(callData.callerId);
-          
+
           // Play call sound
           this.audioService.playCallSound();
-          
+
           // Show notification
           await this.notificationService.showCallNotification({
             id: callData.callerId,
             name: callerInfo?.name || callData.callerName || 'Unknown'
           });
-          
+
           this.callStatusSubject.next({
             status: 'incoming',
             remoteUserId: callData.callerId,
@@ -172,11 +172,11 @@ export class VoiceCallService {
     this.peerConnection = new RTCPeerConnection(configuration);
     console.log('Peer connection created for voice:', this.peerConnection);
     // Add local tracks to the connection
-      this.localStream.getTracks().forEach(track => {
-        if (this.localStream) {
-          this.peerConnection?.addTrack(track, this.localStream);
-        }
-      });
+    this.localStream.getTracks().forEach(track => {
+      if (this.localStream) {
+        this.peerConnection?.addTrack(track, this.localStream);
+      }
+    });
 
 
     // Add ICE gathering state logging
@@ -215,17 +215,14 @@ export class VoiceCallService {
       switch (this.peerConnection?.connectionState) {
         case 'connected':
           this.callStatusSubject.next({
-            callerName: this.callStatusSubject.value.callerName,
-            receiverPhotoUrl: this.callStatusSubject.value.receiverPhotoUrl,
-            receiverName: this.callStatusSubject.value.receiverName,
-            photoUrl: this.callStatusSubject.value.photoUrl,
             status: 'connected',
+            remoteUserId: this.callStatusSubject.value.remoteUserId
           });
           console.log("connected to voice")
           break;
         case 'disconnected':
           console.log("disconnected from voice")
-              break;
+          break;
         case 'failed':
           this.endCall();
           this.setShowVoiceCallDialog(false);
@@ -240,8 +237,8 @@ export class VoiceCallService {
     this.peerConnection.oniceconnectionstatechange = () => {
       if (this.peerConnection?.iceConnectionState === 'connected') {
         this.callStatusSubject.next({
-          ...this.callStatusSubject.value,
-          status: 'connected'
+          status: 'connected',
+          remoteUserId: this.callStatusSubject.value.remoteUserId
         });
       }
     };
@@ -276,7 +273,7 @@ export class VoiceCallService {
     this.remoteAudio.autoplay = true;
     this.remoteAudio.classList.add('remote-audio');
     document.body.appendChild(this.remoteAudio);
-    
+
     // Ensure audio is playing
     this.remoteAudio.play().catch(error => {
       console.error('Error playing remote audio:', error);
@@ -296,16 +293,16 @@ export class VoiceCallService {
         this.peerConnection.close();
         this.peerConnection = null;
       }
-      
+
       // Get local media stream
-      this.localStream = await navigator.mediaDevices.getUserMedia({ 
+      this.localStream = await navigator.mediaDevices.getUserMedia({
         audio: true,
         video: false
       });
 
       // Setup WebRTC peer connection
       this.peerConnection = await this.setupPeerConnection();
-      
+
       // Create offer with specific constraints
       const offerOptions = {
         offerToReceiveAudio: true,
@@ -319,7 +316,7 @@ export class VoiceCallService {
       // Set local description
       console.log('Setting local description');
       await this.peerConnection.setLocalDescription(offer);
-      
+
       // Get the exact offer that was set
       const currentOffer = this.peerConnection.localDescription;
       console.log('Current local description:', JSON.stringify(currentOffer));
@@ -331,7 +328,7 @@ export class VoiceCallService {
         type: currentOffer?.type,
         sdp: currentOffer?.sdp
       };
-      
+
       console.log('Offer being saved to database:', JSON.stringify(offerForDb));
       await this.ngZone.run(async () => {
         await set(ref(this.db, `calls/${targetUserId}`), {
@@ -344,11 +341,11 @@ export class VoiceCallService {
           timestamp: Date.now()
         });
       });
-      
+
       // Verify the saved offer
       const savedOffer = (await get(ref(this.db, `calls/${targetUserId}/offer`))).val();
       console.log('Offer saved in database:', JSON.stringify(savedOffer));
-      
+
       if (JSON.stringify(offerForDb) !== JSON.stringify(savedOffer)) {
         console.error('Offer mismatch between local and database!');
         console.log('Difference:', {
@@ -369,8 +366,7 @@ export class VoiceCallService {
             await this.peerConnection!.setRemoteDescription(remoteDesc);
 
             // Start timer when answer is received and connection is established
-            await this.handleCallConnected(this.callStatusSubject.value.remoteUserId, this.callStatusSubject.value.receiverName,
-                this.callStatusSubject.value.receiverPhotoUrl);
+            await this.handleCallConnected(targetUserId, callerName,photoUrl);
           } catch (error) {
             console.error('Error setting remote description:', error);
             this.setShowVoiceCallDialog(false);
@@ -385,7 +381,7 @@ export class VoiceCallService {
         if (candidates && this.peerConnection) {
           Object.values(candidates).forEach(async (data: any) => {
             if (!data.candidate) return;
-            
+
             try {
               if (!this.peerConnection!.remoteDescription) {
                 return;
@@ -407,7 +403,7 @@ export class VoiceCallService {
 
   async acceptCall(remoteUserId: string | undefined) {
     if (!remoteUserId) return;
-    
+
     try {
       this.audioService.stopCallSound();
       if (!await this.checkAuth()) return;
@@ -423,7 +419,7 @@ export class VoiceCallService {
       const callRef = ref(this.db, `calls/${this.authService.getCurrentUser()?.id}`);
       const snapshot = await get(callRef);
       const data = snapshot.val();
-      
+
 
       if (!data?.offer) {
         console.error('No offer found for incoming call');
@@ -432,7 +428,7 @@ export class VoiceCallService {
       }
 
       // Get local media stream first
-      this.localStream = await navigator.mediaDevices.getUserMedia({ 
+      this.localStream = await navigator.mediaDevices.getUserMedia({
         audio: true,
         video: false
       });
@@ -451,7 +447,7 @@ export class VoiceCallService {
       console.log('Created initial answer:', JSON.stringify(answer));
 
       await this.peerConnection!.setLocalDescription(answer);
-      
+
       // Get the exact answer that was set
       const currentAnswer = this.peerConnection!.localDescription;
       console.log('Current local description:', JSON.stringify(currentAnswer));
@@ -462,7 +458,7 @@ export class VoiceCallService {
         sdp: currentAnswer?.sdp
       };
       console.log('Answer being saved to database:', JSON.stringify(answerForDb));
-      
+
       await this.ngZone.run(async () => {
         await set(ref(this.db, `calls/${remoteUserId}/answer`), answerForDb);
       });
@@ -470,7 +466,7 @@ export class VoiceCallService {
       // Verify the saved answer
       const savedAnswer = (await get(ref(this.db, `calls/${remoteUserId}/answer`))).val();
       console.log('Answer saved in database:', JSON.stringify(savedAnswer));
-      
+
       if (JSON.stringify(answerForDb) !== JSON.stringify(savedAnswer)) {
         console.error('Answer mismatch between local and database!');
         console.log('Difference:', {
@@ -498,7 +494,7 @@ export class VoiceCallService {
 
       // Handle call connected state
       await this.handleCallConnected(remoteUserId, this.callStatusSubject.value.callerName || 'Unknown', this.callStatusSubject.value.photoUrl);
-      
+
     } catch (error) {
       console.error('Error accepting call:', error);
       this.audioService.stopCallSound();
@@ -555,7 +551,7 @@ export class VoiceCallService {
     // Clean up the call data in Firebase
     const currentUserId = this.authService.getCurrentUser()?.id;
     const remoteUserId = this.callStatusSubject.value.remoteUserId;
-    
+
     if (currentUserId) {
       remove(ref(this.db, `calls/${currentUserId}`));
     }
@@ -572,7 +568,7 @@ export class VoiceCallService {
   private startCallTimer() {
     // Clear any existing timer
     this.stopCallTimer();
-    
+
     this.callStartTime = Date.now();
     this.timerInterval = setInterval(() => {
       if (this.callStartTime) {
@@ -598,8 +594,8 @@ export class VoiceCallService {
     this.callStatusSubject.next({
       status: 'connected',
       remoteUserId: userId,
-      photoUrl: photoUrl,
       callerName: userName,
+      photoUrl: photoUrl
     });
     this.startCallTimer();
   }
