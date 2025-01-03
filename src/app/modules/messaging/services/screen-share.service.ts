@@ -108,11 +108,16 @@ export class ScreenShareService implements OnDestroy {
       if (event.candidate) {
         console.log('Generated ICE candidate');
         const remoteUserId = this.screenShareStateSubject.value.remoteUserId; // Use the remote user ID
+        console.log('New ICE candidate:', event.candidate);
+    console.log('Candidate type:', event.candidate.type); // Check candidate type (host, srflx, relay)
         if (remoteUserId) {
           this.ngZone.run(() => {
             set(ref(this.db, `screenShare/${remoteUserId}/candidates/${Date.now()}`), event.candidate.toJSON());
           });
         }
+      }else {
+        console.log('All ICE candidates have been generated.');
+
       }
     };
 
