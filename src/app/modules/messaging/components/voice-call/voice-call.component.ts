@@ -5,7 +5,7 @@ import { Subscription } from 'rxjs';
 import { ButtonModule } from "primeng/button";
 import { DialogModule } from "primeng/dialog";
 import { TooltipModule } from 'primeng/tooltip';
-import {AsyncPipe, NgClass, NgIf, NgSwitch} from "@angular/common";
+import { AsyncPipe, NgIf } from "@angular/common";
 
 @Component({
   selector: 'app-voice-call',
@@ -13,21 +13,20 @@ import {AsyncPipe, NgClass, NgIf, NgSwitch} from "@angular/common";
   styleUrls: ['./voice-call.component.scss'],
   standalone: true,
   imports: [
+    NgIf,
     AsyncPipe,
     DialogModule,
     ButtonModule,
-    TooltipModule,
+    TooltipModule
   ]
 })
 export class VoiceCallComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('localScreenVideo') localScreenVideo!: ElementRef<HTMLVideoElement>;
   @ViewChild('remoteScreenVideo') remoteScreenVideo!: ElementRef<HTMLVideoElement>;
-  @ViewChild('localAudio') localAudio!: ElementRef<HTMLAudioElement>;
-  @ViewChild('remoteAudio') remoteAudio!: ElementRef<HTMLAudioElement>;
 
   callStatus: CallStatus = { status: 'idle' };
-  screenShareState: ScreenShareState = { 
-    isSharing: false, 
+  screenShareState: ScreenShareState = {
+    isSharing: false,
     remoteScreenStream: null,
     localScreenStream: null,
     remoteUserId: null
@@ -42,79 +41,73 @@ export class VoiceCallComponent implements OnInit, OnDestroy, AfterViewInit {
   isLocalScreenFullscreen = false;
   isRemoteScreenFullscreen = false;
   isFullscreen = false;
-  isSpeakerOff = false;
-  private audioContext: AudioContext | null = null;
-  private gainNode: GainNode | null = null;
 
   constructor(
-    private voiceCallService: VoiceCallService,
-    private screenShareService: ScreenShareService
+      private voiceCallService: VoiceCallService,
+      private screenShareService: ScreenShareService
   ) {
     this.dialogSubscription = this.voiceCallService.showVioceCallDialog$.subscribe(
-      show => {
-        this.showCallDialog = show;
-      }
+        show => {
+          this.showCallDialog = show;
+        }
     );
   }
 
   ngOnInit() {
     this.statusSubscription = this.voiceCallService.callStatus$.subscribe(
-      status => {
-        this.callStatus = status;
-      }
+        status => {
+          this.callStatus = status;
+        }
     );
-
-    // Initialize Web Audio API
-    this.initializeAudioContext();
   }
 
   ngAfterViewInit() {
     // Set up observers for video elements
     this.screenShareSubscription = this.screenShareService.screenShareState$.subscribe(
-      state => {
-        this.screenShareState = state;
-        
-        // Handle local screen video
-        if (this.localScreenVideo?.nativeElement && state.localScreenStream) {
-          this.localScreenVideo.nativeElement.srcObject = state.localScreenStream;
-          this.localScreenVideo.nativeElement.onloadedmetadata = () => {
-            this.localScreenVideo.nativeElement.play().catch(e => console.error('Error playing local video:', e));
-          };
-        }
-        
-        // Handle remote screen video
-        if (this.remoteScreenVideo?.nativeElement && state.remoteScreenStream) {
+        state => {
+          this.screenShareState = state;
 
-          // Force video track to be enabled
-          const videoTrack = state.remoteScreenStream.getVideoTracks()[0];
-          if (videoTrack) {
-            videoTrack.enabled = true;
-
-            // Create a new stream with just the video track
-            const newStream = new MediaStream([videoTrack]);
-            this.remoteScreenVideo.nativeElement.srcObject = newStream;
-            
-            // Set up video element
-            this.remoteScreenVideo.nativeElement.onloadedmetadata = () => {
-              this.remoteScreenVideo.nativeElement.play()
-                .then(() => {
-                  // Force a repaint
-                  this.remoteScreenVideo.nativeElement.style.display = 'none';
-                  setTimeout(() => {
-                    if (this.remoteScreenVideo?.nativeElement) {
-                      this.remoteScreenVideo.nativeElement.style.display = 'block';
-                    }
-                  }, 0);
-                })
-                .catch(e => console.error('Error playing remote video:', e));
+          // Handle local screen video
+          if (this.localScreenVideo?.nativeElement && state.localScreenStream) {
+            this.localScreenVideo.nativeElement.srcObject = state.localScreenStream;
+            this.localScreenVideo.nativeElement.onloadedmetadata = () => {
+              this.localScreenVideo.nativeElement.play().catch(e => console.error('Error playing local video:', e));
             };
-          } else {
-            console.error('No video track in remote stream');
           }
-        } else if (!state.remoteScreenStream && this.remoteScreenVideo?.nativeElement) {
-          this.remoteScreenVideo.nativeElement.srcObject = null;
+
+          // Handle remote screen video
+          if (this.remoteScreenVideo?.nativeElement && state.remoteScreenStream) {
+
+            // Force video track to be enabled
+            const videoTrack = state.remoteScreenStream.getVideoTracks()[0];
+            if (videoTrack) {
+              videoTrack.enabled = true;
+
+              // Create a new stream with just the video track
+              const newStream = new MediaStream([videoTrack]);
+              this.remoteScreenVideo.nativeElement.srcObject = newStream;
+
+              // Set up video element
+              this.remoteScreenVideo.nativeElement.onloadedmetadata = () => {
+                this.remoteScreenVideo.nativeElement.play()
+                    .then(() => {
+                      // Force a repaint
+                      this.remoteScreenVideo.nativeElement.style.display = 'none';
+                      setTimeout(() => {
+                        if (this.remoteScreenVideo?.nativeElement) {
+                          this.remoteScreenVideo.nativeElement.style.display = 'block';
+                        }
+                      }, 0);
+                    })
+                    .catch(e => console.error('Error playing remote video:', e));
+              };
+            } else {
+              console.error('No video track in remote stream');
+            }
+          } else if (!state.remoteScreenStream && this.remoteScreenVideo?.nativeElement) {
+            this.remoteScreenVideo.nativeElement.srcObject = null;
+          }
         }
-      }
     );
   }
 
@@ -122,12 +115,6 @@ export class VoiceCallComponent implements OnInit, OnDestroy, AfterViewInit {
     this.statusSubscription?.unsubscribe();
     this.dialogSubscription?.unsubscribe();
     this.screenShareSubscription?.unsubscribe();
-    if (this.audioContext) {
-      this.audioContext.close();
-    }
-    if (this.gainNode) {
-      this.gainNode.disconnect();
-    }
   }
 
   async toggleMute() {
@@ -178,23 +165,23 @@ export class VoiceCallComponent implements OnInit, OnDestroy, AfterViewInit {
     try {
       const container = videoElement.parentElement as HTMLElement;
       const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-      
+
       // Store current time and playing state
       const currentTime = videoElement.currentTime;
       const wasPlaying = !videoElement.paused;
-      
+
       if (!document.fullscreenElement &&
           !(document as any).webkitFullscreenElement &&
           !(document as any).mozFullScreenElement &&
           !(document as any).msFullscreenElement) {
-        
+
         // For iOS Safari
         if (isMobile && (videoElement as any).webkitEnterFullscreen) {
           await (videoElement as any).webkitEnterFullscreen();
           this.isFullscreen = true;
           return;
         }
-        
+
         // Try standard fullscreen API
         if (container.requestFullscreen) {
           await container.requestFullscreen();
@@ -242,7 +229,7 @@ export class VoiceCallComponent implements OnInit, OnDestroy, AfterViewInit {
       }
     } catch (error) {
       console.error('Error toggling fullscreen:', error);
-      
+
       // Fallback for iOS
       try {
         if ((videoElement as any).webkitEnterFullscreen) {
@@ -261,10 +248,10 @@ export class VoiceCallComponent implements OnInit, OnDestroy, AfterViewInit {
   @HostListener('document:MSFullscreenChange')
   onFullscreenChange() {
     this.isFullscreen = !!(
-      document.fullscreenElement ||
-      (document as any).webkitFullscreenElement ||
-      (document as any).mozFullScreenElement ||
-      (document as any).msFullscreenElement
+        document.fullscreenElement ||
+        (document as any).webkitFullscreenElement ||
+        (document as any).mozFullScreenElement ||
+        (document as any).msFullscreenElement
     );
   }
 
@@ -282,44 +269,5 @@ export class VoiceCallComponent implements OnInit, OnDestroy, AfterViewInit {
     console.error('Remote video error:', event);
     const video = event.target as HTMLVideoElement;
     console.error('Video error:', video.error);
-  }
-
-  private initializeAudioContext() {
-    try {
-      this.audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
-      this.gainNode = this.audioContext.createGain();
-      this.gainNode.connect(this.audioContext.destination);
-      this.gainNode.gain.value = 1.0; // Default volume
-    } catch (error) {
-      console.error('Failed to initialize audio context:', error);
-    }
-  }
-
-  toggleSpeaker() {
-    if (!this.remoteAudio?.nativeElement) return;
-
-    this.isSpeakerOff = !this.isSpeakerOff;
-    
-    if (this.gainNode) {
-      // When speaker is off, reduce volume to minimum but not zero
-      // When speaker is on, restore to full volume
-      const targetGain = this.isSpeakerOff ? 0.01 : 1.0;
-      
-      // Smooth transition
-      this.gainNode.gain.setValueAtTime(this.gainNode.gain.value, this.audioContext!.currentTime);
-      this.gainNode.gain.exponentialRampToValueAtTime(
-        targetGain,
-        this.audioContext!.currentTime + 0.1
-      );
-    }
-
-    // Try to switch audio output if available (modern browsers)
-    if ('setSinkId' in HTMLMediaElement.prototype) {
-      const audioElement = this.remoteAudio.nativeElement;
-      (audioElement as any).setSinkId(this.isSpeakerOff ? 'default' : 'speaker')
-        .catch((error: any) => {
-          console.warn('Failed to change audio output:', error);
-        });
-    }
   }
 }

@@ -1,28 +1,14 @@
 :host ::ng-deep .voice-call-dialog {
-  &.glass-effect {
-    .p-dialog-header {
-      display: none;
-    }
-
-    .p-dialog-content {
-      padding: 0;
-      border-radius: 24px;
-      background: rgba(255, 255, 255, 0.1);
-      backdrop-filter: blur(20px) saturate(180%);
-      -webkit-backdrop-filter: blur(20px) saturate(180%);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-    }
-  }
-
-  .p-dialog-mask {
-    backdrop-filter: blur(8px);
+  .p-dialog-content {
+    padding: 0;
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
   }
 }
 
 .call-dialog {
   padding: 2rem;
-  color: #333;
 }
 
 .call-status {
@@ -30,13 +16,6 @@
   flex-direction: column;
   align-items: center;
   text-align: center;
-  gap: 2rem;
-}
-
-.avatar-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
   gap: 1.5rem;
 }
 
@@ -48,171 +27,150 @@
   align-items: center;
   justify-content: center;
 
-  &.active {
-    .wave-effect {
-      position: absolute;
-      width: 100%;
-      height: 100%;
-      border-radius: 50%;
-      background: radial-gradient(circle, rgba(33, 150, 243, 0.1) 0%, transparent 70%);
-      animation: wave 2s infinite;
-    }
-  }
-
   .ripple {
     position: absolute;
     width: 100%;
     height: 100%;
     border-radius: 50%;
-    border: 2px solid rgba(33, 150, 243, 0.5);
-    animation: ripple 2s infinite;
+    border: 2px solid var(--primary-color);
+    animation: ripple 1.5s infinite;
+  }
 
-    &.delay-1 {
-      animation-delay: 0.5s;
-    }
-
-    &.delay-2 {
-      animation-delay: 1s;
-    }
+  &.incoming .ripple {
+    border-color: var(--green-500);
   }
 
   .avatar {
     width: 80px;
     height: 80px;
-    background: linear-gradient(135deg, #2196f3 0%, #1976d2 100%);
+    background: var(--surface-ground);
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     z-index: 1;
-    box-shadow: 0 4px 20px rgba(33, 150, 243, 0.3);
-
-    i {
-      font-size: 32px;
-      color: white;
-    }
-  }
-}
-
-.caller-info {
-  .caller-name {
-    font-size: 1.5rem;
-    font-weight: 600;
-    margin: 0 0 0.5rem;
-    color: #1a1a1a;
-  }
-
-  .call-type,
-  .call-duration {
-    font-size: 1rem;
-    color: #666;
-    margin: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-
-    i {
-      color: #2196f3;
-    }
-  }
-}
-
-.call-actions {
-  display: flex;
-  gap: 2rem;
-  margin-top: 1rem;
-
-  button {
-    width: 64px;
-    height: 64px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.3s ease;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 
-    &:hover {
-      transform: scale(1.05);
-    }
-
-    &:active {
-      transform: scale(0.95);
+    .user-avatar {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 50%;
     }
 
     i {
-      font-size: 24px;
+      font-size: 2rem;
+      color: var(--text-color);
     }
+  }
 
-    &.accept-btn {
-      background: linear-gradient(135deg, #4caf50 0%, #388e3c 100%);
-      border: none;
+  &.connected {
+    .audio-waves {
+      position: absolute;
+      bottom: -20px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      align-items: center;
+      gap: 3px;
+      height: 20px;
 
-      &:hover {
-        background: linear-gradient(135deg, #388e3c 0%, #2e7d32 100%);
-      }
-    }
+      span {
+        width: 3px;
+        height: 100%;
+        background-color: var(--primary-color);
+        border-radius: 3px;
+        animation: wave 1s infinite;
 
-    &.decline-btn {
-      background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%);
-      border: none;
+        &:nth-child(2) {
+          animation-delay: 0.2s;
+          height: 60%;
+        }
 
-      &:hover {
-        background: linear-gradient(135deg, #d32f2f 0%, #c62828 100%);
+        &:nth-child(3) {
+          animation-delay: 0.4s;
+          height: 80%;
+        }
       }
     }
   }
 }
 
-.call-controls {
-  display: flex;
-  gap: 1.5rem;
-  margin-top: 1rem;
+.info {
+  h3 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--text-color);
+    margin: 0;
+  }
 
-  .control-btn {
-    width: 56px;
-    height: 56px;
-    border-radius: 50%;
-    border: none;
-    background: rgba(0, 0, 0, 0.1);
-    color: #666;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: all 0.3s ease;
+  p {
+    color: var(--text-color-secondary);
+    margin: 0.5rem 0 0;
+  }
+
+  .timer {
+    color: var(--primary-color);
+    font-size: 1.25rem;
+    font-weight: 500;
+    margin-top: 0.5rem;
+  }
+}
+
+.actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 0.5rem;
+
+  button {
+    width: 3.5rem;
+    height: 3.5rem;
+    transition: transform 0.2s;
+    color: black;
 
     &:hover {
-      background: rgba(0, 0, 0, 0.15);
+      transform: scale(1.1);
     }
 
-    &:active {
-      transform: scale(0.95);
-    }
-
-    &.active {
-      background: #2196f3;
-      color: white;
-    }
-
-    &.end-call {
-      background: #f44336;
-      color: white;
-      width: 64px;
-      height: 64px;
+    &.p-button-danger {
+      background: var(--red-500);
+      border-color: var(--red-500);
 
       &:hover {
-        background: #d32f2f;
-      }
-
-      i {
-        font-size: 24px;
+        background: var(--red-600);
+        border-color: var(--red-600);
       }
     }
 
-    i {
-      font-size: 20px;
+    &.p-button-success {
+      background: var(--green-500);
+      border-color: var(--green-500);
+
+      &:hover {
+        background: var(--green-600);
+        border-color: var(--green-600);
+      }
+    }
+
+    &.p-button-secondary {
+      background: var(--surface-d);
+      border-color: var(--surface-d);
+      color: var(--text-color);
+
+      &:hover {
+        background: var(--surface-e);
+        border-color: var(--surface-e);
+      }
+
+      &.p-button-outlined {
+        background: transparent;
+        color: var(--surface-d);
+        border-color: var(--surface-d);
+
+        &:hover {
+          background: var(--surface-100);
+        }
+      }
     }
   }
 }
@@ -223,7 +181,7 @@
   flex-direction: column;
   gap: 1rem;
   width: 100%;
-  
+
   .screen-share-container {
     position: relative;
     width: 100%;
@@ -246,7 +204,7 @@
 
     &.remote-screen {
       min-height: 400px;
-      
+
       .screen-share-video {
         position: absolute;
         top: 50%;
@@ -338,7 +296,7 @@
         height: 52px;
         bottom: 20px;
         right: 20px;
-        
+
         i {
           font-size: 24px;
         }
@@ -381,7 +339,7 @@
     background-color: transparent;
     color: var(--primary-color);
     border: 1px solid var(--primary-color);
-    
+
     &:hover {
       background: rgba(var(--primary-color-rgb), 0.04);
     }
@@ -390,84 +348,20 @@
 
 @keyframes ripple {
   0% {
-    transform: scale(0.8);
+    transform: scale(0.5);
     opacity: 1;
   }
   100% {
-    transform: scale(1.5);
+    transform: scale(1.2);
     opacity: 0;
   }
 }
 
 @keyframes wave {
-  0% {
-    transform: scale(0.8);
-    opacity: 1;
+  0%, 100% {
+    transform: scaleY(1);
   }
-  100% {
-    transform: scale(2);
-    opacity: 0;
-  }
-}
-
-// Mobile optimizations
-@media (max-width: 768px) {
-  .call-dialog {
-    padding: 1.5rem;
-  }
-
-  .avatar-wrapper {
-    width: 100px;
-    height: 100px;
-
-    .avatar {
-      width: 70px;
-      height: 70px;
-
-      i {
-        font-size: 28px;
-      }
-    }
-  }
-
-  .caller-info {
-    .caller-name {
-      font-size: 1.25rem;
-    }
-
-    .call-type,
-    .call-duration {
-      font-size: 0.9rem;
-    }
-  }
-
-  .call-actions button {
-    width: 56px;
-    height: 56px;
-
-    i {
-      font-size: 20px;
-    }
-  }
-
-  .call-controls .control-btn {
-    width: 48px;
-    height: 48px;
-
-    &.end-call {
-      width: 56px;
-      height: 56px;
-    }
-
-    i {
-      font-size: 18px;
-    }
-  }
-}
-
-// iOS specific fixes
-@supports (-webkit-touch-callout: none) {
-  .voice-call-dialog.glass-effect .p-dialog-content {
-    -webkit-backdrop-filter: blur(20px) saturate(180%);
+  50% {
+    transform: scaleY(0.3);
   }
 }
