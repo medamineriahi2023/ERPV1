@@ -33,9 +33,9 @@
         "endTime": "17:00",
         "lunchBreakDuration": 60
       },
-      "status": "OFFLINE",
+      "status": "ACTIVE",
       "contractType": "CDI",
-      "lastActive": "2025-01-02T23:35:05.313Z"
+      "lastActive": "2025-01-03T20:19:15.849Z"
     },
     {
       "username": "safwane",
@@ -64,7 +64,7 @@
       "status": "ACTIVE",
       "contractType": "CDI",
       "id": 2,
-      "lastActive": "2025-01-02T23:34:59.694Z"
+      "lastActive": "2025-01-03T20:19:22.810Z"
     },
     {
       "username": "aliriahi@gmail.com",
@@ -177,7 +177,7 @@
       "contractType": "CDI",
       "photoUrl": "https://i.imgur.com/BQfIQJN.jpeg",
       "id": 6,
-      "lastActive": "2025-01-02T22:24:11.067Z"
+      "lastActive": "2025-01-03T18:02:41.581Z"
     },
     {
       "username": "kamel@gmail.com",
@@ -856,6 +856,15 @@
       "receiverId": "1",
       "content": "ahla bik",
       "timestamp": "2025-01-01T15:21:37.521Z",
+      "read": true
+    },
+    {
+      "id": "1735861803596",
+      "senderId": "1",
+      "senderName": "medaminer",
+      "receiverId": "2",
+      "content": "https://turndemo.metered.ca/meeting/NfnzI7wEB",
+      "timestamp": "2025-01-02T23:50:03.596Z",
       "read": true
     }
   ],

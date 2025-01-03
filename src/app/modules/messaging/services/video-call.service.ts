@@ -47,12 +47,10 @@ export class VideoCallService {
       onValue(userCallsRef, async (snapshot) => {
         const callData = snapshot.val();
         if (callData?.offer && !callData.answer && !callData.rejected) {
-          console.log('Incoming video call detected:', callData);
-
           try {
             // Get caller's information
             const callerInfo = await this.getUserInfo(callData.callerId);
-            console.log('Caller info retrieved:', callerInfo);
+            // console.log('Caller info retrieved:', callerInfo);
 
             // Get user from API as backup
             let callerName = callerInfo?.name;
@@ -60,7 +58,7 @@ export class VideoCallService {
               try {
                 const user = await firstValueFrom(this.apiService.getUserById(parseInt(callData.callerId)));
                 callerName = user ? `${user.firstName} ${user.lastName}` : null;
-                console.log('Retrieved caller name from API:', callerName);
+                // console.log('Retrieved caller name from API:', callerName);
               } catch (error) {
                 console.warn('Failed to get user from API:', error);
               }
@@ -68,7 +66,7 @@ export class VideoCallService {
 
             // Set final caller name
             callerName = callerName || 'Unknown Caller';
-            console.log('Final caller name:', callerName);
+            // console.log('Final caller name:', callerName);
 
             // Play call sound
             this.audioService.playCallSound();
@@ -86,7 +84,7 @@ export class VideoCallService {
               remoteUserId: callData.callerId,
               callerName: callerName
             };
-            console.log('Setting call status:', callStatus);
+            // console.log('Setting call status:', callStatus);
             this.callStatusSubject.next(callStatus);
           } catch (error) {
             console.error('Error handling incoming call:', error);
@@ -126,7 +124,7 @@ export class VideoCallService {
             ? `${user.firstName} ${user.lastName}`
             : user.name || user.username;
 
-        console.log('Retrieved user info from API:', { userId, fullName, user });
+        // console.log('Retrieved user info from API:', { userId, fullName, user });
         return { name: fullName };
       }
 
@@ -140,7 +138,7 @@ export class VideoCallService {
             ? `${userData.firstName} ${userData.lastName}`
             : userData.name || userData.username || userId;
 
-        console.log('Retrieved user info from Firebase:', { userId, fullName, userData });
+        // console.log('Retrieved user info from Firebase:', { userId, fullName, userData });
         return { name: fullName };
       }
 
@@ -151,11 +149,11 @@ export class VideoCallService {
             ? `${currentUser.firstName} ${currentUser.lastName}`
             : currentUser.name || currentUser.username;
 
-        console.log('Retrieved user info from auth service:', { userId, fullName, currentUser });
+        // console.log('Retrieved user info from auth service:', { userId, fullName, currentUser });
         return { name: fullName };
       }
 
-      console.log('No user data found for:', userId);
+      // console.log('No user data found for:', userId);
       return null;
     } catch (error) {
       console.error('Error getting user info:', error);
@@ -220,13 +218,13 @@ export class VideoCallService {
     };
 
     this.peerConnection = new RTCPeerConnection(configuration);
-    console.log('Created new peer connection');
+    // console.log('Created new peer connection');
 
     // Add local tracks to the connection
     if (this.localStream) {
       this.localStream.getTracks().forEach(track => {
         if (this.localStream) {
-          console.log('Adding local track to peer connection:', track.kind);
+          // console.log('Adding local track to peer connection:', track.kind);
           this.peerConnection?.addTrack(track, this.localStream);
         }
       });
@@ -237,7 +235,7 @@ export class VideoCallService {
       if (event.candidate) {
         const remoteUserId = this.callStatusSubject.value.remoteUserId;
         if (remoteUserId) {
-          console.log('Sending ICE candidate to remote peer');
+          // console.log('Sending ICE candidate to remote peer');
           const candidateRef = ref(this.db, `videoCalls/${remoteUserId}/candidates/${Date.now()}`);
           set(candidateRef, {
             candidate: event.candidate.toJSON()
@@ -248,10 +246,10 @@ export class VideoCallService {
 
     // Handle connection state changes
     this.peerConnection.onconnectionstatechange = () => {
-      console.log('Connection state changed:', this.peerConnection?.connectionState);
+      // console.log('Connection state changed:', this.peerConnection?.connectionState);
       switch (this.peerConnection?.connectionState) {
         case 'connected':
-          console.log('Peers connected!');
+          // console.log('Peers connected!');
           this.callStatusSubject.next({
             status: 'connected',
             remoteUserId: this.callStatusSubject.value.remoteUserId
@@ -259,24 +257,24 @@ export class VideoCallService {
           break;
         case 'disconnected':
         case 'failed':
-          console.log('Peer connection failed or disconnected');
+          // console.log('Peer connection failed or disconnected');
           this.endCall();
           break;
         case 'closed':
-          console.log('Peer connection closed');
+          // console.log('Peer connection closed');
           break;
       }
     };
 
     // Handle receiving remote tracks
     this.peerConnection.ontrack = (event) => {
-      console.log('Received remote track:', event.track.kind);
+      // console.log('Received remote track:', event.track.kind);
       if (!this.remoteStream) {
         this.remoteStream = new MediaStream();
       }
       event.streams[0].getTracks().forEach(track => {
         if (this.remoteStream) {
-          console.log('Adding remote track to stream:', track.kind);
+          // console.log('Adding remote track to stream:', track.kind);
           this.remoteStream.addTrack(track);
         }
       });
@@ -302,7 +300,7 @@ export class VideoCallService {
     try {
       if (!await this.checkAuth()) return;
 
-      console.log('Starting video call to:', targetUserId);
+      // console.log('Starting video call to:', targetUserId);
 
       // Clean up any existing call state
       this.cleanupCallHandlers();
@@ -337,6 +335,7 @@ export class VideoCallService {
       // Create and set local description
       const offer = await this.peerConnection!.createOffer();
       await this.peerConnection!.setLocalDescription(offer);
+      console.log('Created and set local description:', offer);
 
       const currentUserId = this.authService.getCurrentUser()?.id;
 
@@ -351,6 +350,7 @@ export class VideoCallService {
       };
 
       await set(ref(this.db, `videoCalls/${targetUserId}`), callData);
+      console.log('saved database offer : ', callData)
 
       this.callStatusSubject.next({ status: 'calling', remoteUserId: targetUserId });
 
@@ -358,10 +358,12 @@ export class VideoCallService {
       this.answerHandler = `videoCalls/${currentUserId}/answer`;
       onValue(ref(this.db, this.answerHandler), async (snapshot) => {
         const answer = snapshot.val();
+        console.log('Received answer from database', answer);
         if (answer && this.peerConnection?.currentRemoteDescription === null) {
           try {
             const remoteDesc = new RTCSessionDescription(answer);
             await this.peerConnection!.setRemoteDescription(remoteDesc);
+            console.log('Set remote description: sdp', remoteDesc);
           } catch (error) {
             console.error('Error setting remote description:', error);
           }
@@ -386,7 +388,7 @@ export class VideoCallService {
             if (!data.candidate) return;
             try {
               if (!this.peerConnection!.remoteDescription) {
-                console.log('Waiting for remote description before adding ICE candidate');
+                // console.log('Waiting for remote description before adding ICE candidate');
                 return;
               }
               const candidate = new RTCIceCandidate(data.candidate);
@@ -409,7 +411,7 @@ export class VideoCallService {
       this.audioService.stopCallSound();
       if (!await this.checkAuth()) return;
 
-      console.log('Accepting video call from:', callerId);
+      // console.log('Accepting video call from:', callerId);
 
       // Clean up any existing call state
       this.cleanupCallHandlers();
@@ -487,7 +489,7 @@ export class VideoCallService {
       this.rejectedHandler = `videoCalls/${callerId}`;
       onValue(ref(this.db, this.rejectedHandler), (snapshot) => {
         if (!snapshot.exists()) {
-          console.log('Call ended by caller');
+          // console.log('Call ended by caller');
           this.endCall();
         }
       });
@@ -504,7 +506,7 @@ export class VideoCallService {
       this.audioService.stopCallSound();
       if (!await this.checkAuth()) return;
 
-      console.log('Rejecting video call from:', callerId);
+      // console.log('Rejecting video call from:', callerId);
       const currentUserId = this.authService.getCurrentUser()?.id;
       if (currentUserId) {
         await set(ref(this.db, `videoCalls/${currentUserId}/rejected`), true);
@@ -518,7 +520,7 @@ export class VideoCallService {
   }
 
   endCall() {
-    console.log('Ending video call');
+    // console.log('Ending video call');
 
     // Stop all tracks in the local stream
     if (this.localStream) {
@@ -558,6 +560,6 @@ export class VideoCallService {
 
     // Reset call status to idle
     this.callStatusSubject.next({ status: 'idle' });
-    console.log('Video call ended and cleaned up');
+    // console.log('Video call ended and cleaned up');
   }
 }

@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ElementRef, AfterViewInit, HostListener } from '@angular/core';
 import { VoiceCallService, CallStatus } from '../../services/voice-call.service';
 import { ScreenShareService, ScreenShareState } from '../../services/screen-share.service';
 import { Subscription } from 'rxjs';
@@ -40,6 +40,7 @@ export class VoiceCallComponent implements OnInit, OnDestroy, AfterViewInit {
   isVolumeOff = false;
   isLocalScreenFullscreen = false;
   isRemoteScreenFullscreen = false;
+  isFullscreen = false;
 
   constructor(
     private voiceCallService: VoiceCallService,
@@ -61,8 +62,6 @@ export class VoiceCallComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   ngAfterViewInit() {
-    document.addEventListener('fullscreenchange', this.handleFullscreenChange);
-    
     // Set up observers for video elements
     this.screenShareSubscription = this.screenShareService.screenShareState$.subscribe(
       state => {
@@ -116,21 +115,13 @@ export class VoiceCallComponent implements OnInit, OnDestroy, AfterViewInit {
     this.statusSubscription?.unsubscribe();
     this.dialogSubscription?.unsubscribe();
     this.screenShareSubscription?.unsubscribe();
-    document.removeEventListener('fullscreenchange', this.handleFullscreenChange);
   }
 
-  handleFullscreenChange = () => {
-    if (!document.fullscreenElement) {
-      this.isLocalScreenFullscreen = false;
-      this.isRemoteScreenFullscreen = false;
-    }
-  }
-
-  toggleMute() {
+  async toggleMute() {
     this.isMuted = !this.isMuted;
   }
 
-  toggleVolume() {
+  async toggleVolume() {
     this.isVolumeOff = !this.isVolumeOff;
   }
 
@@ -163,23 +154,49 @@ export class VoiceCallComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   async toggleLocalScreenFullscreen() {
-    if (!this.isLocalScreenFullscreen) {
-      await this.localScreenVideo.nativeElement.requestFullscreen();
-      this.isLocalScreenFullscreen = true;
-    } else {
-      await document.exitFullscreen();
-      this.isLocalScreenFullscreen = false;
-    }
+    await this.toggleFullscreen(this.localScreenVideo.nativeElement);
   }
 
   async toggleRemoteScreenFullscreen() {
-    if (!this.isRemoteScreenFullscreen) {
-      await this.remoteScreenVideo.nativeElement.requestFullscreen();
-      this.isRemoteScreenFullscreen = true;
-    } else {
-      await document.exitFullscreen();
-      this.isRemoteScreenFullscreen = false;
+    await this.toggleFullscreen(this.remoteScreenVideo.nativeElement);
+  }
+
+  async toggleFullscreen(videoElement: HTMLVideoElement) {
+    try {
+      const container = videoElement.parentElement as HTMLElement;
+      
+      if (!document.fullscreenElement) {
+        // Enter fullscreen
+        if (container.requestFullscreen) {
+          await container.requestFullscreen();
+        } else if ((container as any).webkitRequestFullscreen) {
+          await (container as any).webkitRequestFullscreen();
+        } else if ((container as any).msRequestFullscreen) {
+          await (container as any).msRequestFullscreen();
+        }
+        this.isFullscreen = true;
+      } else {
+        // Exit fullscreen
+        if (document.exitFullscreen) {
+          await document.exitFullscreen();
+        } else if ((document as any).webkitExitFullscreen) {
+          await (document as any).webkitExitFullscreen();
+        } else if ((document as any).msExitFullscreen) {
+          await (document as any).msExitFullscreen();
+        }
+        this.isFullscreen = false;
+      }
+    } catch (error) {
+      console.error('Error toggling fullscreen:', error);
     }
+  }
+
+  @HostListener('document:fullscreenchange')
+  @HostListener('document:webkitfullscreenchange')
+  @HostListener('document:mozfullscreenchange')
+  @HostListener('document:MSFullscreenChange')
+  onFullscreenChange() {
+    this.isFullscreen = !!document.fullscreenElement;
   }
 
   onRemoteVideoLoaded(event: Event) {

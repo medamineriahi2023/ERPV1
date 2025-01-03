@@ -21,6 +21,7 @@ export class ScreenShareService implements OnDestroy {
   private candidatesHandler: any;
   private iceCandidateQueue: RTCIceCandidate[] = [];
   private ngZone = inject(NgZone);
+  private screenShareStoppedHandler: string | null = null;
 
   private screenShareStateSubject = new BehaviorSubject<ScreenShareState>({
     isSharing: false,
@@ -69,6 +70,15 @@ export class ScreenShareService implements OnDestroy {
         });
       }
     });
+
+    // Listen for remote user stopping screen share
+    this.screenShareStoppedHandler = `screenShare/${currentUserId}/isScreenSharing`;
+    onValue(ref(this.db, this.screenShareStoppedHandler), (snapshot) => {
+      const isScreenSharing = snapshot.val();
+      if (isScreenSharing === false) {
+        this.stopScreenShare();
+      }
+    });
   }
 
   ngOnDestroy() {
@@ -79,6 +89,10 @@ export class ScreenShareService implements OnDestroy {
       const candidatesRef = ref(this.db, `screenShare/${currentUserId}/candidates`);
       off(screenShareRef, 'value', this.offerHandler);
       off(candidatesRef, 'value', this.candidatesHandler);
+    }
+    if (this.screenShareStoppedHandler) {
+      off(ref(this.db, this.screenShareStoppedHandler));
+      this.screenShareStoppedHandler = null;
     }
   }
 
@@ -135,19 +149,46 @@ export class ScreenShareService implements OnDestroy {
     return peerConnection;
   }
 
+  private async getDisplayMedia(): Promise<MediaStream | null> {
+    try {
+      // Check if running on mobile
+      const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+      
+      if (isMobile) {
+        // For mobile devices, try to use the rear camera as fallback
+        return await navigator.mediaDevices.getUserMedia({
+          video: {
+            facingMode: 'environment', // Use rear camera
+            width: { ideal: 1280 },
+            height: { ideal: 720 }
+          }
+        });
+      } else {
+        // For desktop, use screen sharing
+        return await navigator.mediaDevices.getDisplayMedia({
+          video: {
+            frameRate: { ideal: 15, max: 30 },
+            width: { ideal: 1920, max: 1920 },
+            height: { ideal: 1080, max: 1080 },
+          },
+        });
+      }
+    } catch (error) {
+      console.error('Error getting display media:', error);
+      return null;
+    }
+  }
+
   async startScreenShare(remoteUserId: string): Promise<void> {
     try {
       // Clean up existing connections first
       await this.stopScreenShare(remoteUserId);
 
       // Get screen stream
-      this.screenStream = await navigator.mediaDevices.getDisplayMedia({
-        video: {
-          frameRate: { ideal: 15, max: 30 },
-          width: { ideal: 1920, max: 1920 },
-          height: { ideal: 1080, max: 1080 },
-        },
-      });
+      this.screenStream = await this.getDisplayMedia();
+      if (!this.screenStream) {
+        throw new Error('Failed to get display media stream');
+      }
 
       const videoTrack = this.screenStream.getVideoTracks()[0];
       if (!videoTrack) {
@@ -244,6 +285,11 @@ export class ScreenShareService implements OnDestroy {
       videoTrack.onended = () => {
         this.stopScreenShare(remoteUserId);
       };
+
+      // Update Firebase to indicate screen sharing has started
+      await this.ngZone.run(() =>
+        set(ref(this.db, `screenShare/${remoteUserId}/isScreenSharing`), true)
+      );
 
     } catch (error) {
       console.error('Error starting screen share:', error);
@@ -349,25 +395,50 @@ export class ScreenShareService implements OnDestroy {
     }
   }
 
-  async stopScreenShare(remoteUserId: string): Promise<void> {
-    this.screenStream?.getTracks().forEach((track) => track.stop());
-    this.screenPeerConnection?.close();
+  async stopScreenShare(remoteUserId?: string): Promise<void> {
+    try {
+      // Use provided remoteUserId or get it from state
+      const targetUserId = remoteUserId || this.screenShareStateSubject.value.remoteUserId;
+      
+      if (!targetUserId) {
+        console.warn('No remote user ID available for stopping screen share');
+        return;
+      }
 
-    this.screenStream = null;
-    this.screenPeerConnection = null;
+      // Update Firebase to indicate screen sharing has stopped
+      await this.ngZone.run(() =>
+        set(ref(this.db, `screenShare/${targetUserId}/isScreenSharing`), false)
+      );
 
-    // Clean up Firebase
-    const currentUserId = this.authService.getCurrentUser()?.id;
-    this.ngZone.run(() => {
-      remove(ref(this.db, `screenShare/${remoteUserId}`));
-      remove(ref(this.db, `screenShare/${currentUserId}`));
-    });
+      // Stop local stream tracks
+      if (this.screenStream) {
+        this.screenStream.getTracks().forEach((track) => track.stop());
+        this.screenStream = null;
+      }
 
-    this.screenShareStateSubject.next({
-      isSharing: false,
-      remoteScreenStream: null,
-      localScreenStream: null,
-      remoteUserId: null,
-    });
+      // Clean up peer connection
+      if (this.screenPeerConnection) {
+        this.screenPeerConnection.close();
+        this.screenPeerConnection = null;
+      }
+
+      // Clean up Firebase data
+      const currentUserId = this.authService.getCurrentUser()?.id;
+      if (currentUserId) {
+        await remove(ref(this.db, `screenShare/${currentUserId}`));
+      }
+      await remove(ref(this.db, `screenShare/${targetUserId}`));
+
+      // Update state
+      this.screenShareStateSubject.next({
+        isSharing: false,
+        remoteScreenStream: null,
+        localScreenStream: null,
+        remoteUserId: null,
+      });
+
+    } catch (error) {
+      console.error('Error stopping screen share:', error);
+    }
   }
 }

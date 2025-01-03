@@ -111,35 +111,24 @@
         <div *ngIf="screenShareState.localScreenStream" class="screen-share-container local-screen">
           <video #localScreenVideo 
                  [srcObject]="screenShareState.localScreenStream" 
-                 autoplay 
-                 playsinline 
-                 muted
-                 style="width: 100%; height: 100%; object-fit: contain;">
+                 autoplay
+                 playsinline
+                 [muted]="true"
+                 class="screen-share-video"
+                 (click)="toggleFullscreen(localScreenVideo)">
           </video>
-          <span class="video-label">Your Screen</span>
-          <button pButton icon="pi pi-window-maximize"
-                  class="p-button-rounded p-button-secondary fullscreen-btn"
-                  [class.p-button-outlined]="!isLocalScreenFullscreen"
-                  pTooltip="Toggle Fullscreen"
-                  (click)="toggleLocalScreenFullscreen()">
-          </button>
         </div>
 
         <div *ngIf="screenShareState.remoteScreenStream" class="screen-share-container remote-screen">
           <video #remoteScreenVideo 
                  [srcObject]="screenShareState.remoteScreenStream" 
-                 autoplay 
+                 autoplay
                  playsinline
-                 style="width: 100%; height: 100%; object-fit: contain;"
-                 (loadedmetadata)="onRemoteVideoLoaded($event)"
-                 (error)="onRemoteVideoError($event)">
+                 class="screen-share-video"
+                 (click)="toggleFullscreen(remoteScreenVideo)">
           </video>
-          <span class="video-label">Shared Screen</span>
-          <button pButton icon="pi pi-window-maximize"
-                  class="p-button-rounded p-button-secondary fullscreen-btn"
-                  [class.p-button-outlined]="!isRemoteScreenFullscreen"
-                  pTooltip="Toggle Fullscreen"
-                  (click)="toggleRemoteScreenFullscreen()">
+          <button class="fullscreen-btn" (click)="toggleFullscreen(remoteScreenVideo)">
+            <i class="fas" [class.fa-expand]="!isFullscreen" [class.fa-compress]="isFullscreen"></i>
           </button>
         </div>
       </div>
