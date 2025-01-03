@@ -1,4 +1,4 @@
-import { Injectable, inject, NgZone } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Database, ref, set, onValue, remove, get, off } from '@angular/fire/database';
 import { Auth } from '@angular/fire/auth';
 import { BehaviorSubject, firstValueFrom } from 'rxjs';
@@ -34,24 +34,25 @@ export class VideoCallService {
   public callDuration$ = this.callDurationSubject.asObservable();
 
   constructor(
-    private authService: AuthService,
-    private notificationService: NotificationService,
-    private audioService: AudioService,
-    private apiService: ApiService,
-    private ngZone: NgZone
+      private authService: AuthService,
+      private notificationService: NotificationService,
+      private audioService: AudioService,
+      private apiService: ApiService
   ) {
     if (this.authService.isLoggedIn()) {
       const currentUserId = String(this.authService.getCurrentUser()?.id);
       const userCallsRef = ref(this.db, `videoCalls/${currentUserId}`);
-      
+
       // Listen for incoming calls
       onValue(userCallsRef, async (snapshot) => {
         const callData = snapshot.val();
         if (callData?.offer && !callData.answer && !callData.rejected) {
+          console.log('Incoming video call detected:', callData);
 
           try {
             // Get caller's information
             const callerInfo = await this.getUserInfo(callData.callerId);
+            console.log('Caller info retrieved:', callerInfo);
 
             // Get user from API as backup
             let callerName = callerInfo?.name;
@@ -59,24 +60,26 @@ export class VideoCallService {
               try {
                 const user = await firstValueFrom(this.apiService.getUserById(parseInt(callData.callerId)));
                 callerName = user ? `${user.firstName} ${user.lastName}` : null;
+                console.log('Retrieved caller name from API:', callerName);
               } catch (error) {
                 console.warn('Failed to get user from API:', error);
               }
             }
-            
+
             // Set final caller name
             callerName = callerName || 'Unknown Caller';
+            console.log('Final caller name:', callerName);
 
             // Play call sound
             this.audioService.playCallSound();
-            
+
             // Show notification
             await this.notificationService.showCallNotification({
               id: callData.callerId,
               name: callerName,
               isVideo: true
             });
-            
+
             // Update call status with caller information
             const callStatus: VideoCallStatus = {
               status: 'incoming',
@@ -119,10 +122,10 @@ export class VideoCallService {
       // First try to get user from API
       const user = await firstValueFrom(this.apiService.getUserById(parseInt(userId)));
       if (user) {
-        const fullName = user.firstName && user.lastName 
-          ? `${user.firstName} ${user.lastName}`
-          : user.name || user.username;
-        
+        const fullName = user.firstName && user.lastName
+            ? `${user.firstName} ${user.lastName}`
+            : user.name || user.username;
+
         console.log('Retrieved user info from API:', { userId, fullName, user });
         return { name: fullName };
       }
@@ -131,27 +134,27 @@ export class VideoCallService {
       const userRef = ref(this.db, `users/${userId}`);
       const snapshot = await get(userRef);
       const userData = snapshot.val();
-      
+
       if (userData) {
-        const fullName = userData.firstName && userData.lastName 
-          ? `${userData.firstName} ${userData.lastName}`
-          : userData.name || userData.username || userId;
-        
+        const fullName = userData.firstName && userData.lastName
+            ? `${userData.firstName} ${userData.lastName}`
+            : userData.name || userData.username || userId;
+
         console.log('Retrieved user info from Firebase:', { userId, fullName, userData });
         return { name: fullName };
       }
-      
+
       // Finally, try auth service
       const currentUser = this.authService.getCurrentUser();
       if (currentUser && currentUser.id.toString() === userId) {
         const fullName = currentUser.firstName && currentUser.lastName
-          ? `${currentUser.firstName} ${currentUser.lastName}`
-          : currentUser.name || currentUser.username;
-          
+            ? `${currentUser.firstName} ${currentUser.lastName}`
+            : currentUser.name || currentUser.username;
+
         console.log('Retrieved user info from auth service:', { userId, fullName, currentUser });
         return { name: fullName };
       }
-      
+
       console.log('No user data found for:', userId);
       return null;
     } catch (error) {
@@ -217,8 +220,8 @@ export class VideoCallService {
     };
 
     this.peerConnection = new RTCPeerConnection(configuration);
-    console.log("----------------------------------------");
-    console.log(this.peerConnection);
+    console.log('Created new peer connection');
+
     // Add local tracks to the connection
     if (this.localStream) {
       this.localStream.getTracks().forEach(track => {
@@ -300,7 +303,7 @@ export class VideoCallService {
       if (!await this.checkAuth()) return;
 
       console.log('Starting video call to:', targetUserId);
-      
+
       // Clean up any existing call state
       this.cleanupCallHandlers();
       if (this.peerConnection) {
@@ -330,54 +333,24 @@ export class VideoCallService {
 
       // Setup WebRTC peer connection
       await this.setupPeerConnection();
-      
-      // Create offer with specific constraints
-      const offerOptions = {
-        offerToReceiveAudio: true,
-        offerToReceiveVideo: true,
-        voiceActivityDetection: true
-      };
 
-      console.log('Creating offer with options:', offerOptions);
-      const offer = await this.peerConnection.createOffer(offerOptions);
-      console.log('Created initial offer:', JSON.stringify(offer));
+      // Create and set local description
+      const offer = await this.peerConnection!.createOffer();
+      await this.peerConnection!.setLocalDescription(offer);
 
-      // Set local description
-      console.log('Setting local description');
-      await this.peerConnection.setLocalDescription(offer);
-      
-      // Get the exact offer that was set
-      const currentOffer = this.peerConnection.localDescription;
-      console.log('Current local description:', JSON.stringify(currentOffer));
-
-      // Send the exact same offer to Firebase
       const currentUserId = this.authService.getCurrentUser()?.id;
-      console.log('Sending offer to database');
-      const offerForDb = {
-        type: currentOffer?.type,
-        sdp: currentOffer?.sdp
+
+      // Store the offer in Firebase
+      const callData = {
+        offer: {
+          type: offer.type,
+          sdp: offer.sdp
+        },
+        callerId: currentUserId,
+        timestamp: new Date().toISOString()
       };
-      
-      console.log('Offer being saved to database:', JSON.stringify(offerForDb));
-      await this.ngZone.run(async () => {
-        await set(ref(this.db, `videoCalls/${targetUserId}`), {
-          offer: offerForDb,
-          callerId: currentUserId,
-          timestamp: new Date().toISOString()
-        });
-      });
-      
-      // Verify the saved offer
-      const savedOffer = (await get(ref(this.db, `videoCalls/${targetUserId}/offer`))).val();
-      console.log('Offer saved in database:', JSON.stringify(savedOffer));
-      
-      if (JSON.stringify(offerForDb) !== JSON.stringify(savedOffer)) {
-        console.error('Offer mismatch between local and database!');
-        console.log('Difference:', {
-          local: offerForDb,
-          database: savedOffer
-        });
-      }
+
+      await set(ref(this.db, `videoCalls/${targetUserId}`), callData);
 
       this.callStatusSubject.next({ status: 'calling', remoteUserId: targetUserId });
 
@@ -437,7 +410,7 @@ export class VideoCallService {
       if (!await this.checkAuth()) return;
 
       console.log('Accepting video call from:', callerId);
-      
+
       // Clean up any existing call state
       this.cleanupCallHandlers();
       if (this.peerConnection) {
@@ -449,110 +422,81 @@ export class VideoCallService {
       const callRef = ref(this.db, `videoCalls/${this.authService.getCurrentUser()?.id}`);
       const snapshot = await get(callRef);
       const data = snapshot.val();
-      
+
       if (!data?.offer) {
         console.error('No offer found for incoming call');
         this.endCall();
         return;
       }
 
-      // Get local media stream first
-      this.localStream = await navigator.mediaDevices.getUserMedia({ 
-        audio: true,
-        video: true
+      // Get local media stream
+      this.localStream = await navigator.mediaDevices.getUserMedia({
+        video: {
+          width: { ideal: 1280 },
+          height: { ideal: 720 }
+        },
+        audio: true
+      }).catch(error => {
+        if (error.name === 'NotReadableError' || error.name === 'NotFoundError') {
+          return navigator.mediaDevices.getUserMedia({
+            video: {
+              width: { ideal: 640 },
+              height: { ideal: 480 }
+            },
+            audio: true
+          });
+        }
+        throw error;
       });
 
       // Setup peer connection
       await this.setupPeerConnection();
 
       // Set remote description (offer)
-      console.log('Setting remote description:', data.offer);
       const remoteDesc = new RTCSessionDescription(data.offer);
       await this.peerConnection!.setRemoteDescription(remoteDesc);
-      console.log('Remote description set successfully');
 
-      // Create answer with specific constraints
-      const answerOptions = {
-        offerToReceiveAudio: true,
-        offerToReceiveVideo: true,
-        voiceActivityDetection: true
-      };
-
-      console.log('Creating answer with options:', answerOptions);
-      const answer = await this.peerConnection!.createAnswer(answerOptions);
-      console.log('Created initial answer:', JSON.stringify(answer));
-
-      // Set local description
-      console.log('Setting local description');
+      // Create and set local description (answer)
+      const answer = await this.peerConnection!.createAnswer();
       await this.peerConnection!.setLocalDescription(answer);
-      
-      // Get the exact answer that was set
-      const currentAnswer = this.peerConnection!.localDescription;
-      console.log('Current local description:', JSON.stringify(currentAnswer));
 
-      if (!currentAnswer) {
-        throw new Error('Failed to get current local description');
-      }
-
-      // Store the exact answer in Firebase
-      const answerForDb = {
-        type: currentAnswer.type,
-        sdp: currentAnswer.sdp
-      };
-      console.log('Answer being saved to database:', JSON.stringify(answerForDb));
-      
-      await this.ngZone.run(async () => {
-        await set(ref(this.db, `videoCalls/${callerId}/answer`), answerForDb);
-        console.log('Answer saved to database successfully');
+      // Store the answer in Firebase
+      await set(ref(this.db, `videoCalls/${callerId}/answer`), {
+        type: answer.type,
+        sdp: answer.sdp
       });
 
-      // Verify the saved answer
-      const savedAnswer = (await get(ref(this.db, `videoCalls/${callerId}/answer`))).val();
-      console.log('Answer saved in database:', JSON.stringify(savedAnswer));
-      
-      if (JSON.stringify(answerForDb) !== JSON.stringify(savedAnswer)) {
-        console.error('Answer mismatch between local and database!');
-        console.log('Difference:', {
-          local: answerForDb,
-          database: savedAnswer
-        });
-        throw new Error('Answer synchronization failed');
-      }
+      // Listen for ICE candidates
+      this.candidatesHandler = `videoCalls/${callerId}/candidates`;
+      onValue(ref(this.db, this.candidatesHandler), async (snapshot) => {
+        const candidates = snapshot.val();
+        if (candidates && this.peerConnection) {
+          Object.values(candidates).forEach(async (data: any) => {
+            if (!data.candidate) return;
+            try {
+              const candidate = new RTCIceCandidate(data.candidate);
+              await this.peerConnection!.addIceCandidate(candidate);
+            } catch (error) {
+              console.error('Error adding ICE candidate:', error);
+            }
+          });
+        }
+      });
 
-      // Set up ICE candidate handling only after answer is confirmed
-      this.setupIceCandidateHandling(callerId);
-
-      // Update call status
-      this.callStatusSubject.next({ 
-        status: 'connected',
-        remoteUserId: callerId
+      // Listen for call end
+      this.rejectedHandler = `videoCalls/${callerId}`;
+      onValue(ref(this.db, this.rejectedHandler), (snapshot) => {
+        if (!snapshot.exists()) {
+          console.log('Call ended by caller');
+          this.endCall();
+        }
       });
 
     } catch (error) {
-      console.error('Error accepting call:', error);
+      console.error('Error accepting video call:', error);
+      this.audioService.stopCallSound();
       this.endCall();
     }
-  }
-
-  private setupIceCandidateHandling(remoteUserId: string) {
-    if (!this.peerConnection) return;
-
-    // Listen for ICE candidates
-    this.candidatesHandler = `videoCalls/${remoteUserId}/candidates`;
-    onValue(ref(this.db, this.candidatesHandler), async (snapshot) => {
-      const candidates = snapshot.val();
-      if (candidates && this.peerConnection?.remoteDescription) {
-        Object.values(candidates).forEach(async (data: any) => {
-          try {
-            const candidate = new RTCIceCandidate(data);
-            await this.peerConnection!.addIceCandidate(candidate);
-            console.log('Added ICE candidate successfully');
-          } catch (error) {
-            console.error('Error adding ICE candidate:', error);
-          }
-        });
-      }
-    });
   }
 
   async rejectCall(callerId: string) {
@@ -575,7 +519,7 @@ export class VideoCallService {
 
   endCall() {
     console.log('Ending video call');
-    
+
     // Stop all tracks in the local stream
     if (this.localStream) {
       this.localStream.getTracks().forEach(track => {
@@ -604,7 +548,7 @@ export class VideoCallService {
     // Clean up the call data in Firebase
     const currentUserId = this.authService.getCurrentUser()?.id;
     const remoteUserId = this.callStatusSubject.value.remoteUserId;
-    
+
     if (currentUserId) {
       remove(ref(this.db, `videoCalls/${currentUserId}`));
     }
