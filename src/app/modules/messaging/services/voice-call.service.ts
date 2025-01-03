@@ -39,10 +39,10 @@ export class VoiceCallService {
   private timerInterval: any;
 
   constructor(
-      private authService: AuthService,
-      private notificationService: NotificationService,
-      private audioService: AudioService,
-      private ngZone: NgZone
+    private authService: AuthService,
+    private notificationService: NotificationService,
+    private audioService: AudioService,
+    private ngZone: NgZone
   ) {
     if (this.authService.isLoggedIn()) {
       const currentUserId = String(this.authService.getCurrentUser()?.id);

@@ -43,71 +43,71 @@ export class VoiceCallComponent implements OnInit, OnDestroy, AfterViewInit {
   isFullscreen = false;
 
   constructor(
-      private voiceCallService: VoiceCallService,
-      private screenShareService: ScreenShareService
+    private voiceCallService: VoiceCallService,
+    private screenShareService: ScreenShareService
   ) {
     this.dialogSubscription = this.voiceCallService.showVioceCallDialog$.subscribe(
-        show => {
-          this.showCallDialog = show;
-        }
+      show => {
+        this.showCallDialog = show;
+      }
     );
   }
 
   ngOnInit() {
     this.statusSubscription = this.voiceCallService.callStatus$.subscribe(
-        status => {
-          this.callStatus = status;
-        }
+      status => {
+        this.callStatus = status;
+      }
     );
   }
 
   ngAfterViewInit() {
     // Set up observers for video elements
     this.screenShareSubscription = this.screenShareService.screenShareState$.subscribe(
-        state => {
-          this.screenShareState = state;
+      state => {
+        this.screenShareState = state;
 
-          // Handle local screen video
-          if (this.localScreenVideo?.nativeElement && state.localScreenStream) {
-            this.localScreenVideo.nativeElement.srcObject = state.localScreenStream;
-            this.localScreenVideo.nativeElement.onloadedmetadata = () => {
-              this.localScreenVideo.nativeElement.play().catch(e => console.error('Error playing local video:', e));
-            };
-          }
-
-          // Handle remote screen video
-          if (this.remoteScreenVideo?.nativeElement && state.remoteScreenStream) {
-
-            // Force video track to be enabled
-            const videoTrack = state.remoteScreenStream.getVideoTracks()[0];
-            if (videoTrack) {
-              videoTrack.enabled = true;
-
-              // Create a new stream with just the video track
-              const newStream = new MediaStream([videoTrack]);
-              this.remoteScreenVideo.nativeElement.srcObject = newStream;
-
-              // Set up video element
-              this.remoteScreenVideo.nativeElement.onloadedmetadata = () => {
-                this.remoteScreenVideo.nativeElement.play()
-                    .then(() => {
-                      // Force a repaint
-                      this.remoteScreenVideo.nativeElement.style.display = 'none';
-                      setTimeout(() => {
-                        if (this.remoteScreenVideo?.nativeElement) {
-                          this.remoteScreenVideo.nativeElement.style.display = 'block';
-                        }
-                      }, 0);
-                    })
-                    .catch(e => console.error('Error playing remote video:', e));
-              };
-            } else {
-              console.error('No video track in remote stream');
-            }
-          } else if (!state.remoteScreenStream && this.remoteScreenVideo?.nativeElement) {
-            this.remoteScreenVideo.nativeElement.srcObject = null;
-          }
+        // Handle local screen video
+        if (this.localScreenVideo?.nativeElement && state.localScreenStream) {
+          this.localScreenVideo.nativeElement.srcObject = state.localScreenStream;
+          this.localScreenVideo.nativeElement.onloadedmetadata = () => {
+            this.localScreenVideo.nativeElement.play().catch(e => console.error('Error playing local video:', e));
+          };
         }
+
+        // Handle remote screen video
+        if (this.remoteScreenVideo?.nativeElement && state.remoteScreenStream) {
+
+          // Force video track to be enabled
+          const videoTrack = state.remoteScreenStream.getVideoTracks()[0];
+          if (videoTrack) {
+            videoTrack.enabled = true;
+
+            // Create a new stream with just the video track
+            const newStream = new MediaStream([videoTrack]);
+            this.remoteScreenVideo.nativeElement.srcObject = newStream;
+
+            // Set up video element
+            this.remoteScreenVideo.nativeElement.onloadedmetadata = () => {
+              this.remoteScreenVideo.nativeElement.play()
+                .then(() => {
+                  // Force a repaint
+                  this.remoteScreenVideo.nativeElement.style.display = 'none';
+                  setTimeout(() => {
+                    if (this.remoteScreenVideo?.nativeElement) {
+                      this.remoteScreenVideo.nativeElement.style.display = 'block';
+                    }
+                  }, 0);
+                })
+                .catch(e => console.error('Error playing remote video:', e));
+            };
+          } else {
+            console.error('No video track in remote stream');
+          }
+        } else if (!state.remoteScreenStream && this.remoteScreenVideo?.nativeElement) {
+          this.remoteScreenVideo.nativeElement.srcObject = null;
+        }
+      }
     );
   }
 
@@ -166,10 +166,6 @@ export class VoiceCallComponent implements OnInit, OnDestroy, AfterViewInit {
       const container = videoElement.parentElement as HTMLElement;
       const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
-      // Store current time and playing state
-      const currentTime = videoElement.currentTime;
-      const wasPlaying = !videoElement.paused;
-
       if (!document.fullscreenElement &&
           !(document as any).webkitFullscreenElement &&
           !(document as any).mozFullScreenElement &&
@@ -191,19 +187,10 @@ export class VoiceCallComponent implements OnInit, OnDestroy, AfterViewInit {
           await (container as any).mozRequestFullScreen();
         } else if ((container as any).msRequestFullscreen) {
           await (container as any).msRequestFullscreen();
+        } else if ((videoElement as any).webkitEnterFullScreen) {
+          await (videoElement as any).webkitEnterFullScreen();
         }
         this.isFullscreen = true;
-
-        // Restore video state after a short delay
-        setTimeout(() => {
-          if (wasPlaying) {
-            videoElement.play().catch(console.error);
-          }
-          if (currentTime > 0) {
-            videoElement.currentTime = currentTime;
-          }
-        }, 100);
-
       } else {
         // Exit fullscreen
         if (document.exitFullscreen) {
@@ -216,16 +203,6 @@ export class VoiceCallComponent implements OnInit, OnDestroy, AfterViewInit {
           await (document as any).msExitFullscreen();
         }
         this.isFullscreen = false;
-
-        // Restore video state after a short delay
-        setTimeout(() => {
-          if (wasPlaying) {
-            videoElement.play().catch(console.error);
-          }
-          if (currentTime > 0) {
-            videoElement.currentTime = currentTime;
-          }
-        }, 100);
       }
     } catch (error) {
       console.error('Error toggling fullscreen:', error);
@@ -242,16 +219,17 @@ export class VoiceCallComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
+  // Listen for fullscreen changes
   @HostListener('document:fullscreenchange')
   @HostListener('document:webkitfullscreenchange')
   @HostListener('document:mozfullscreenchange')
   @HostListener('document:MSFullscreenChange')
   onFullscreenChange() {
     this.isFullscreen = !!(
-        document.fullscreenElement ||
-        (document as any).webkitFullscreenElement ||
-        (document as any).mozFullScreenElement ||
-        (document as any).msFullscreenElement
+      document.fullscreenElement ||
+      (document as any).webkitFullscreenElement ||
+      (document as any).mozFullScreenElement ||
+      (document as any).msFullscreenElement
     );
   }
 
