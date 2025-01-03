@@ -1,4 +1,4 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable, inject, NgZone } from '@angular/core';
 import { Database, ref, set, onValue, remove, get, off } from '@angular/fire/database';
 import { Auth } from '@angular/fire/auth';
 import { BehaviorSubject, firstValueFrom } from 'rxjs';
@@ -37,7 +37,8 @@ export class VideoCallService {
     private authService: AuthService,
     private notificationService: NotificationService,
     private audioService: AudioService,
-    private apiService: ApiService
+    private apiService: ApiService,
+    private ngZone: NgZone
   ) {
     if (this.authService.isLoggedIn()) {
       const currentUserId = String(this.authService.getCurrentUser()?.id);
@@ -330,23 +331,53 @@ export class VideoCallService {
       // Setup WebRTC peer connection
       await this.setupPeerConnection();
       
-      // Create and set local description
-      const offer = await this.peerConnection!.createOffer();
-      await this.peerConnection!.setLocalDescription(offer);
-
-      const currentUserId = this.authService.getCurrentUser()?.id;
-      
-      // Store the offer in Firebase
-      const callData = {
-        offer: {
-          type: offer.type,
-          sdp: offer.sdp
-        },
-        callerId: currentUserId,
-        timestamp: new Date().toISOString()
+      // Create offer with specific constraints
+      const offerOptions = {
+        offerToReceiveAudio: true,
+        offerToReceiveVideo: true,
+        voiceActivityDetection: true
       };
 
-      await set(ref(this.db, `videoCalls/${targetUserId}`), callData);
+      console.log('Creating offer with options:', offerOptions);
+      const offer = await this.peerConnection.createOffer(offerOptions);
+      console.log('Created initial offer:', JSON.stringify(offer));
+
+      // Set local description
+      console.log('Setting local description');
+      await this.peerConnection.setLocalDescription(offer);
+      
+      // Get the exact offer that was set
+      const currentOffer = this.peerConnection.localDescription;
+      console.log('Current local description:', JSON.stringify(currentOffer));
+
+      // Send the exact same offer to Firebase
+      const currentUserId = this.authService.getCurrentUser()?.id;
+      console.log('Sending offer to database');
+      const offerForDb = {
+        type: currentOffer?.type,
+        sdp: currentOffer?.sdp
+      };
+      
+      console.log('Offer being saved to database:', JSON.stringify(offerForDb));
+      await this.ngZone.run(async () => {
+        await set(ref(this.db, `videoCalls/${targetUserId}`), {
+          offer: offerForDb,
+          callerId: currentUserId,
+          timestamp: new Date().toISOString()
+        });
+      });
+      
+      // Verify the saved offer
+      const savedOffer = (await get(ref(this.db, `videoCalls/${targetUserId}/offer`))).val();
+      console.log('Offer saved in database:', JSON.stringify(savedOffer));
+      
+      if (JSON.stringify(offerForDb) !== JSON.stringify(savedOffer)) {
+        console.error('Offer mismatch between local and database!');
+        console.log('Difference:', {
+          local: offerForDb,
+          database: savedOffer
+        });
+      }
 
       this.callStatusSubject.next({ status: 'calling', remoteUserId: targetUserId });
 
@@ -425,74 +456,103 @@ export class VideoCallService {
         return;
       }
 
-      // Get local media stream
-      this.localStream = await navigator.mediaDevices.getUserMedia({
-        video: {
-          width: { ideal: 1280 },
-          height: { ideal: 720 }
-        },
-        audio: true
-      }).catch(error => {
-        if (error.name === 'NotReadableError' || error.name === 'NotFoundError') {
-          return navigator.mediaDevices.getUserMedia({
-            video: {
-              width: { ideal: 640 },
-              height: { ideal: 480 }
-            },
-            audio: true
-          });
-        }
-        throw error;
+      // Get local media stream first
+      this.localStream = await navigator.mediaDevices.getUserMedia({ 
+        audio: true,
+        video: true
       });
 
       // Setup peer connection
       await this.setupPeerConnection();
 
       // Set remote description (offer)
+      console.log('Setting remote description:', data.offer);
       const remoteDesc = new RTCSessionDescription(data.offer);
       await this.peerConnection!.setRemoteDescription(remoteDesc);
+      console.log('Remote description set successfully');
 
-      // Create and set local description (answer)
-      const answer = await this.peerConnection!.createAnswer();
+      // Create answer with specific constraints
+      const answerOptions = {
+        offerToReceiveAudio: true,
+        offerToReceiveVideo: true,
+        voiceActivityDetection: true
+      };
+
+      console.log('Creating answer with options:', answerOptions);
+      const answer = await this.peerConnection!.createAnswer(answerOptions);
+      console.log('Created initial answer:', JSON.stringify(answer));
+
+      // Set local description
+      console.log('Setting local description');
       await this.peerConnection!.setLocalDescription(answer);
+      
+      // Get the exact answer that was set
+      const currentAnswer = this.peerConnection!.localDescription;
+      console.log('Current local description:', JSON.stringify(currentAnswer));
 
-      // Store the answer in Firebase
-      await set(ref(this.db, `videoCalls/${callerId}/answer`), {
-        type: answer.type,
-        sdp: answer.sdp
+      if (!currentAnswer) {
+        throw new Error('Failed to get current local description');
+      }
+
+      // Store the exact answer in Firebase
+      const answerForDb = {
+        type: currentAnswer.type,
+        sdp: currentAnswer.sdp
+      };
+      console.log('Answer being saved to database:', JSON.stringify(answerForDb));
+      
+      await this.ngZone.run(async () => {
+        await set(ref(this.db, `videoCalls/${callerId}/answer`), answerForDb);
+        console.log('Answer saved to database successfully');
       });
 
-      // Listen for ICE candidates
-      this.candidatesHandler = `videoCalls/${callerId}/candidates`;
-      onValue(ref(this.db, this.candidatesHandler), async (snapshot) => {
-        const candidates = snapshot.val();
-        if (candidates && this.peerConnection) {
-          Object.values(candidates).forEach(async (data: any) => {
-            if (!data.candidate) return;
-            try {
-              const candidate = new RTCIceCandidate(data.candidate);
-              await this.peerConnection!.addIceCandidate(candidate);
-            } catch (error) {
-              console.error('Error adding ICE candidate:', error);
-            }
-          });
-        }
-      });
+      // Verify the saved answer
+      const savedAnswer = (await get(ref(this.db, `videoCalls/${callerId}/answer`))).val();
+      console.log('Answer saved in database:', JSON.stringify(savedAnswer));
+      
+      if (JSON.stringify(answerForDb) !== JSON.stringify(savedAnswer)) {
+        console.error('Answer mismatch between local and database!');
+        console.log('Difference:', {
+          local: answerForDb,
+          database: savedAnswer
+        });
+        throw new Error('Answer synchronization failed');
+      }
 
-      // Listen for call end
-      this.rejectedHandler = `videoCalls/${callerId}`;
-      onValue(ref(this.db, this.rejectedHandler), (snapshot) => {
-        if (!snapshot.exists()) {
-          console.log('Call ended by caller');
-          this.endCall();
-        }
+      // Set up ICE candidate handling only after answer is confirmed
+      this.setupIceCandidateHandling(callerId);
+
+      // Update call status
+      this.callStatusSubject.next({ 
+        status: 'connected',
+        remoteUserId: callerId
       });
 
     } catch (error) {
-      console.error('Error accepting video call:', error);
-      this.audioService.stopCallSound();
+      console.error('Error accepting call:', error);
       this.endCall();
     }
+  }
+
+  private setupIceCandidateHandling(remoteUserId: string) {
+    if (!this.peerConnection) return;
+
+    // Listen for ICE candidates
+    this.candidatesHandler = `videoCalls/${remoteUserId}/candidates`;
+    onValue(ref(this.db, this.candidatesHandler), async (snapshot) => {
+      const candidates = snapshot.val();
+      if (candidates && this.peerConnection?.remoteDescription) {
+        Object.values(candidates).forEach(async (data: any) => {
+          try {
+            const candidate = new RTCIceCandidate(data);
+            await this.peerConnection!.addIceCandidate(candidate);
+            console.log('Added ICE candidate successfully');
+          } catch (error) {
+            console.error('Error adding ICE candidate:', error);
+          }
+        });
+      }
+    });
   }
 
   async rejectCall(callerId: string) {
