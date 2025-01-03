@@ -109,15 +109,14 @@ export class ScreenShareService implements OnDestroy {
         console.log('Generated ICE candidate');
         const remoteUserId = this.screenShareStateSubject.value.remoteUserId; // Use the remote user ID
         console.log('New ICE candidate:', event.candidate);
-    console.log('Candidate type:', event.candidate.type); // Check candidate type (host, srflx, relay)
+        console.log('Candidate type:', event.candidate.type); // Check candidate type (host, srflx, relay)
         if (remoteUserId) {
           this.ngZone.run(() => {
             set(ref(this.db, `screenShare/${remoteUserId}/candidates/${Date.now()}`), event.candidate.toJSON());
           });
         }
-      }else {
+      } else {
         console.log('All ICE candidates have been generated.');
-
       }
     };
 
@@ -166,36 +165,67 @@ export class ScreenShareService implements OnDestroy {
         ...this.screenShareStateSubject.value,
         isSharing: true,
         localScreenStream: this.screenStream,
-        remoteUserId: remoteUserId, // Set the remote user ID
+        remoteUserId: remoteUserId,
       });
 
-      // Create and send offer
-      const offer = await this.screenPeerConnection.createOffer({
+      // Create offer with specific constraints
+      const offerOptions = {
         offerToReceiveVideo: true,
-      });
+        offerToReceiveAudio: false,
+        voiceActivityDetection: false
+      };
 
+      console.log('Creating offer with options:', offerOptions);
+      const offer = await this.screenPeerConnection.createOffer(offerOptions);
+
+      // Set local description and wait for it to complete
+      console.log('Setting local description:', offer);
       await this.screenPeerConnection.setLocalDescription(offer);
-      console.log('Set local description, sending offer');
 
-      // Send the offer
-      const currentUserId = this.authService.getCurrentUser()?.id;
-      await set(ref(this.db, `screenShare/${remoteUserId}`), {
-        offer: {
-          type: offer.type,
-          sdp: offer.sdp,
-        },
-        sharerId: currentUserId,
-        timestamp: Date.now(),
+      // Wait for ICE gathering to complete
+      await new Promise<void>((resolve) => {
+        if (this.screenPeerConnection!.iceGatheringState === 'complete') {
+          resolve();
+        } else {
+          this.screenPeerConnection!.onicegatheringstatechange = () => {
+            if (this.screenPeerConnection!.iceGatheringState === 'complete') {
+              resolve();
+            }
+          };
+        }
       });
+
+      // Get the final local description after ICE gathering
+      const finalOffer = this.screenPeerConnection.localDescription;
+      console.log('Final offer after ICE gathering:', finalOffer);
+
+      if (!finalOffer) {
+        throw new Error('Failed to create final offer');
+      }
+
+      // Send the final offer
+      const currentUserId = this.authService.getCurrentUser()?.id;
+      console.log('Sending final offer to database');
+      await this.ngZone.run(() =>
+        set(ref(this.db, `screenShare/${remoteUserId}`), {
+          offer: {
+            type: finalOffer.type,
+            sdp: finalOffer.sdp,
+          },
+          sharerId: currentUserId,
+          timestamp: Date.now(),
+        })
+      );
 
       // Listen for answer
       const answerRef = ref(this.db, `screenShare/${currentUserId}/answer`);
       onValue(answerRef, async (snapshot) => {
         const answer = snapshot.val();
-        if (answer && this.screenPeerConnection?.signalingState !== 'stable') {
+        if (answer && this.screenPeerConnection) {
           try {
-            console.log('Received answer, setting remote description');
+            console.log('Received answer:', answer);
             await this.screenPeerConnection.setRemoteDescription(new RTCSessionDescription(answer));
+            console.log('Remote description set successfully');
           } catch (error) {
             console.error('Error setting remote description:', error);
           }
@@ -215,7 +245,8 @@ export class ScreenShareService implements OnDestroy {
 
   async handleIncomingScreenShare(sharerId: string, offer: RTCSessionDescriptionInit): Promise<void> {
     try {
-      console.log('Handling incoming screen share');
+      console.log('Handling incoming screen share from:', sharerId);
+      console.log('Received offer:', offer);
 
       // Clean up existing connection
       if (this.screenPeerConnection) {
@@ -228,28 +259,57 @@ export class ScreenShareService implements OnDestroy {
       // Set remote description (offer)
       console.log('Setting remote description');
       await this.screenPeerConnection.setRemoteDescription(new RTCSessionDescription(offer));
+      console.log('Remote description set successfully');
 
-      // Create and send answer
-      console.log('Creating answer');
-      const answer = await this.screenPeerConnection.createAnswer({
+      // Create answer with specific constraints
+      const answerOptions = {
         offerToReceiveVideo: true,
-      });
+        offerToReceiveAudio: false,
+        voiceActivityDetection: false
+      };
 
-      console.log('Setting local description');
+      console.log('Creating answer with options:', answerOptions);
+      const answer = await this.screenPeerConnection.createAnswer(answerOptions);
+
+      // Set local description
+      console.log('Setting local description:', answer);
       await this.screenPeerConnection.setLocalDescription(answer);
 
+      // Update state
       this.screenShareStateSubject.next({
         ...this.screenShareStateSubject.value,
-        remoteUserId: sharerId, // Set the remote user ID
+        remoteUserId: sharerId,
       });
 
-      // Send answer
-      this.ngZone.run(() => {
-        set(ref(this.db, `screenShare/${sharerId}/answer`), {
-          type: answer.type,
-          sdp: answer.sdp,
-        });
+      // Wait for ICE gathering to complete
+      await new Promise<void>((resolve) => {
+        if (this.screenPeerConnection!.iceGatheringState === 'complete') {
+          resolve();
+        } else {
+          this.screenPeerConnection!.onicegatheringstatechange = () => {
+            if (this.screenPeerConnection!.iceGatheringState === 'complete') {
+              resolve();
+            }
+          };
+        }
       });
+
+      // Get the final answer after ICE gathering
+      const finalAnswer = this.screenPeerConnection.localDescription;
+      console.log('Final answer after ICE gathering:', finalAnswer);
+
+      if (!finalAnswer) {
+        throw new Error('Failed to create final answer');
+      }
+
+      // Send the final answer
+      console.log('Sending final answer to database');
+      await this.ngZone.run(() =>
+        set(ref(this.db, `screenShare/${sharerId}/answer`), {
+          type: finalAnswer.type,
+          sdp: finalAnswer.sdp,
+        })
+      );
 
       // Process any queued candidates
       while (this.iceCandidateQueue.length > 0) {
@@ -288,7 +348,7 @@ export class ScreenShareService implements OnDestroy {
       isSharing: false,
       remoteScreenStream: null,
       localScreenStream: null,
-        remoteUserId: null,
+      remoteUserId: null,
     });
   }
 }
