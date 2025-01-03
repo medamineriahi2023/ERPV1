@@ -164,15 +164,31 @@ export class VoiceCallComponent implements OnInit, OnDestroy, AfterViewInit {
   async toggleFullscreen(videoElement: HTMLVideoElement) {
     try {
       const container = videoElement.parentElement as HTMLElement;
+      const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
       
-      if (!document.fullscreenElement) {
-        // Enter fullscreen
+      if (!document.fullscreenElement &&
+          !(document as any).webkitFullscreenElement &&
+          !(document as any).mozFullScreenElement &&
+          !(document as any).msFullscreenElement) {
+        
+        // For iOS Safari
+        if (isMobile && (videoElement as any).webkitEnterFullscreen) {
+          await (videoElement as any).webkitEnterFullscreen();
+          this.isFullscreen = true;
+          return;
+        }
+        
+        // Try standard fullscreen API
         if (container.requestFullscreen) {
           await container.requestFullscreen();
         } else if ((container as any).webkitRequestFullscreen) {
           await (container as any).webkitRequestFullscreen();
+        } else if ((container as any).mozRequestFullScreen) {
+          await (container as any).mozRequestFullScreen();
         } else if ((container as any).msRequestFullscreen) {
           await (container as any).msRequestFullscreen();
+        } else if ((videoElement as any).webkitEnterFullScreen) {
+          await (videoElement as any).webkitEnterFullScreen();
         }
         this.isFullscreen = true;
       } else {
@@ -181,6 +197,8 @@ export class VoiceCallComponent implements OnInit, OnDestroy, AfterViewInit {
           await document.exitFullscreen();
         } else if ((document as any).webkitExitFullscreen) {
           await (document as any).webkitExitFullscreen();
+        } else if ((document as any).mozCancelFullScreen) {
+          await (document as any).mozCancelFullScreen();
         } else if ((document as any).msExitFullscreen) {
           await (document as any).msExitFullscreen();
         }
@@ -188,15 +206,31 @@ export class VoiceCallComponent implements OnInit, OnDestroy, AfterViewInit {
       }
     } catch (error) {
       console.error('Error toggling fullscreen:', error);
+      
+      // Fallback for iOS
+      try {
+        if ((videoElement as any).webkitEnterFullscreen) {
+          await (videoElement as any).webkitEnterFullscreen();
+          this.isFullscreen = true;
+        }
+      } catch (iosError) {
+        console.error('iOS fullscreen fallback failed:', iosError);
+      }
     }
   }
 
+  // Listen for fullscreen changes
   @HostListener('document:fullscreenchange')
   @HostListener('document:webkitfullscreenchange')
   @HostListener('document:mozfullscreenchange')
   @HostListener('document:MSFullscreenChange')
   onFullscreenChange() {
-    this.isFullscreen = !!document.fullscreenElement;
+    this.isFullscreen = !!(
+      document.fullscreenElement ||
+      (document as any).webkitFullscreenElement ||
+      (document as any).mozFullScreenElement ||
+      (document as any).msFullscreenElement
+    );
   }
 
   onRemoteVideoLoaded(event: Event) {

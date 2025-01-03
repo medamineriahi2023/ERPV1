@@ -113,10 +113,15 @@
                  [srcObject]="screenShareState.localScreenStream" 
                  autoplay
                  playsinline
+                 webkit-playsinline="true"
+                 x-webkit-airplay="allow"
                  [muted]="true"
                  class="screen-share-video"
                  (click)="toggleFullscreen(localScreenVideo)">
           </video>
+          <button class="fullscreen-btn" (click)="toggleFullscreen(localScreenVideo); $event.stopPropagation()">
+            <i class="fas" [class.fa-expand]="!isFullscreen" [class.fa-compress]="isFullscreen"></i>
+          </button>
         </div>
 
         <div *ngIf="screenShareState.remoteScreenStream" class="screen-share-container remote-screen">
@@ -124,10 +129,12 @@
                  [srcObject]="screenShareState.remoteScreenStream" 
                  autoplay
                  playsinline
+                 webkit-playsinline="true"
+                 x-webkit-airplay="allow"
                  class="screen-share-video"
                  (click)="toggleFullscreen(remoteScreenVideo)">
           </video>
-          <button class="fullscreen-btn" (click)="toggleFullscreen(remoteScreenVideo)">
+          <button class="fullscreen-btn" (click)="toggleFullscreen(remoteScreenVideo); $event.stopPropagation()">
             <i class="fas" [class.fa-expand]="!isFullscreen" [class.fa-compress]="isFullscreen"></i>
           </button>
         </div>
