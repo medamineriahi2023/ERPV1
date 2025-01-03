@@ -1,144 +1,117 @@
 <p-dialog
-  [visible]="showCallDialog"
-  [modal]="true"
-  [closable]="false"
-  [style]="{width: '360px'}"
-  styleClass="voice-call-dialog"
-  [showHeader]="false">
-  <div class="call-dialog">
-    <!-- Calling State -->
-    <div *ngIf="callStatus.status === 'calling'" class="call-status">
-      <div class="avatar-wrapper">
-        <div class="ripple"></div>
-        <div class="avatar">
-          <img *ngIf="callStatus?.receiverPhotoUrl" [src]="callStatus?.receiverPhotoUrl" 
-               [alt]="callStatus?.receiverName"
-               class="user-avatar">
-          <i *ngIf="!callStatus?.receiverPhotoUrl" class="pi pi-user"></i>
+    [visible]="callStatus.status === 'incoming'"
+    [modal]="true"
+    [closable]="false"
+    [draggable]="false"
+    styleClass="voice-call-dialog glass-effect"
+    [style]="{width: '90vw', maxWidth: '360px'}"
+    header="">
+    <div class="call-dialog">
+        <div class="call-status" [class.incoming]="callStatus.status === 'incoming'">
+            <div class="avatar-container">
+                <div class="avatar-wrapper">
+                    <div class="ripple"></div>
+                    <div class="ripple delay-1"></div>
+                    <div class="ripple delay-2"></div>
+                    <div class="avatar">
+                        <img [src]="callStatus.photoUrl" class="rounded-full">
+                    </div>
+                </div>
+                <div class="caller-info">
+                    <h3 class="caller-name">{{ callStatus.callerName }}</h3>
+                    <p class="call-type">
+                        <i class="fas fa-phone-alt"></i>
+                        <span>Incoming voice call</span>
+                    </p>
+                </div>
+            </div>
+
+            <div class="call-actions">
+                <button pButton class="p-button-rounded p-button-success accept-btn"
+                        (click)="acceptCall()">
+                    <i class="fas fa-phone-alt"></i>
+                </button>
+                <button pButton class="p-button-rounded p-button-danger decline-btn"
+                        (click)="rejectCall()">
+                    <i class="fas fa-phone-slash"></i>
+                </button>
+            </div>
         </div>
-      </div>
-      <div class="info">
-        <h3 class="caller-name">{{callStatus?.receiverName}}</h3>
-        <p class="call-status-text">Calling...</p>
-      </div>
-      <div class="action-buttons actions">
-        <button pButton icon="pi pi-times"
-                class="p-button-rounded p-button-danger hang-up-btn"
-                pTooltip="End Call"
-                (click)="endCall()">
-        </button>
-      </div>
     </div>
+</p-dialog>
 
-    <!-- Incoming Call State -->
-    <div *ngIf="callStatus.status === 'incoming'" class="call-status">
-      <div class="avatar-wrapper incoming">
-        <div class="ripple"></div>
-        <div class="avatar">
-          <img *ngIf="callStatus?.photoUrl" [src]="callStatus?.photoUrl" 
-               [alt]="callStatus?.callerName"
-               class="user-avatar">
-          <i *ngIf="!callStatus?.photoUrl" class="pi pi-user"></i>
+<p-dialog
+    [visible]="callStatus.status === 'connected'"
+    [modal]="true"
+    [closable]="false"
+    [draggable]="false"
+    styleClass="voice-call-dialog glass-effect"
+    [style]="{width: '90vw', maxWidth: '360px'}"
+    header="">
+    <div class="call-dialog active-call">
+        <div class="call-status">
+            <div class="avatar-container">
+                <div class="avatar-wrapper active">
+                    <div class="wave-effect"></div>
+                    <div class="avatar">
+                        <img [src]="callStatus.photoUrl" class="rounded-full">
+                    </div>
+                </div>
+                <div class="caller-info">
+                    <h3 class="caller-name">{{ callStatus.callerName || 'Unknown Caller' }}</h3>
+                    <p class="call-duration">{{ callDuration$ | async }}</p>
+                </div>
+            </div>
+
+            <div class="call-controls">
+                <button class="control-btn" [class.active]="!isMuted" (click)="toggleMute()">
+                    <i class="fas" [class.fa-microphone]="!isMuted" [class.fa-microphone-slash]="isMuted"></i>
+                </button>
+                <button class="control-btn end-call" (click)="endCall()">
+                    <i class="fas fa-phone-slash"></i>
+                </button>
+                <button class="control-btn" [class.active]="!isSpeakerOff" (click)="toggleSpeaker()">
+                    <i class="fas" [class.fa-volume-up]="!isSpeakerOff" [class.fa-volume-mute]="isSpeakerOff"></i>
+                </button>
+            </div>
         </div>
-      </div>
-      <div class="info">
-        <h3 class="caller-name">{{callStatus?.callerName}}</h3>
-        <p class="call-status-text">Incoming call</p>
-      </div>
-      <div class="action-buttons actions">
-        <button pButton icon="pi pi-phone"
-                class="p-button-rounded p-button-success accept-btn"
-                pTooltip="Accept Call"
-                (click)="acceptCall()">
-        </button>
-        <button pButton icon="pi pi-times"
-                class="p-button-rounded p-button-danger reject-btn"
-                pTooltip="Reject Call"
-                (click)="rejectCall()">
-        </button>
-      </div>
     </div>
+</p-dialog>
 
-    <!-- Connected State -->
-    <div *ngIf="callStatus.status === 'connected'" class="call-status">
-      <div class="avatar-wrapper connected">
-        <div class="avatar">
-          <img *ngIf="callStatus?.receiverPhotoUrl" [src]="callStatus?.receiverPhotoUrl" 
-               [alt]="callStatus?.receiverName"
-               class="user-avatar">
-          <i *ngIf="!callStatus?.receiverPhotoUrl" class="pi pi-user"></i>
-        </div>
-        <div class="audio-waves">
-          <span></span>
-          <span></span>
-          <span></span>
-        </div>
-      </div>
-      <div class="info">
-        <h3 class="caller-name">{{callStatus?.receiverName}}</h3>
-        <div class="timer">{{callDuration$ | async}}</div>
-      </div>
-      <div class="action-buttons actions">
-        <button pButton icon="pi pi-volume-up"
-                class="p-button-rounded p-button-secondary volume-btn"
-                [class.p-button-outlined]="isVolumeOff"
-                pTooltip="Volume"
-                (click)="toggleVolume()">
-        </button>
-        <button pButton icon="pi pi-microphone"
-                class="p-button-rounded p-button-secondary mic-btn"
-                [class.p-button-outlined]="isMuted"
-                pTooltip="Microphone"
-                (click)="toggleMute()">
-        </button>
-        <button pButton icon="pi pi-desktop"
-                class="p-button-rounded p-button-secondary screen-share-btn"
-                [class.p-button-outlined]="!screenShareState.isSharing"
-                pTooltip="Share Screen"
-                (click)="toggleScreenShare()"
-                [disabled]="screenShareState.remoteScreenStream"
-                >
-        </button>
-        <button pButton icon="pi pi-times"
-                class="p-button-rounded p-button-danger hang-up-btn"
-                pTooltip="End Call"
-                (click)="endCall()">
-        </button>
-      </div>
+<p-dialog
+    [visible]="callStatus.status === 'calling'"
+    [modal]="true"
+    [closable]="false"
+    [draggable]="false"
+    styleClass="voice-call-dialog glass-effect"
+    [style]="{width: '90vw', maxWidth: '360px'}"
+    header="">
+    <div class="call-dialog">
+        <div class="call-status outgoing">
+            <div class="avatar-container">
+                <div class="avatar-wrapper">
+                    <div class="ripple"></div>
+                    <div class="ripple delay-1"></div>
+                    <div class="ripple delay-2"></div>
+                    <div class="avatar">
+                        <img [src]="callStatus.receiverPhotoUrl" class="bg-cover rounded-full" >
+                    </div>
+                </div>
+                <div class="caller-info">
+                    <h3 class="caller-name">{{ callStatus.receiverName }}</h3>
+                    <p class="call-type">
+                        <i class="fas fa-phone-alt"></i>
+                        <span>Calling...</span>
+                    </p>
+                </div>
+            </div>
 
-      <!-- Screen Share Videos -->
-      <div class="screen-share-videos">
-        <div *ngIf="screenShareState.localScreenStream" class="screen-share-container local-screen">
-          <video #localScreenVideo 
-                 [srcObject]="screenShareState.localScreenStream" 
-                 autoplay
-                 playsinline
-                 webkit-playsinline="true"
-                 x-webkit-airplay="allow"
-                 [muted]="true"
-                 class="screen-share-video"
-                 (click)="toggleFullscreen(localScreenVideo)">
-          </video>
-          <button class="fullscreen-btn" (click)="toggleFullscreen(localScreenVideo); $event.stopPropagation()">
-            <i class="fas" [class.fa-expand]="!isFullscreen" [class.fa-compress]="isFullscreen"></i>
-          </button>
+            <div class="call-actions">
+                <button pButton class="p-button-rounded p-button-danger decline-btn"
+                        (click)="endCall()">
+                    <i class="fas fa-phone-slash"></i>
+                </button>
+            </div>
         </div>
-
-        <div *ngIf="screenShareState.remoteScreenStream" class="screen-share-container remote-screen">
-          <video #remoteScreenVideo 
-                 [srcObject]="screenShareState.remoteScreenStream" 
-                 autoplay
-                 playsinline
-                 webkit-playsinline="true"
-                 x-webkit-airplay="allow"
-                 class="screen-share-video"
-                 (click)="toggleFullscreen(remoteScreenVideo)">
-          </video>
-          <button class="fullscreen-btn" (click)="toggleFullscreen(remoteScreenVideo); $event.stopPropagation()">
-            <i class="fas" [class.fa-expand]="!isFullscreen" [class.fa-compress]="isFullscreen"></i>
-          </button>
-        </div>
-      </div>
     </div>
-  </div>
 </p-dialog>

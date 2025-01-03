@@ -3,523 +3,296 @@
 }
 
 .video-call-container {
-  position: fixed;
-  top: 0;
-  right: 0;
-  width: 300px;
-  height: 400px;
-  background: rgba(0, 0, 0, 0.9);
-  border-radius: 12px;
-  margin: 16px;
-  overflow: hidden;
-  opacity: 0;
-  transform: translateX(100%);
-  transition: all 0.3s ease-in-out;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-  z-index: 1000;
-
-  &.visible {
-    opacity: 1;
-    transform: translateX(0);
-  }
-
-  &.fullscreen {
-    width: 100%;
-    height: 100vh;
-    margin: 0;
-    border-radius: 0;
-
-    .video-wrapper {
-      &.local-video-wrapper {
-        width: 180px;
-        height: 240px;
-        bottom: 100px;
-        right: 24px;
-      }
-
-      &.remote-video-wrapper {
-        height: 100%;
-      }
-    }
-
-    .call-controls {
-      bottom: 32px;
-      .control-button {
-        width: 64px;
-        height: 64px;
-        
-        i {
-          font-size: 24px;
-        }
-      }
-    }
-  }
-}
-
-.video-grid {
   position: relative;
   width: 100%;
   height: 100%;
-  display: flex;
-  flex-direction: column;
+  background: #000;
+  overflow: hidden;
 }
 
-.video-wrapper {
+.remote-video-wrapper {
   position: relative;
+  width: 100%;
+  height: 100%;
   background: #1a1a1a;
-  border-radius: 8px;
-  overflow: hidden;
 
-  &.remote-video-wrapper {
-    flex: 1;
-    margin-bottom: 8px;
-  }
-
-  &.local-video-wrapper {
-    position: absolute;
-    bottom: 80px;
-    right: 16px;
-    width: 100px;
-    height: 150px;
-    border: 2px solid rgba(255, 255, 255, 0.1);
-    transition: all 0.3s ease;
-    cursor: pointer;
-    z-index: 2;
-
-    &:hover {
-      transform: scale(1.05);
-    }
-  }
-
-  video {
+  .remote-video {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    background: #000;
   }
-}
 
-.video-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: rgba(0, 0, 0, 0.6);
-
-  .avatar-placeholder {
-    width: 64px;
-    height: 64px;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.1);
+  .video-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
     display: flex;
     align-items: center;
     justify-content: center;
 
-    i {
-      font-size: 32px;
-      color: rgba(255, 255, 255, 0.8);
+    .connecting-status {
+      text-align: center;
+      color: white;
+
+      i {
+        font-size: 40px;
+        margin-bottom: 12px;
+      }
+
+      span {
+        display: block;
+        font-size: 16px;
+      }
+    }
+  }
+
+  .call-info {
+    position: absolute;
+    top: 16px;
+    left: 16px;
+    color: white;
+    z-index: 2;
+
+    .call-duration {
+      background: rgba(0, 0, 0, 0.6);
+      padding: 8px 12px;
+      border-radius: 20px;
+      font-size: 14px;
+      margin-bottom: 8px;
+
+      i {
+        margin-right: 6px;
+      }
+    }
+
+    .caller-info {
+      background: rgba(0, 0, 0, 0.6);
+      padding: 8px 12px;
+      border-radius: 20px;
+      font-size: 14px;
     }
   }
 }
 
-.call-status-overlay {
+.local-video-wrapper {
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: rgba(0, 0, 0, 0.7);
+  bottom: 100px;
+  right: 16px;
+  width: 90px;
+  height: 160px;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  transition: all 0.3s ease;
   z-index: 3;
 
-  .status-content {
-    text-align: center;
-    color: white;
+  &.dragging {
+    opacity: 0.8;
+    transform: scale(1.05);
+  }
 
-    .status-icon {
-      width: 80px;
-      height: 80px;
+  .local-video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transform: scaleX(-1); // Mirror effect
+  }
+
+  .local-video-controls {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    padding: 8px;
+    background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+
+    .control-btn {
+      width: 28px;
+      height: 28px;
       border-radius: 50%;
-      background: rgba(255, 255, 255, 0.1);
-      margin: 0 auto 16px;
+      border: none;
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
       display: flex;
       align-items: center;
       justify-content: center;
-      animation: pulse 1.5s infinite;
+      cursor: pointer;
+      transition: all 0.2s ease;
 
-      &.calling {
-        background: rgba(52, 152, 219, 0.2);
-        i { color: #3498db; }
-      }
-
-      &.incoming {
-        background: rgba(46, 204, 113, 0.2);
-        i { color: #2ecc71; }
+      &.active {
+        background: #2196f3;
       }
 
       i {
-        font-size: 32px;
+        font-size: 12px;
       }
-    }
-
-    .status-text {
-      font-size: 16px;
-      font-weight: 500;
-      margin-top: 8px;
-
-      .calling { color: #3498db; }
-      .incoming { color: #2ecc71; }
     }
   }
 }
 
-.call-controls {
+.main-controls {
   position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 100%;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
   display: flex;
-  justify-content: center;
-  gap: 16px;
-  padding: 16px;
-  background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
-  z-index: 4;
+  gap: 20px;
+  z-index: 3;
 
-  .control-button {
-    width: 48px;
-    height: 48px;
+  .control-btn {
+    width: 56px;
+    height: 56px;
     border-radius: 50%;
-    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
     transition: all 0.2s ease;
 
-    &:hover {
-      background: rgba(255, 255, 255, 0.2);
-      transform: scale(1.1);
-    }
-
     &.active {
-      background: rgba(255, 0, 0, 0.2);
-      i { color: #e74c3c; }
+      background: #2196f3;
     }
 
     &.end-call {
-      background: rgba(231, 76, 60, 0.2);
-      &:hover { background: rgba(231, 76, 60, 0.4); }
-      i { color: #e74c3c; }
+      background: #f44336;
+      width: 64px;
+      height: 64px;
+
+      i {
+        font-size: 24px;
+      }
     }
 
     i {
       font-size: 20px;
-      color: white;
     }
   }
 }
 
-.call-duration {
-  position: absolute;
-  top: 16px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: rgba(0, 0, 0, 0.5);
-  color: white;
-  padding: 4px 12px;
-  border-radius: 16px;
-  font-size: 14px;
-  font-weight: 500;
-  z-index: 4;
-}
-
-.video-container {
-  position: relative;
-  width: 100%;
-  height: 600px;
-  background-color: #000;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-}
-
-.remote-video-container {
-  position: relative;
-  width: 100%;
-  height: 100%;
-
-  video {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-
-  .call-duration {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    background-color: rgba(0, 0, 0, 0.5);
-    color: white;
-    padding: 5px 10px;
-    border-radius: 4px;
-    font-size: 14px;
-  }
-}
-
-.local-video-container {
-  position: absolute;
-  bottom: 20px;
-  right: 20px;
-  width: 200px;
-  height: 150px;
-  border: 2px solid white;
-  border-radius: 8px;
-  overflow: hidden;
-
-  video {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-}
-
-.call-actions {
-  display: flex;
-  justify-content: center;
-  gap: 1rem;
-  padding: 1rem 0;
-
-  button {
-    min-width: 120px;
-  }
-}
-
-:host ::ng-deep {
-  .modern-dialog {
-    .p-dialog-header {
-      background: rgba(0, 0, 0, 0.8);
-      color: white;
-      border: none;
-      padding: 1rem;
-    }
-
-    .p-dialog-content {
-      background: #1a1a1a;
-      color: white;
-      border: none;
-      padding: 0;
-    }
-  }
-}
-
-// Shared styles for incoming and outgoing call dialogs
+// Incoming/Outgoing call styles
 .incoming-call-content,
 .outgoing-call-content {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 2rem;
   text-align: center;
+  padding: 24px 16px;
 
   .caller-avatar,
   .callee-avatar {
-    font-size: 4rem;
-    color: #666;
-    margin-bottom: 1rem;
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 16px;
+    border-radius: 50%;
+    background: #f5f5f5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    i {
+      font-size: 40px;
+      color: #666;
+    }
   }
 
   .caller-name,
   .callee-name {
-    font-size: 1.5rem;
-    margin: 0.5rem 0;
-    color: white;
+    margin: 0 0 12px;
+    font-size: 20px;
+    color: #333;
   }
 
   .call-status {
-    color: #999;
-    margin: 1rem 0;
+    margin: 0 0 24px;
+    color: #666;
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    justify-content: center;
+    gap: 8px;
 
     i {
-      color: #4CAF50;
+      font-size: 16px;
+    }
+  }
+
+  .call-actions {
+    display: flex;
+    justify-content: center;
+    gap: 24px;
+
+    .action-btn {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+
+      i {
+        font-size: 24px;
+      }
     }
   }
 }
 
-// Video container styles
-.video-container {
-  position: relative;
-  width: 100%;
-  height: 70vh;
-  background: #000;
-  border-radius: 8px;
-  overflow: hidden;
+// Mobile optimizations
+@media (max-width: 768px) {
+  .local-video-wrapper {
+    width: 80px;
+    height: 142px;
+    bottom: 90px;
+  }
 
-  .remote-video-wrapper {
-    width: 100%;
-    height: 100%;
-    position: relative;
+  .main-controls {
+    bottom: 20px;
 
-    video {
-      width: 100%;
-      height: 100%;
-    }
+    .control-btn {
+      width: 52px;
+      height: 52px;
 
-    .video-overlay {
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      padding: 1rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      background: linear-gradient(to bottom, rgba(0,0,0,0.6) 0%, transparent 100%);
-
-      .call-duration {
-        background: rgba(0, 0, 0, 0.5);
-        padding: 0.5rem 1rem;
-        border-radius: 20px;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        
-        i {
-          color: #4CAF50;
-        }
+      &.end-call {
+        width: 60px;
+        height: 60px;
       }
 
-      .connection-status {
-        background: rgba(0, 0, 0, 0.5);
-        padding: 0.5rem 1rem;
-        border-radius: 20px;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        
-        i {
-          color: #2196F3;
-        }
+      i {
+        font-size: 18px;
       }
     }
+  }
+
+  .call-info {
+    .call-duration,
+    .caller-info {
+      font-size: 12px;
+      padding: 6px 10px;
+    }
+  }
+}
+
+// iOS Safari specific fixes
+@supports (-webkit-touch-callout: none) {
+  .video-call-container {
+    height: -webkit-fill-available;
   }
 
   .local-video-wrapper {
-    position: absolute;
-    bottom: 1rem;
-    right: 1rem;
-    width: 240px;
-    height: 180px;
-    border-radius: 8px;
-    overflow: hidden;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
-    transition: all 0.3s ease;
+    bottom: 90px; // Adjust for iOS bottom bar
+  }
 
-    &:hover {
-      transform: scale(1.05);
-      
-      .video-controls {
-        opacity: 1;
-      }
-    }
-
-    video {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-
-    .video-controls {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      padding: 0.5rem;
-      background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 100%);
-      display: flex;
-      justify-content: center;
-      gap: 0.5rem;
-      opacity: 0;
-      transition: opacity 0.3s ease;
-
-      .control-btn {
-        background: rgba(255, 255, 255, 0.2);
-        border: none;
-        color: white;
-        width: 32px;
-        height: 32px;
-        border-radius: 50%;
-        cursor: pointer;
-        transition: all 0.2s ease;
-
-        &:hover {
-          background: rgba(255, 255, 255, 0.3);
-        }
-      }
-    }
+  .main-controls {
+    bottom: 40px; // Adjust for iOS bottom bar
   }
 }
 
-// Call actions
-.call-actions {
-  display: flex;
-  justify-content: center;
-  gap: 1rem;
-  margin-top: 1.5rem;
-
-  button {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.75rem 1.5rem;
-    font-weight: 500;
-    transition: transform 0.2s ease;
-
-    &:hover {
-      transform: scale(1.05);
+:host ::ng-deep {
+  .video-call-dialog {
+    .p-dialog-content {
+      padding: 0 !important;
+      overflow: hidden !important;
     }
-
-    i {
-      font-size: 1.2rem;
-    }
-  }
-}
-
-.main-controls {
-  display: flex;
-  justify-content: center;
-  padding: 1.5rem;
-
-  .end-call-btn {
-    padding: 1rem 2rem;
-    font-size: 1.1rem;
-    
-    &:hover {
-      transform: scale(1.05);
-    }
-  }
-}
-
-@keyframes pulse {
-  0% {
-    transform: scale(1);
-    opacity: 1;
-  }
-  50% {
-    transform: scale(1.1);
-    opacity: 0.8;
-  }
-  100% {
-    transform: scale(1);
-    opacity: 1;
   }
 }

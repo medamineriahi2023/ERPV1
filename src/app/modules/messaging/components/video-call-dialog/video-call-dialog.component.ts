@@ -19,6 +19,10 @@ export class VideoCallDialogComponent implements OnInit, OnDestroy {
   videoCallStatus: VideoCallStatus = { status: 'idle' };
   showDialog = false;
   callDuration = '00:00';
+  isCameraOff = false;
+  isMicOff = false;
+  isDragging = false;
+  private localStream: MediaStream | null = null;
   private callDurationInterval: any;
   private startTime: number = 0;
   private subscriptions: Subscription[] = [];
@@ -57,20 +61,54 @@ export class VideoCallDialogComponent implements OnInit, OnDestroy {
         break;
       case 'idle':
         this.stopCallDurationTimer();
+        this.cleanupStreams();
         break;
     }
   }
 
   private setupVideoStreams() {
-    const localStream = this.videoCallService.getLocalStream();
+    this.localStream = this.videoCallService.getLocalStream();
     const remoteStream = this.videoCallService.getRemoteStream();
 
-    if (localStream && this.localVideo) {
-      this.localVideo.nativeElement.srcObject = localStream;
+    if (this.localStream && this.localVideo) {
+      this.localVideo.nativeElement.srcObject = this.localStream;
     }
 
     if (remoteStream && this.remoteVideo) {
       this.remoteVideo.nativeElement.srcObject = remoteStream;
+    }
+  }
+
+  private cleanupStreams() {
+    if (this.localStream) {
+      this.localStream.getTracks().forEach(track => track.stop());
+      this.localStream = null;
+    }
+    if (this.localVideo) {
+      this.localVideo.nativeElement.srcObject = null;
+    }
+    if (this.remoteVideo) {
+      this.remoteVideo.nativeElement.srcObject = null;
+    }
+  }
+
+  toggleCamera() {
+    if (this.localStream) {
+      const videoTrack = this.localStream.getVideoTracks()[0];
+      if (videoTrack) {
+        this.isCameraOff = !this.isCameraOff;
+        videoTrack.enabled = !this.isCameraOff;
+      }
+    }
+  }
+
+  toggleMic() {
+    if (this.localStream) {
+      const audioTrack = this.localStream.getAudioTracks()[0];
+      if (audioTrack) {
+        this.isMicOff = !this.isMicOff;
+        audioTrack.enabled = !this.isMicOff;
+      }
     }
   }
 

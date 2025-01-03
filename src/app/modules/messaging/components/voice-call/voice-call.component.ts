@@ -5,7 +5,7 @@ import { Subscription } from 'rxjs';
 import { ButtonModule } from "primeng/button";
 import { DialogModule } from "primeng/dialog";
 import { TooltipModule } from 'primeng/tooltip';
-import { AsyncPipe, NgIf } from "@angular/common";
+import {AsyncPipe, NgClass, NgIf, NgSwitch} from "@angular/common";
 
 @Component({
   selector: 'app-voice-call',
@@ -13,17 +13,18 @@ import { AsyncPipe, NgIf } from "@angular/common";
   styleUrls: ['./voice-call.component.scss'],
   standalone: true,
   imports: [
-    NgIf,
     AsyncPipe,
     DialogModule,
     ButtonModule,
-    TooltipModule
+    TooltipModule,
   ]
 })
 export class VoiceCallComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('localScreenVideo') localScreenVideo!: ElementRef<HTMLVideoElement>;
   @ViewChild('remoteScreenVideo') remoteScreenVideo!: ElementRef<HTMLVideoElement>;
-  
+  @ViewChild('localAudio') localAudio!: ElementRef<HTMLAudioElement>;
+  @ViewChild('remoteAudio') remoteAudio!: ElementRef<HTMLAudioElement>;
+
   callStatus: CallStatus = { status: 'idle' };
   screenShareState: ScreenShareState = { 
     isSharing: false, 
@@ -41,6 +42,9 @@ export class VoiceCallComponent implements OnInit, OnDestroy, AfterViewInit {
   isLocalScreenFullscreen = false;
   isRemoteScreenFullscreen = false;
   isFullscreen = false;
+  isSpeakerOff = false;
+  private audioContext: AudioContext | null = null;
+  private gainNode: GainNode | null = null;
 
   constructor(
     private voiceCallService: VoiceCallService,
@@ -59,6 +63,9 @@ export class VoiceCallComponent implements OnInit, OnDestroy, AfterViewInit {
         this.callStatus = status;
       }
     );
+
+    // Initialize Web Audio API
+    this.initializeAudioContext();
   }
 
   ngAfterViewInit() {
@@ -115,6 +122,12 @@ export class VoiceCallComponent implements OnInit, OnDestroy, AfterViewInit {
     this.statusSubscription?.unsubscribe();
     this.dialogSubscription?.unsubscribe();
     this.screenShareSubscription?.unsubscribe();
+    if (this.audioContext) {
+      this.audioContext.close();
+    }
+    if (this.gainNode) {
+      this.gainNode.disconnect();
+    }
   }
 
   async toggleMute() {
@@ -269,5 +282,44 @@ export class VoiceCallComponent implements OnInit, OnDestroy, AfterViewInit {
     console.error('Remote video error:', event);
     const video = event.target as HTMLVideoElement;
     console.error('Video error:', video.error);
+  }
+
+  private initializeAudioContext() {
+    try {
+      this.audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+      this.gainNode = this.audioContext.createGain();
+      this.gainNode.connect(this.audioContext.destination);
+      this.gainNode.gain.value = 1.0; // Default volume
+    } catch (error) {
+      console.error('Failed to initialize audio context:', error);
+    }
+  }
+
+  toggleSpeaker() {
+    if (!this.remoteAudio?.nativeElement) return;
+
+    this.isSpeakerOff = !this.isSpeakerOff;
+    
+    if (this.gainNode) {
+      // When speaker is off, reduce volume to minimum but not zero
+      // When speaker is on, restore to full volume
+      const targetGain = this.isSpeakerOff ? 0.01 : 1.0;
+      
+      // Smooth transition
+      this.gainNode.gain.setValueAtTime(this.gainNode.gain.value, this.audioContext!.currentTime);
+      this.gainNode.gain.exponentialRampToValueAtTime(
+        targetGain,
+        this.audioContext!.currentTime + 0.1
+      );
+    }
+
+    // Try to switch audio output if available (modern browsers)
+    if ('setSinkId' in HTMLMediaElement.prototype) {
+      const audioElement = this.remoteAudio.nativeElement;
+      (audioElement as any).setSinkId(this.isSpeakerOff ? 'default' : 'speaker')
+        .catch((error: any) => {
+          console.warn('Failed to change audio output:', error);
+        });
+    }
   }
 }

@@ -215,8 +215,11 @@ export class VoiceCallService {
       switch (this.peerConnection?.connectionState) {
         case 'connected':
           this.callStatusSubject.next({
+            callerName: this.callStatusSubject.value.callerName,
+            receiverPhotoUrl: this.callStatusSubject.value.receiverPhotoUrl,
+            receiverName: this.callStatusSubject.value.receiverName,
+            photoUrl: this.callStatusSubject.value.photoUrl,
             status: 'connected',
-            remoteUserId: this.callStatusSubject.value.remoteUserId
           });
           console.log("connected to voice")
           break;
@@ -237,8 +240,8 @@ export class VoiceCallService {
     this.peerConnection.oniceconnectionstatechange = () => {
       if (this.peerConnection?.iceConnectionState === 'connected') {
         this.callStatusSubject.next({
-          status: 'connected',
-          remoteUserId: this.callStatusSubject.value.remoteUserId
+          ...this.callStatusSubject.value,
+          status: 'connected'
         });
       }
     };
@@ -366,7 +369,8 @@ export class VoiceCallService {
             await this.peerConnection!.setRemoteDescription(remoteDesc);
 
             // Start timer when answer is received and connection is established
-            await this.handleCallConnected(targetUserId, callerName,photoUrl);
+            await this.handleCallConnected(this.callStatusSubject.value.remoteUserId, this.callStatusSubject.value.receiverName,
+                this.callStatusSubject.value.receiverPhotoUrl);
           } catch (error) {
             console.error('Error setting remote description:', error);
             this.setShowVoiceCallDialog(false);
@@ -594,8 +598,8 @@ export class VoiceCallService {
     this.callStatusSubject.next({
       status: 'connected',
       remoteUserId: userId,
+      photoUrl: photoUrl,
       callerName: userName,
-      photoUrl: photoUrl
     });
     this.startCallTimer();
   }

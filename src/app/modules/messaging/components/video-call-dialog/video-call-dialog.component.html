@@ -3,7 +3,7 @@
         [modal]="true"
         [closable]="false"
         styleClass="modern-dialog incoming-call-dialog"
-        [style]="{width: '360px'}"
+        [style]="{width: '90vw', maxWidth: '360px'}"
         header="Incoming Video Call">
     <div class="incoming-call-content">
         <div class="caller-avatar">
@@ -15,15 +15,13 @@
             <span>Incoming video call...</span>
         </p>
         <div class="call-actions">
-            <button pButton class="p-button-success p-button-rounded"
+            <button pButton class="p-button-success p-button-rounded action-btn"
                     (click)="acceptVideoCall()">
                 <i class="fas fa-video"></i>
-                <span>Accept</span>
             </button>
-            <button pButton class="p-button-danger p-button-rounded"
+            <button pButton class="p-button-danger p-button-rounded action-btn"
                     (click)="rejectVideoCall()">
-                <i class="fas fa-times"></i>
-                <span>Decline</span>
+                <i class="fas fa-phone-slash"></i>
             </button>
         </div>
     </div>
@@ -34,44 +32,55 @@
         [modal]="true"
         [closable]="false"
         styleClass="modern-dialog video-call-dialog"
-        [style]="{width: '90vw', maxWidth: '1200px'}"
-        header="Video Call">
-    <div class="video-container">
+        [style]="{width: '100vw', height: '100vh', maxWidth: '100vw'}"
+        [contentStyle]="{'padding': '0', 'position': 'relative', 'height': '100%'}"
+        header="">
+    <div class="video-call-container">
         <!-- Remote Video -->
         <div class="remote-video-wrapper">
-            <video #remoteVideo autoplay playsinline></video>
-            <div class="video-overlay">
+            <video #remoteVideo autoplay playsinline class="remote-video"></video>
+            <div class="video-overlay" *ngIf="videoCallStatus.status === 'calling'">
+                <div class="connecting-status">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    <span>Connecting...</span>
+                </div>
+            </div>
+            <div class="call-info">
                 <div class="call-duration">
                     <i class="fas fa-clock"></i>
                     <span>{{ callDuration }}</span>
                 </div>
-                <div class="connection-status" *ngIf="videoCallStatus.status === 'calling'">
-                    <i class="fas fa-spinner fa-spin"></i>
-                    <span>Connecting...</span>
+                <div class="caller-info">
+                    {{ videoCallStatus.callerName || videoCallStatus.remoteUserId || 'Unknown' }}
                 </div>
             </div>
         </div>
 
         <!-- Local Video -->
-        <div class="local-video-wrapper">
-            <video #localVideo autoplay playsinline muted></video>
-            <div class="video-controls">
-                <button class="control-btn" title="Toggle Camera">
-                    <i class="fas fa-video"></i>
+        <div class="local-video-wrapper" [class.dragging]="isDragging">
+            <video #localVideo autoplay playsinline muted class="local-video"></video>
+            <div class="local-video-controls">
+                <button class="control-btn" [class.active]="!isCameraOff" (click)="toggleCamera()">
+                    <i class="fas" [class.fa-video]="!isCameraOff" [class.fa-video-slash]="isCameraOff"></i>
                 </button>
-                <button class="control-btn" title="Toggle Microphone">
-                    <i class="fas fa-microphone"></i>
+                <button class="control-btn" [class.active]="!isMicOff" (click)="toggleMic()">
+                    <i class="fas" [class.fa-microphone]="!isMicOff" [class.fa-microphone-slash]="isMicOff"></i>
                 </button>
             </div>
         </div>
-    </div>
 
-    <div class="main-controls">
-        <button pButton class="p-button-rounded p-button-danger end-call-btn"
-                (click)="endCall()">
-            <i class="fas fa-phone-slash"></i>
-            <span>End Call</span>
-        </button>
+        <!-- Main Controls -->
+        <div class="main-controls">
+            <button class="control-btn" [class.active]="!isCameraOff" (click)="toggleCamera()">
+                <i class="fas" [class.fa-video]="!isCameraOff" [class.fa-video-slash]="isCameraOff"></i>
+            </button>
+            <button class="control-btn end-call" (click)="endCall()">
+                <i class="fas fa-phone-slash"></i>
+            </button>
+            <button class="control-btn" [class.active]="!isMicOff" (click)="toggleMic()">
+                <i class="fas" [class.fa-microphone]="!isMicOff" [class.fa-microphone-slash]="isMicOff"></i>
+            </button>
+        </div>
     </div>
 </p-dialog>
 
@@ -81,7 +90,7 @@
         [modal]="true"
         [closable]="false"
         styleClass="modern-dialog outgoing-call-dialog"
-        [style]="{width: '360px'}"
+        [style]="{width: '90vw', maxWidth: '360px'}"
         header="Outgoing Call">
     <div class="outgoing-call-content">
         <div class="callee-avatar">
@@ -90,13 +99,12 @@
         <h3 class="callee-name">{{ videoCallStatus.remoteUserId }}</h3>
         <p class="call-status">
             <i class="fas fa-spinner fa-spin"></i>
-            Calling...
+            <span>Calling...</span>
         </p>
         <div class="call-actions">
-            <button pButton class="p-button-danger p-button-rounded"
+            <button pButton class="p-button-danger p-button-rounded action-btn"
                     (click)="endCall()">
                 <i class="fas fa-phone-slash"></i>
-                <span>Cancel</span>
             </button>
         </div>
     </div>
