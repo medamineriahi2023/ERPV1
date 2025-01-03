@@ -144,13 +144,11 @@ export class VoiceCallComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   async toggleScreenShare() {
-    if (this.callStatus.remoteUserId) {
       if (!this.screenShareState.isSharing) {
         await this.screenShareService.startScreenShare(this.callStatus.remoteUserId);
       } else {
         await this.screenShareService.stopScreenShare(this.callStatus.remoteUserId);
       }
-    }
   }
 
   async toggleLocalScreenFullscreen() {
