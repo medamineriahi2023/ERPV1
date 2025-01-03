@@ -223,9 +223,17 @@ export class ScreenShareService implements OnDestroy {
         const answer = snapshot.val();
         if (answer && this.screenPeerConnection) {
           try {
-            console.log('Received answer:', answer);
-            await this.screenPeerConnection.setRemoteDescription(new RTCSessionDescription(answer));
-            console.log('Remote description set successfully');
+            console.log('Received answer from database:', answer);
+            const rtcAnswer = new RTCSessionDescription(answer);
+            console.log('Created RTCSessionDescription:', rtcAnswer);
+            
+            if (this.screenPeerConnection.signalingState === 'have-local-offer') {
+              await this.screenPeerConnection.setRemoteDescription(rtcAnswer);
+              console.log('Remote description set successfully:', this.screenPeerConnection.remoteDescription);
+              console.log('Current signaling state:', this.screenPeerConnection.signalingState);
+            } else {
+              console.warn('Unexpected signaling state:', this.screenPeerConnection.signalingState);
+            }
           } catch (error) {
             console.error('Error setting remote description:', error);
           }
@@ -258,8 +266,10 @@ export class ScreenShareService implements OnDestroy {
 
       // Set remote description (offer)
       console.log('Setting remote description');
-      await this.screenPeerConnection.setRemoteDescription(new RTCSessionDescription(offer));
-      console.log('Remote description set successfully');
+      const rtcOffer = new RTCSessionDescription(offer);
+      await this.screenPeerConnection.setRemoteDescription(rtcOffer);
+      console.log('Remote description set successfully:', this.screenPeerConnection.remoteDescription);
+      console.log('Current signaling state:', this.screenPeerConnection.signalingState);
 
       // Create answer with specific constraints
       const answerOptions = {
@@ -270,10 +280,12 @@ export class ScreenShareService implements OnDestroy {
 
       console.log('Creating answer with options:', answerOptions);
       const answer = await this.screenPeerConnection.createAnswer(answerOptions);
+      console.log('Created answer:', answer);
 
       // Set local description
-      console.log('Setting local description:', answer);
+      console.log('Setting local description');
       await this.screenPeerConnection.setLocalDescription(answer);
+      console.log('Local description set:', this.screenPeerConnection.localDescription);
 
       // Update state
       this.screenShareStateSubject.next({
@@ -282,16 +294,17 @@ export class ScreenShareService implements OnDestroy {
       });
 
       // Wait for ICE gathering to complete
+      console.log('Waiting for ICE gathering to complete...');
       await new Promise<void>((resolve) => {
-        if (this.screenPeerConnection!.iceGatheringState === 'complete') {
-          resolve();
-        } else {
-          this.screenPeerConnection!.onicegatheringstatechange = () => {
-            if (this.screenPeerConnection!.iceGatheringState === 'complete') {
-              resolve();
-            }
-          };
-        }
+        const checkState = () => {
+          console.log('Current ICE gathering state:', this.screenPeerConnection?.iceGatheringState);
+          if (this.screenPeerConnection?.iceGatheringState === 'complete') {
+            resolve();
+          } else {
+            setTimeout(checkState, 100); // Check every 100ms
+          }
+        };
+        checkState();
       });
 
       // Get the final answer after ICE gathering
@@ -302,16 +315,22 @@ export class ScreenShareService implements OnDestroy {
         throw new Error('Failed to create final answer');
       }
 
+      // Clone and prepare the answer for database
+      const answerForDb = {
+        type: finalAnswer.type,
+        sdp: finalAnswer.sdp
+      };
+      console.log('Preparing answer for database:', answerForDb);
+
       // Send the final answer
       console.log('Sending final answer to database');
-      await this.ngZone.run(() =>
-        set(ref(this.db, `screenShare/${sharerId}/answer`), {
-          type: finalAnswer.type,
-          sdp: finalAnswer.sdp,
-        })
-      );
+      await this.ngZone.run(async () => {
+        await set(ref(this.db, `screenShare/${sharerId}/answer`), answerForDb);
+        console.log('Answer saved to database successfully');
+      });
 
       // Process any queued candidates
+      console.log(`Processing ${this.iceCandidateQueue.length} queued ICE candidates`);
       while (this.iceCandidateQueue.length > 0) {
         const candidate = this.iceCandidateQueue.shift();
         if (candidate) {
