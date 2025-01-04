@@ -1,118 +1,334 @@
 <div class="messaging-container">
-  <div class="users-list" [class.mobile-hidden]="selectedUser && isMobileView">
-    <div class="search-box">
-      <span class="p-input-icon-left w-full">
-        <i class="pi pi-search"></i>
-        <input type="text" pInputText class="w-full" [(ngModel)]="searchTermValue" (ngModelChange)="filterUsers()" placeholder="Search users...">
-      </span>
-    </div>
-
-    <div class="users-scroll">
-      <p-scrollPanel [style]="{width: '100%', height: 'calc(100vh -180px)'}">
-        <ng-container *ngIf="filteredUsers.length > 0; else noUsersMessage">
-          <div class="user-item" *ngFor="let user of filteredUsers" 
-               [class.selected]="selectedUser?.userId === user.userId"
-               (click)="selectUser(user)">
-            <div class="user-avatar">
-              <p-avatar [image]="user.photoUrl" size="large" shape="circle" [style]="{'width': '50px', 'height': '50px'}">
-              </p-avatar>
-              <div class="status-indicator" [style.background-color]="getStatusColor(user.status)"></div>
+    <div class="users-section">
+        <!-- Rooms Section -->
+        <div class="rooms-section">
+            <div class="section-header">
+                <h3>Rooms</h3>
+                <button pButton icon="pi pi-plus" class="p-button-rounded p-button-text" (click)="showCreateRoomDialog()"></button>
             </div>
-            <div class="user-info">
-              <div class="user-name-time">
-                <span class="user-name">{{user.username}}</span>
-                <span class="last-message-time" *ngIf="getLastMessageTime(user)">
-                  {{getLastMessageTime(user) | date:'shortTime'}}
-                </span>
-              </div>
-              <div class="user-details">
-                <span class="user-role" *ngIf="user.role || user.position">
-                  {{user.role || 'Employee'}}{{user.position ? ' • ' + user.position : ''}}
-                </span>
-              </div>
-              <div class="last-message">{{getLastMessage(user)}}</div>
-            </div>
-            <p-badge *ngIf="getUnreadCount(user) > 0" [value]="getUnreadCount(user).toString()"></p-badge>
-          </div>
-        </ng-container>
-        <ng-template #noUsersMessage>
-          <div class="no-users-message">
-            <p>No users found</p>
-          </div>
-        </ng-template>
-      </p-scrollPanel>
-    </div>
-  </div>
-
-  <div class="chat-area" [class.mobile-visible]="selectedUser && isMobileView">
-    <div class="chat-header">
-      <div class="selected-user" *ngIf="selectedUser">
-        <div class="user-info-left">
-          <button *ngIf="isMobileView" pButton icon="pi pi-arrow-left" class="p-button-text back-button" (click)="backToUserList()"></button>
-          <p-avatar [image]="selectedUser.photoUrl" size="large" shape="circle"></p-avatar>
-          <div class="user-details">
-            <span class="user-name">{{selectedUser.username}}</span>
-            <span class="user-status">{{selectedUser.status}}</span>
-          </div>
-        </div>
-        <div class="user-actions" *ngIf="selectedUser">
-          <button pButton class="p-button-rounded p-button-text" icon="fas fa-phone" (click)="initiateCall()"></button>
-          <button class="video-call-btn" (click)="startVideoCall()">
-            <i class="fas fa-video"></i>
-          </button>
-          <button pButton type="button" icon="pi pi-ellipsis-v" class="p-button-rounded p-button-text"></button>
-        </div>
-      </div>
-    </div>
-
-    <div class="chat-messages">
-      <p-scrollPanel [style]="{width: '100%', height: 'calc(100vh - 260px)'}">
-        <ng-container *ngIf="selectedUser && messages.length > 0; else noChat">
-          <div class="message-date-separator" *ngFor="let date of getMessageDates()">
-            <div class="date-separator">
-              <hr>
-              <span class="date-label">{{date | date}}</span>
-              <hr>
-            </div>
-            <div class="messages-group">
-              <ng-container *ngFor="let message of getMessagesByDate(date)">
-                <div class="message" [class.sent]="message.senderId === currentUserId">
-                  <div class="message-content">
-                    <div class="message-text">{{message.content}}</div>
-                    <div class="message-meta">
-                      <span>{{message.timestamp | date:'shortTime'}}</span>
-                      <i class="pi pi-check-circle" *ngIf="message.read"></i>
+            <div class="rooms-list" *ngIf="rooms && rooms.length > 0">
+                <div *ngFor="let room of rooms"
+                     class="room-item"
+                     [class.active]="selectedRoom?.id === room.id"
+                     (click)="selectRoom(room)">
+                    <div class="room-info">
+                        <span class="room-name">{{room.name}}</span>
+                        <span class="room-subject">{{room.subject}}</span>
                     </div>
-                  </div>
+                    <div class="room-participants-preview" *ngIf="room.activeParticipants && room.activeParticipants.length > 0">
+                        <div class="participant-bubbles">
+                            <p-avatar *ngFor="let userId of room.activeParticipants.slice(0, 3)"
+                                      [image]="getUserPhotoById(userId)"
+                                      size="normal"
+                                      shape="circle"
+                                      [style]="{'margin-left': '-8px', 'border': '2px solid var(--surface-ground)'}">
+                            </p-avatar>
+                            <span class="remaining-count" *ngIf="room.activeParticipants.length > 3">
+                +{{room.activeParticipants.length - 3}}
+              </span>
+                        </div>
+                    </div>
                 </div>
-              </ng-container>
             </div>
-          </div>
-        </ng-container>
-      </p-scrollPanel>
+            <div class="no-rooms" *ngIf="!rooms || rooms.length === 0">
+                No rooms available
+            </div>
+        </div>
+
+        <!-- Users Section -->
+        <div class="users-list" [class.mobile-hidden]="selectedUser && isMobileView">
+            <div class="search-box">
+        <span class="p-input-icon-left w-full">
+          <i class="pi pi-search"></i>
+          <input type="text" pInputText class="w-full" [(ngModel)]="searchTermValue" (ngModelChange)="filterUsers()" placeholder="Search users...">
+        </span>
+            </div>
+
+            <div class="users-scroll">
+                <p-scrollPanel [style]="{width: '100%', height: 'calc(100vh -180px)'}">
+                    <ng-container *ngIf="filteredUsers.length > 0; else noUsersMessage">
+                        <div class="user-item" *ngFor="let user of filteredUsers"
+                             [class.selected]="selectedUser?.userId === user.userId"
+                             (click)="selectUser(user)">
+                            <div class="user-avatar">
+                                <p-avatar [image]="user.photoUrl" size="large" shape="circle" [style]="{'width': '50px', 'height': '50px'}">
+                                </p-avatar>
+                                <div class="status-indicator" [style.background-color]="getStatusColor(user.status)"></div>
+                            </div>
+                            <div class="user-info">
+                                <div class="user-name-time">
+                                    <span class="user-name">{{user.username}}</span>
+                                    <span class="last-message-time" *ngIf="getLastMessageTime(user)">
+                    {{getLastMessageTime(user) | date:'shortTime'}}
+                  </span>
+                                </div>
+                                <div class="user-details">
+                  <span class="user-role" *ngIf="user.role || user.position">
+                    {{user.role || 'Employee'}}{{user.position ? ' • ' + user.position : ''}}
+                  </span>
+                                    <span class="last-message" *ngIf="getLastMessage(user)">{{getLastMessage(user)}}</span>
+                                </div>
+                            </div>
+                            <div class="unread-count" *ngIf="getUnreadCount(user) > 0">
+                                {{getUnreadCount(user)}}
+                            </div>
+                        </div>
+                    </ng-container>
+                </p-scrollPanel>
+            </div>
+        </div>
     </div>
 
-    <div class="message-input" *ngIf="selectedUser">
-      <button pButton type="button" icon="pi pi-paperclip" class="p-button-rounded p-button-text"></button>
-      <div class="input-container">
-        <input type="text" pInputText [(ngModel)]="currentMessage" 
-               placeholder="Écrivez votre message..."
-               (keyup.enter)="sendMessage()"
-               class="p-inputtext-lg">
-        <div class="input-actions">
-          <button pButton type="button" icon="pi pi-smile" class="p-button-rounded p-button-text"></button>
-          <button pButton type="button" icon="pi pi-image" class="p-button-rounded p-button-text"></button>
+    <!-- Chat Area -->
+    <ng-container *ngIf="selectedUser || selectedRoom">
+        <!-- User Chat -->
+        <div class="chat-area" *ngIf="selectedUser" [class.mobile-visible]="selectedUser && isMobileView">
+            <div class="chat-header">
+                <div class="selected-user">
+                    <div class="user-info-left">
+                        <button *ngIf="isMobileView" pButton icon="pi pi-arrow-left" class="p-button-text back-button" (click)="backToUserList()"></button>
+                        <p-avatar [image]="selectedUser.photoUrl" size="large" shape="circle"></p-avatar>
+                        <div class="user-details">
+                            <span class="user-name">{{selectedUser.username}}</span>
+                            <span class="user-status">{{selectedUser.status}}</span>
+                        </div>
+                    </div>
+                    <div class="user-actions">
+                        <button pButton class="p-button-rounded p-button-text" icon="fas fa-phone" (click)="initiateCall()"></button>
+                        <button class="video-call-btn" (click)="startVideoCall()">
+                            <i class="fas fa-video"></i>
+                        </button>
+                        <button pButton type="button" icon="pi pi-ellipsis-v" class="p-button-rounded p-button-text"></button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="chat-messages">
+                <div #scrollPanel class="messages-container" style="height: calc(100vh - 180px); overflow-y: auto;">
+                    <ng-container *ngIf="selectedUser && messages.length > 0; else noChat">
+                        <div class="messages-list">
+                            <div *ngFor="let message of messages" 
+                                 class="message-item"
+                                 [ngClass]="{'sent': message.senderId === currentUserId, 'received': message.senderId !== currentUserId}">
+                                
+                                <!-- Avatar for sent messages (current user) -->
+                                <div class="message-avatar" *ngIf="message.senderId === currentUserId">
+                                    <p-avatar [image]="getUserPhotoById(message.senderId) || 'assets/default-avatar.png'"
+                                             size="normal"
+                                             shape="circle">
+                                    </p-avatar>
+                                </div>
+                                
+                                <div class="message-content">
+                                    <!-- Sender name for received messages -->
+                                    <div class="sender-name" *ngIf="message.senderId !== currentUserId">
+                                        {{message.senderName}}
+                                    </div>
+                                    
+                                    <!-- Message bubble -->
+                                    <div class="message-bubble">
+                                        {{message.content}}
+                                    </div>
+                                    
+                                    <!-- Message time and status -->
+                                    <div class="message-time">
+                                        {{message.timestamp | date:'shortTime'}}
+                                        <span class="message-status" 
+                                              *ngIf="message.senderId === currentUserId"
+                                              [ngClass]="{'read': message.read}">
+                                            <i class="pi" [ngClass]="{'pi-check': !message.read, 'pi-check-circle': message.read}"></i>
+                                        </span>
+                                    </div>
+                                </div>
+                                
+                                <!-- Avatar for received messages (remote user) -->
+                                <div class="message-avatar" *ngIf="message.senderId !== currentUserId">
+                                    <p-avatar [image]="getUserPhotoById(message.senderId) || 'assets/default-avatar.png'"
+                                             size="normal"
+                                             shape="circle">
+                                    </p-avatar>
+                                </div>
+                            </div>
+                        </div>
+                    </ng-container>
+                </div>
+            </div>
+
+            <div class="message-input">
+                <button pButton type="button" icon="pi pi-paperclip" class="p-button-rounded p-button-text"></button>
+                <div class="input-container">
+                    <input type="text" pInputText [(ngModel)]="currentMessage"
+                           (keyup.enter)="sendMessageUser()"
+                           placeholder="Type a message...">
+                </div>
+                <button pButton type="button" icon="pi pi-send"
+                        class="p-button-rounded p-button-text"
+                        (click)="sendMessageUser()">
+                </button>
+            </div>
         </div>
-      </div>
-      <button pButton type="button" icon="pi pi-send" 
-              (click)="sendMessage()"
-              [disabled]="!currentMessage.trim()"
-              class="p-button-rounded p-button-primary">
-      </button>
-    </div>
-  </div>
+
+        <!-- Room Chat -->
+        <div class="chat-area" *ngIf="selectedRoom" [class.mobile-visible]="selectedRoom && isMobileView">
+            <div class="chat-header">
+                <div class="room-info">
+                    <button *ngIf="isMobileView" pButton icon="pi pi-arrow-left" class="p-button-text back-button" (click)="backToUserList()"></button>
+                    <h3>{{selectedRoom.name}}</h3>
+                    <p class="room-subject">{{selectedRoom.subject}}</p>
+                </div>
+                <div class="room-actions">
+                    <button pButton icon="pi pi-sign-out"
+                            label="Leave Room"
+                            class="p-button-danger p-button-text"
+                            (click)="leaveRoom()">
+                    </button>
+                </div>
+            </div>
+
+            <div class="active-participants" *ngIf="selectedRoom?.activeParticipants && selectedRoom.activeParticipants.length > 0">
+                <p-chip *ngFor="let userId of selectedRoom.activeParticipants"
+                        [image]="getUserPhotoById(userId)"
+                        [label]="getUserNameById(Number(userId))"
+                        [removable]="false">
+                </p-chip>
+            </div>
+
+            <!-- Room Messages -->
+            <div class="chat-messages">
+                <div #scrollPanel class="messages-container" style="height: calc(100vh - 230px); overflow-y: auto;">
+                    <ng-container *ngIf="selectedRoom && roomMessages.length > 0; else noMessages">
+                        <div class="message-date-separator" *ngFor="let date of getRoomMessageDates()">
+                            <div class="date-separator">
+                                <hr>
+                                <span>{{date | date:'mediumDate'}}</span>
+                                <hr>
+                            </div>
+                            <div class="message-group">
+                                <div *ngFor="let message of getRoomMessagesByDate(date)"
+                                     [ngClass]="{
+                           'message': true,
+                           'sent': message.senderId === currentUserId && !message.isSystemMessage,
+                           'received': message.senderId !== currentUserId && !message.isSystemMessage,
+                           'system-message': message.isSystemMessage
+                         }">
+                                    <!-- User Avatar for received messages -->
+                                    <div class="message-avatar" *ngIf="!message.isSystemMessage && message.senderId !== currentUserId">
+                                        <p-avatar [image]="message.senderPhotoUrl || 'assets/default-avatar.png'"
+                                                  size="normal"
+                                                  shape="circle">
+                                        </p-avatar>
+                                    </div>
+
+                                    <div class="message-content" [ngClass]="{'system-content': message.isSystemMessage}">
+                                        <!-- Sender name for received messages -->
+                                        <div class="sender-name" *ngIf="!message.isSystemMessage && message.senderId !== currentUserId">
+                                            {{message.senderName}}
+                                        </div>
+
+                                        <div class="message-text" [ngSwitch]="message.type">
+                                            <ng-container *ngSwitchCase="'text'">
+                                                {{message.content}}
+                                            </ng-container>
+                                            <ng-container *ngSwitchCase="'system'">
+                                                <i class="pi pi-info-circle"></i> {{message.content}}
+                                            </ng-container>
+                                            <ng-container *ngSwitchCase="'file'">
+                                                <a [href]="message.fileUrl" target="_blank">
+                                                    <i class="pi pi-file"></i> {{message.content}}
+                                                </a>
+                                            </ng-container>
+                                            <ng-container *ngSwitchCase="'image'">
+                                                <img [src]="message.fileUrl" alt="Image" class="message-image">
+                                            </ng-container>
+                                        </div>
+                                    </div>
+
+                                    <!-- User Avatar for sent messages -->
+                                    <div class="message-avatar" *ngIf="!message.isSystemMessage && message.senderId === currentUserId">
+                                        <p-avatar [image]="message.senderPhotoUrl || 'assets/default-avatar.png'"
+                                                  size="normal"
+                                                  shape="circle">
+                                        </p-avatar>
+                                    </div>
+
+                                    <div class="message-time" [ngClass]="{'system-time': message.isSystemMessage}">
+                                        {{message.timestamp | date:'shortTime'}}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </ng-container>
+                    <ng-template #noMessages>
+                        <div class="no-messages" *ngIf="selectedRoom">
+                            <i class="pi pi-comments"></i>
+                            <p>No messages yet. Start the conversation!</p>
+                        </div>
+                    </ng-template>
+                </div>
+            </div>
+            <div class="message-input">
+                <button pButton type="button" icon="pi pi-paperclip" class="p-button-rounded p-button-text"></button>
+                <div class="input-container">
+                    <input type="text" pInputText [(ngModel)]="currentMessage"
+                           (keyup.enter)="sendRoomMessage()"
+                           placeholder="Type a message...">
+                    <button pButton type="button" icon="pi pi-send"
+                            class="p-button-rounded p-button-text"
+                            (click)="sendRoomMessage()">
+                    </button>
+                </div>
+            </div>
+        </div>
+    </ng-container>
+
+    <ng-template #noChat>
+        <div class="no-chat">
+            <p>No messages yet</p>
+        </div>
+    </ng-template>
+
+    <ng-template #noUsersMessage>
+        <div class="no-users">
+            <p>No users found</p>
+        </div>
+    </ng-template>
 </div>
 
+<!-- Create Room Dialog -->
+<p-dialog header="Create New Room"
+          [(visible)]="showRoomDialog"
+          [modal]="true"
+          [style]="{width: '450px'}"
+          [draggable]="false"
+          [resizable]="false">
+    <form [formGroup]="roomForm" (ngSubmit)="createRoom()">
+        <div class="field">
+            <label for="name">Room Name</label>
+            <input id="name" type="text" pInputText formControlName="name" class="w-full">
+        </div>
+        <div class="field">
+            <label for="subject">Subject</label>
+            <input id="subject" type="text" pInputText formControlName="subject" class="w-full">
+        </div>
+        <div class="field">
+            <label for="allowedUsers">Allowed Users</label>
+            <p-multiSelect id="allowedUsers"
+                           [options]="filteredUsers"
+                           formControlName="allowedUsers"
+                           optionLabel="username"
+                           optionValue="userId"
+                           [filter]="true"
+                           filterBy="username"
+                           placeholder="Select users"
+                           class="w-full">
+            </p-multiSelect>
+        </div>
+        <div class="dialog-footer">
+            <button pButton type="button" label="Cancel" class="p-button-text" (click)="showRoomDialog = false"></button>
+            <button pButton type="submit" label="Create" [disabled]="!roomForm.valid"></button>
+        </div>
+    </form>
+</p-dialog>
 
 <ng-template #noUsersMessage>
   <div class="no-users-message">

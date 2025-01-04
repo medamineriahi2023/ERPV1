@@ -33,9 +33,9 @@
         "endTime": "17:00",
         "lunchBreakDuration": 60
       },
-      "status": "OFFLINE",
+      "status": "ACTIVE",
       "contractType": "CDI",
-      "lastActive": "2025-01-03T23:58:33.684Z"
+      "lastActive": "2025-01-04T18:15:06.455Z"
     },
     {
       "username": "safwane",
@@ -61,10 +61,10 @@
         "lunchBreakDuration": 60
       },
       "rating": 4,
-      "status": "OFFLINE",
+      "status": "ACTIVE",
       "contractType": "CDI",
       "id": 2,
-      "lastActive": "2025-01-04T00:00:09.316Z"
+      "lastActive": "2025-01-04T18:15:05.548Z"
     },
     {
       "username": "aliriahi@gmail.com",
@@ -173,11 +173,11 @@
         "lunchBreakDuration": 60
       },
       "rating": 5,
-      "status": "OFFLINE",
+      "status": "ACTIVE",
       "contractType": "CDI",
       "photoUrl": "https://i.imgur.com/BQfIQJN.jpeg",
       "id": 6,
-      "lastActive": "2025-01-03T18:02:41.581Z"
+      "lastActive": "2025-01-04T17:33:09.760Z"
     },
     {
       "username": "kamel@gmail.com",
@@ -355,12 +355,1049 @@
       "status": "late",
       "isLate": true,
       "id": 10
+    },
+    {
+      "userId": 1,
+      "date": "2025-01-04T00:26:17.010Z",
+      "checkIn": "01:26:17",
+      "checkOut": "01:35:53",
+      "lunchStart": null,
+      "lunchEnd": null,
+      "totalHours": 0.15,
+      "status": "present",
+      "isLate": false,
+      "id": 11
     }
   ],
   "leave-requests": [],
   "projects": [],
   "weekly-reports": [],
   "notifications": [],
+  "rooms": [
+    {
+      "name": "Daly meetings",
+      "subject": "Daly meetings",
+      "allowedUsers": [
+        "1",
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8",
+        2
+      ],
+      "activeParticipants": [],
+      "createdBy": 2,
+      "createdAt": "2025-01-04T16:47:36.286Z",
+      "activeScreenShare": null,
+      "id": 1
+    }
+  ],
+  "room-messages": [
+    {
+      "roomId": 1,
+      "senderId": 1,
+      "content": "Mohamed Amine Riahi has joined the room",
+      "timestamp": "2025-01-04T16:54:12.420Z",
+      "type": "system",
+      "isSystemMessage": true,
+      "id": 1
+    },
+    {
+      "roomId": 1,
+      "senderId": 2,
+      "content": "Safwen Soker has joined the room",
+      "timestamp": "2025-01-04T16:54:19.346Z",
+      "type": "system",
+      "isSystemMessage": true,
+      "id": 2
+    },
+    {
+      "roomId": 1,
+      "senderId": 1,
+      "content": "Mohamed Amine Riahi has joined the room",
+      "timestamp": "2025-01-04T16:54:31.478Z",
+      "type": "system",
+      "isSystemMessage": true,
+      "id": 3
+    },
+    {
+      "roomId": 1,
+      "senderId": 2,
+      "content": "Safwen Soker has joined the room",
+      "timestamp": "2025-01-04T16:54:35.992Z",
+      "type": "system",
+      "isSystemMessage": true,
+      "id": 4
+    },
+    {
+      "roomId": 1,
+      "senderId": 2,
+      "content": "Safwen Soker has joined the room",
+      "timestamp": "2025-01-04T16:54:36.876Z",
+      "type": "system",
+      "isSystemMessage": true,
+      "id": 5
+    },
+    {
+      "roomId": 1,
+      "senderId": 2,
+      "content": "Safwen Soker has joined the room",
+      "timestamp": "2025-01-04T16:54:37.352Z",
+      "type": "system",
+      "isSystemMessage": true,
+      "id": 6
+    },
+    {
+      "roomId": 1,
+      "senderId": 2,
+      "content": "Safwen Soker has joined the room",
+      "timestamp": "2025-01-04T16:54:38.147Z",
+      "type": "system",
+      "isSystemMessage": true,
+      "id": 7
+    },
+    {
+      "roomId": 1,
+      "senderId": 2,
+      "content": "Safwen Soker has joined the room",
+      "timestamp": "2025-01-04T16:54:38.340Z",
+      "type": "system",
+      "isSystemMessage": true,
+      "id": 8
+    },
+    {
+      "roomId": 1,
+      "senderId": 2,
+      "content": "Safwen Soker has joined the room",
+      "timestamp": "2025-01-04T16:54:38.541Z",
+      "type": "system",
+      "isSystemMessage": true,
+      "id": 9
+    },
+    {
+      "roomId": 1,
+      "senderId": 1,
+      "content": "Mohamed Amine Riahi has joined the room",
+      "timestamp": "2025-01-04T16:54:42.233Z",
+      "type": "system",
+      "isSystemMessage": true,
+      "id": 10
+    },
+    {
+      "roomId": 1,
+      "senderId": 2,
+      "content": "Safwen Soker has joined the room",
+      "timestamp": "2025-01-04T16:54:52.073Z",
+      "type": "system",
+      "isSystemMessage": true,
+      "id": 11
+    },
+    {
+      "roomId": 1,
+      "senderId": 2,
+      "content": "Safwen Soker has joined the room",
+      "timestamp": "2025-01-04T16:56:16.563Z",
+      "type": "system",
+      "isSystemMessage": true,
+      "id": 12
+    },
+    {
+      "roomId": 1,
+      "senderId": 1,
+      "content": "Mohamed Amine Riahi has joined the room",
+      "timestamp": "2025-01-04T16:56:26.736Z",
+      "type": "system",
+      "isSystemMessage": true,
+      "id": 13
+    },
+    {
+      "roomId": 1,
+      "senderId": 2,
+      "content": "Safwen Soker has joined the room",
+      "timestamp": "2025-01-04T16:56:29.743Z",
+      "type": "system",
+      "isSystemMessage": true,
+      "id": 14
+    },
+    {
+      "roomId": 1,
+      "senderId": 1,
+      "content": "Mohamed Amine Riahi has joined the room",
+      "timestamp": "2025-01-04T16:56:31.218Z",
+      "type": "system",
+      "isSystemMessage": true,
+      "id": 15
+    },
+    {
+      "roomId": 1,
+      "senderId": 1,
+      "content": "Mohamed Amine Riahi has joined the room",
+      "timestamp": "2025-01-04T16:56:32.933Z",
+      "type": "system",
+      "isSystemMessage": true,
+      "id": 16
+    },
+    {
+      "roomId": 1,
+      "senderId": 1,
+      "content": "sdfgdsfg",
+      "timestamp": "2025-01-04T16:56:37.187Z",
+      "type": "text",
+      "isSystemMessage": false,
+      "id": 17
+    },
+    {
+      "roomId": 1,
+      "senderId": 2,
+      "content": "Safwen Soker has joined the room",
+      "timestamp": "2025-01-04T16:56:42.178Z",
+      "type": "system",
+      "isSystemMessage": true,
+      "id": 18
+    },
+    {
+      "roomId": 1,
+      "senderId": 2,
+      "content": "Safwen Soker has joined the room",
+      "timestamp": "2025-01-04T16:56:44.844Z",
+      "type": "system",
+      "isSystemMessage": true,
+      "id": 19
+    },
+    {
+      "roomId": 1,
+      "senderId": 2,
+      "content": "Safwen Soker has joined the room",
+      "timestamp": "2025-01-04T16:56:46.435Z",
+      "type": "system",
+      "isSystemMessage": true,
+      "id": 20
+    },
+    {
+      "roomId": 1,
+      "senderId": 2,
+      "content": "Safwen Soker has joined the room",
+      "timestamp": "2025-01-04T16:56:51.049Z",
+      "type": "system",
+      "isSystemMessage": true,
+      "id": 21
+    },
+    {
+      "roomId": 1,
+      "senderId": 1,
+      "content": "Mohamed Amine Riahi has joined the room",
+      "timestamp": "2025-01-04T16:56:53.357Z",
+      "type": "system",
+      "isSystemMessage": true,
+      "id": 22
+    },
+    {
+      "roomId": 1,
+      "senderId": 1,
+      "content": "Mohamed Amine Riahi has joined the room",
+      "timestamp": "2025-01-04T17:01:13.396Z",
+      "type": "system",
+      "isSystemMessage": true,
+      "id": 23
+    },
+    {
+      "roomId": 1,
+      "senderId": 2,
+      "content": "Safwen Soker has joined the room",
+      "timestamp": "2025-01-04T17:01:18.231Z",
+      "type": "system",
+      "isSystemMessage": true,
+      "id": 24
+    },
+    {
+      "roomId": 1,
+      "senderId": 1,
+      "senderName": "Mohamed Amine Riahi",
+      "senderPhotoUrl": "https://i.imgur.com/lGQPUvK.jpeg",
+      "content": "hi",
+      "timestamp": "2025-01-04T17:01:21.540Z",
+      "type": "text",
+      "isSystemMessage": false,
+      "id": 25
+    },
+    {
+      "roomId": 1,
+      "senderId": 2,
+      "content": "Safwen Soker has joined the room",
+      "timestamp": "2025-01-04T17:01:29.925Z",
+      "type": "system",
+      "isSystemMessage": true,
+      "id": 26
+    },
+    {
+      "roomId": 1,
+      "senderId": 2,
+      "content": "Safwen Soker has joined the room",
+      "timestamp": "2025-01-04T17:01:31.180Z",
+      "type": "system",
+      "isSystemMessage": true,
+      "id": 27
+    },
+    {
+      "roomId": 1,
+      "senderId": 2,
+      "content": "Safwen Soker has joined the room",
+      "timestamp": "2025-01-04T17:01:32.828Z",
+      "type": "system",
+      "isSystemMessage": true,
+      "id": 28
+    },
+    {
+      "roomId": 1,
+      "senderId": 2,
+      "content": "Safwen Soker has joined the room",
+      "timestamp": "2025-01-04T17:01:33.603Z",
+      "type": "system",
+      "isSystemMessage": true,
+      "id": 29
+    },
+    {
+      "roomId": 1,
+      "senderId": 2,
+      "content": "Safwen Soker has joined the room",
+      "timestamp": "2025-01-04T17:03:43.427Z",
+      "type": "system",
+      "isSystemMessage": true,
+      "id": 30
+    },
+    {
+      "roomId": 1,
+      "senderId": 1,
+      "content": "Mohamed Amine Riahi has joined the room",
+      "timestamp": "2025-01-04T17:03:45.886Z",
+      "type": "system",
+      "isSystemMessage": true,
+      "id": 31
+    },
+    {
+      "roomId": 1,
+      "senderId": 1,
+      "content": "Mohamed Amine Riahi has joined the room",
+      "timestamp": "2025-01-04T17:06:18.093Z",
+      "type": "system",
+      "isSystemMessage": true,
+      "id": 32
+    },
+    {
+      "roomId": 1,
+      "senderId": 2,
+      "content": "Safwen Soker has joined the room",
+      "timestamp": "2025-01-04T17:06:22.509Z",
+      "type": "system",
+      "isSystemMessage": true,
+      "id": 33
+    },
+    {
+      "roomId": 1,
+      "senderId": 1,
+      "content": "Mohamed Amine Riahi has joined the room",
+      "timestamp": "2025-01-04T17:06:38.705Z",
+      "type": "system",
+      "isSystemMessage": true,
+      "id": 34
+    },
+    {
+      "roomId": 1,
+      "senderId": 1,
+      "content": "Mohamed Amine Riahi has joined the room",
+      "timestamp": "2025-01-04T17:06:42.333Z",
+      "type": "system",
+      "isSystemMessage": true,
+      "id": 35
+    },
+    {
+      "roomId": 1,
+      "senderId": 1,
+      "content": "Mohamed Amine Riahi has left the room",
+      "timestamp": "2025-01-04T17:06:43.143Z",
+      "type": "system",
+      "isSystemMessage": true,
+      "id": 36
+    },
+    {
+      "roomId": 1,
+      "senderId": 1,
+      "content": "Mohamed Amine Riahi has joined the room",
+      "timestamp": "2025-01-04T17:06:43.755Z",
+      "type": "system",
+      "isSystemMessage": true,
+      "id": 37
+    },
+    {
+      "roomId": 1,
+      "senderId": 2,
+      "content": "Safwen Soker has joined the room",
+      "timestamp": "2025-01-04T17:06:45.263Z",
+      "type": "system",
+      "isSystemMessage": true,
+      "id": 38
+    },
+    {
+      "roomId": 1,
+      "senderId": 2,
+      "content": "Safwen Soker has joined the room",
+      "timestamp": "2025-01-04T17:06:48.163Z",
+      "type": "system",
+      "isSystemMessage": true,
+      "id": 39
+    },
+    {
+      "roomId": 1,
+      "senderId": 1,
+      "content": "Mohamed Amine Riahi has joined the room",
+      "timestamp": "2025-01-04T17:06:49.850Z",
+      "type": "system",
+      "isSystemMessage": true,
+      "id": 40
+    },
+    {
+      "roomId": 1,
+      "senderId": 2,
+      "senderName": "Safwen Soker",
+      "senderPhotoUrl": "https://i.imgur.com/xpVw5Ov.jpeg",
+      "content": "hi",
+      "timestamp": "2025-01-04T17:06:57.579Z",
+      "type": "text",
+      "isSystemMessage": false,
+      "id": 41
+    },
+    {
+      "roomId": 1,
+      "senderId": 1,
+      "content": "Mohamed Amine Riahi has joined the room",
+      "timestamp": "2025-01-04T17:07:04.993Z",
+      "type": "system",
+      "isSystemMessage": true,
+      "id": 42
+    },
+    {
+      "roomId": 1,
+      "senderId": 1,
+      "content": "Mohamed Amine Riahi has joined the room",
+      "timestamp": "2025-01-04T17:11:05.581Z",
+      "type": "system",
+      "isSystemMessage": true,
+      "id": 43
+    },
+    {
+      "roomId": 1,
+      "senderId": 1,
+      "senderName": "Mohamed Amine Riahi",
+      "senderPhotoUrl": "https://i.imgur.com/lGQPUvK.jpeg",
+      "content": "sdfdsf",
+      "timestamp": "2025-01-04T17:11:08.121Z",
+      "type": "text",
+      "isSystemMessage": false,
+      "id": 44
+    },
+    {
+      "roomId": 1,
+      "senderId": 2,
+      "content": "Safwen Soker has joined the room",
+      "timestamp": "2025-01-04T17:11:10.471Z",
+      "type": "system",
+      "isSystemMessage": true,
+      "id": 45
+    },
+    {
+      "roomId": 1,
+      "senderId": 2,
+      "content": "Safwen Soker has joined the room",
+      "timestamp": "2025-01-04T17:11:24.604Z",
+      "type": "system",
+      "isSystemMessage": true,
+      "id": 46
+    },
+    {
+      "roomId": 1,
+      "senderId": 1,
+      "senderName": "Mohamed Amine Riahi",
+      "senderPhotoUrl": "https://i.imgur.com/lGQPUvK.jpeg",
+      "content": "hi",
+      "timestamp": "2025-01-04T17:11:28.298Z",
+      "type": "text",
+      "isSystemMessage": false,
+      "id": 47
+    },
+    {
+      "roomId": 1,
+      "senderId": 1,
+      "content": "Mohamed Amine Riahi has joined the room",
+      "timestamp": "2025-01-04T17:11:32.941Z",
+      "type": "system",
+      "isSystemMessage": true,
+      "id": 48
+    },
+    {
+      "roomId": 1,
+      "senderId": 2,
+      "content": "Safwen Soker has joined the room",
+      "timestamp": "2025-01-04T17:12:32.900Z",
+      "type": "system",
+      "isSystemMessage": true,
+      "id": 49
+    },
+    {
+      "roomId": 1,
+      "senderId": 2,
+      "content": "Safwen Soker has joined the room",
+      "timestamp": "2025-01-04T17:14:55.774Z",
+      "type": "system",
+      "isSystemMessage": true,
+      "id": 50
+    },
+    {
+      "roomId": 1,
+      "senderId": 1,
+      "content": "Mohamed Amine Riahi has joined the room",
+      "timestamp": "2025-01-04T17:15:05.094Z",
+      "type": "system",
+      "isSystemMessage": true,
+      "id": 51
+    },
+    {
+      "id": 1736010912261,
+      "roomId": 1,
+      "senderId": "1",
+      "content": "Mohamed Amine Riahi has joined the room",
+      "timestamp": "2025-01-04T17:15:12.261Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736010916188,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker has joined the room",
+      "timestamp": "2025-01-04T17:15:16.188Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736010953080,
+      "roomId": 1,
+      "senderId": "1",
+      "senderName": "Mohamed Amine Riahi",
+      "senderPhotoUrl": "https://i.imgur.com/lGQPUvK.jpeg",
+      "content": "hi",
+      "timestamp": "2025-01-04T17:15:53.080Z",
+      "type": "text",
+      "isSystemMessage": false
+    },
+    {
+      "id": 1736011460040,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker has joined the room",
+      "timestamp": "2025-01-04T17:24:20.040Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736011469901,
+      "roomId": 1,
+      "senderId": "1",
+      "content": "Mohamed Amine Riahi has joined the room",
+      "timestamp": "2025-01-04T17:24:29.901Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736011473845,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker has joined the room",
+      "timestamp": "2025-01-04T17:24:33.845Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736011483736,
+      "roomId": 1,
+      "senderId": "1",
+      "senderName": "Mohamed Amine Riahi",
+      "senderPhotoUrl": "https://i.imgur.com/lGQPUvK.jpeg",
+      "content": "hi",
+      "timestamp": "2025-01-04T17:24:43.736Z",
+      "type": "text",
+      "isSystemMessage": false
+    },
+    {
+      "id": 1736011487831,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker has joined the room",
+      "timestamp": "2025-01-04T17:24:47.831Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736011489816,
+      "roomId": 1,
+      "senderId": "2",
+      "senderName": "Safwen Soker",
+      "senderPhotoUrl": "https://i.imgur.com/xpVw5Ov.jpeg",
+      "content": "hi",
+      "timestamp": "2025-01-04T17:24:49.816Z",
+      "type": "text",
+      "isSystemMessage": false
+    },
+    {
+      "id": 1736011500800,
+      "roomId": 1,
+      "senderId": "1",
+      "content": "Mohamed Amine Riahi has left the room",
+      "timestamp": "2025-01-04T17:25:00.800Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736011505395,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker has joined the room",
+      "timestamp": "2025-01-04T17:25:05.395Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736011506416,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker has left the room",
+      "timestamp": "2025-01-04T17:25:06.416Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736011585060,
+      "roomId": 1,
+      "senderId": "1",
+      "content": "Mohamed Amine Riahi has joined the room",
+      "timestamp": "2025-01-04T17:26:25.060Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736011591791,
+      "roomId": 1,
+      "senderId": "1",
+      "content": "Mohamed Amine Riahi has left the room",
+      "timestamp": "2025-01-04T17:26:31.791Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736011598637,
+      "roomId": 1,
+      "senderId": "1",
+      "content": "Mohamed Amine Riahi has joined the room",
+      "timestamp": "2025-01-04T17:26:38.637Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736011602719,
+      "roomId": 1,
+      "senderId": "1",
+      "content": "Mohamed Amine Riahi has left the room",
+      "timestamp": "2025-01-04T17:26:42.719Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736011707390,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker has joined the room",
+      "timestamp": "2025-01-04T17:28:27.391Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736011713081,
+      "roomId": 1,
+      "senderId": "1",
+      "content": "Mohamed Amine Riahi has joined the room",
+      "timestamp": "2025-01-04T17:28:33.081Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736011717659,
+      "roomId": 1,
+      "senderId": "1",
+      "senderName": "Mohamed Amine Riahi",
+      "senderPhotoUrl": "https://i.imgur.com/lGQPUvK.jpeg",
+      "content": "ahla",
+      "timestamp": "2025-01-04T17:28:37.659Z",
+      "type": "text",
+      "isSystemMessage": false
+    },
+    {
+      "id": 1736011825104,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker has joined the room",
+      "timestamp": "2025-01-04T17:30:25.104Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736011830661,
+      "roomId": 1,
+      "senderId": "1",
+      "content": "Mohamed Amine Riahi has joined the room",
+      "timestamp": "2025-01-04T17:30:30.661Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736011834681,
+      "roomId": 1,
+      "senderId": "1",
+      "senderName": "Mohamed Amine Riahi",
+      "senderPhotoUrl": "https://i.imgur.com/lGQPUvK.jpeg",
+      "content": "waa",
+      "timestamp": "2025-01-04T17:30:34.681Z",
+      "type": "text",
+      "isSystemMessage": false
+    },
+    {
+      "id": 1736011836855,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker has joined the room",
+      "timestamp": "2025-01-04T17:30:36.855Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736011843509,
+      "roomId": 1,
+      "senderId": "2",
+      "senderName": "Safwen Soker",
+      "senderPhotoUrl": "https://i.imgur.com/xpVw5Ov.jpeg",
+      "content": "wink",
+      "timestamp": "2025-01-04T17:30:43.509Z",
+      "type": "text",
+      "isSystemMessage": false
+    },
+    {
+      "id": 1736011962146,
+      "roomId": 1,
+      "senderId": "6",
+      "content": "Emna Mekni has joined the room",
+      "timestamp": "2025-01-04T17:32:42.146Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736011972371,
+      "roomId": 1,
+      "senderId": "6",
+      "senderName": "Emna Mekni",
+      "senderPhotoUrl": "https://i.imgur.com/BQfIQJN.jpeg",
+      "content": "hi",
+      "timestamp": "2025-01-04T17:32:52.371Z",
+      "type": "text",
+      "isSystemMessage": false
+    },
+    {
+      "id": 1736011988775,
+      "roomId": 1,
+      "senderId": "6",
+      "content": "Emna Mekni has left the room",
+      "timestamp": "2025-01-04T17:33:08.775Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736012053573,
+      "roomId": 1,
+      "senderId": "1",
+      "content": "Mohamed Amine Riahi has joined the room",
+      "timestamp": "2025-01-04T17:34:13.573Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736012054313,
+      "roomId": 1,
+      "senderId": "1",
+      "content": "Mohamed Amine Riahi has left the room",
+      "timestamp": "2025-01-04T17:34:14.313Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736012086966,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker has joined the room",
+      "timestamp": "2025-01-04T17:34:46.966Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736012088657,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker has left the room",
+      "timestamp": "2025-01-04T17:34:48.657Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736012093141,
+      "roomId": 1,
+      "senderId": "1",
+      "content": "Mohamed Amine Riahi has joined the room",
+      "timestamp": "2025-01-04T17:34:53.141Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736012247321,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker has joined the room",
+      "timestamp": "2025-01-04T17:37:27.321Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736012253613,
+      "roomId": 1,
+      "senderId": "2",
+      "senderName": "Safwen Soker",
+      "senderPhotoUrl": "https://i.imgur.com/xpVw5Ov.jpeg",
+      "content": "hi",
+      "timestamp": "2025-01-04T17:37:33.613Z",
+      "type": "text",
+      "isSystemMessage": false
+    },
+    {
+      "id": 1736012268591,
+      "roomId": 1,
+      "senderId": "1",
+      "content": "Mohamed Amine Riahi has joined the room",
+      "timestamp": "2025-01-04T17:37:48.591Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736012269428,
+      "roomId": 1,
+      "senderId": "1",
+      "content": "Mohamed Amine Riahi has left the room",
+      "timestamp": "2025-01-04T17:37:49.428Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736012270901,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker has joined the room",
+      "timestamp": "2025-01-04T17:37:50.901Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736012271342,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker has left the room",
+      "timestamp": "2025-01-04T17:37:51.342Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736013050849,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker has joined the room",
+      "timestamp": "2025-01-04T17:50:50.849Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736013056997,
+      "roomId": 1,
+      "senderId": "2",
+      "senderName": "Safwen Soker",
+      "senderPhotoUrl": "https://i.imgur.com/xpVw5Ov.jpeg",
+      "content": "aaaa",
+      "timestamp": "2025-01-04T17:50:56.997Z",
+      "type": "text",
+      "isSystemMessage": false
+    },
+    {
+      "id": 1736013178299,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker has joined the room",
+      "timestamp": "2025-01-04T17:52:58.299Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736013179301,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker has left the room",
+      "timestamp": "2025-01-04T17:52:59.301Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736013383542,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker has joined the room",
+      "timestamp": "2025-01-04T17:56:23.542Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736013398790,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker has joined the room",
+      "timestamp": "2025-01-04T17:56:38.790Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736013399637,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker has left the room",
+      "timestamp": "2025-01-04T17:56:39.637Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736013488183,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker has joined the room",
+      "timestamp": "2025-01-04T17:58:08.183Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736013491459,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker has left the room",
+      "timestamp": "2025-01-04T17:58:11.459Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736013589318,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker has joined the room",
+      "timestamp": "2025-01-04T17:59:49.318Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736013666571,
+      "roomId": 1,
+      "senderId": "1",
+      "content": "Mohamed Amine Riahi has joined the room",
+      "timestamp": "2025-01-04T18:01:06.571Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736013674147,
+      "roomId": 1,
+      "senderId": "1",
+      "senderName": "Mohamed Amine Riahi",
+      "senderPhotoUrl": "https://i.imgur.com/lGQPUvK.jpeg",
+      "content": "hi",
+      "timestamp": "2025-01-04T18:01:14.147Z",
+      "type": "text",
+      "isSystemMessage": false
+    },
+    {
+      "id": 1736013685832,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker has joined the room",
+      "timestamp": "2025-01-04T18:01:25.832Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736014228709,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker has joined the room",
+      "timestamp": "2025-01-04T18:10:28.709Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736014417330,
+      "roomId": 1,
+      "senderId": "1",
+      "content": "Mohamed Amine Riahi has joined the room",
+      "timestamp": "2025-01-04T18:13:37.330Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736014424743,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker has joined the room",
+      "timestamp": "2025-01-04T18:13:44.743Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736014429520,
+      "roomId": 1,
+      "senderId": "2",
+      "senderName": "Safwen Soker",
+      "senderPhotoUrl": "https://i.imgur.com/xpVw5Ov.jpeg",
+      "content": "hello",
+      "timestamp": "2025-01-04T18:13:49.520Z",
+      "type": "text",
+      "isSystemMessage": false
+    },
+    {
+      "id": 1736014443653,
+      "roomId": 1,
+      "senderId": "1",
+      "content": "Mohamed Amine Riahi has left the room",
+      "timestamp": "2025-01-04T18:14:03.653Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736014446692,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker has left the room",
+      "timestamp": "2025-01-04T18:14:06.692Z",
+      "type": "system",
+      "isSystemMessage": true
+    }
+  ],
   "messages": [
     {
       "id": "1735579074077",
@@ -877,6 +1914,114 @@
       "receiverId": "2",
       "content": "https://turndemo.metered.ca/meeting/NfnzI7wEB",
       "timestamp": "2025-01-02T23:50:03.596Z",
+      "read": true
+    },
+    {
+      "id": "1735955454684",
+      "senderId": "1",
+      "senderName": "medaminer",
+      "receiverId": "6",
+      "content": "qsdzaer",
+      "timestamp": "2025-01-04T01:50:54.684Z",
+      "read": false
+    },
+    {
+      "id": "1736008956622",
+      "senderId": "2",
+      "senderName": "safwane",
+      "receiverId": "1",
+      "content": "sdfgdfsg",
+      "timestamp": "2025-01-04T16:42:36.622Z",
+      "read": true
+    },
+    {
+      "id": "1736009139059",
+      "senderId": "2",
+      "senderName": "safwane",
+      "receiverId": "1",
+      "content": "aaaa",
+      "timestamp": "2025-01-04T16:45:39.059Z",
+      "read": true
+    },
+    {
+      "id": "1736012232318",
+      "senderId": "2",
+      "senderName": "safwane",
+      "receiverId": "1",
+      "content": "hi",
+      "timestamp": "2025-01-04T17:37:12.318Z",
+      "read": true
+    },
+    {
+      "id": "1736012423071",
+      "senderId": "2",
+      "senderName": "safwane",
+      "receiverId": "1",
+      "content": "hi",
+      "timestamp": "2025-01-04T17:40:23.071Z",
+      "read": true
+    },
+    {
+      "id": "1736013074756",
+      "senderId": "2",
+      "senderName": "safwane",
+      "receiverId": "1",
+      "content": "aaaaaa",
+      "timestamp": "2025-01-04T17:51:14.756Z",
+      "read": true
+    },
+    {
+      "id": "1736013193418",
+      "senderId": "2",
+      "senderName": "safwane",
+      "receiverId": "1",
+      "content": "aaa",
+      "timestamp": "2025-01-04T17:53:13.418Z",
+      "read": true
+    },
+    {
+      "id": "1736013201415",
+      "senderId": "1",
+      "senderName": "medaminer",
+      "receiverId": "2",
+      "content": "chbik",
+      "timestamp": "2025-01-04T17:53:21.415Z",
+      "read": true
+    },
+    {
+      "id": "1736013500910",
+      "senderId": "2",
+      "senderName": "safwane",
+      "receiverId": "1",
+      "content": "hi",
+      "timestamp": "2025-01-04T17:58:20.910Z",
+      "read": true
+    },
+    {
+      "id": "1736013522605",
+      "senderId": "1",
+      "senderName": "medaminer",
+      "receiverId": "2",
+      "content": "chbik",
+      "timestamp": "2025-01-04T17:58:42.605Z",
+      "read": true
+    },
+    {
+      "id": "1736014397450",
+      "senderId": "2",
+      "senderName": "safwane",
+      "receiverId": "1",
+      "content": "hani hne",
+      "timestamp": "2025-01-04T18:13:17.450Z",
+      "read": true
+    },
+    {
+      "id": "1736014406997",
+      "senderId": "2",
+      "senderName": "safwane",
+      "receiverId": "1",
+      "content": "chtaaml",
+      "timestamp": "2025-01-04T18:13:26.997Z",
       "read": true
     }
   ],
