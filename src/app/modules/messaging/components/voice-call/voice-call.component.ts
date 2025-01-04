@@ -166,6 +166,10 @@ export class VoiceCallComponent implements OnInit, OnDestroy, AfterViewInit {
       const container = videoElement.parentElement as HTMLElement;
       const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
+      // Store current time and playing state
+      const currentTime = videoElement.currentTime;
+      const wasPlaying = !videoElement.paused;
+
       if (!document.fullscreenElement &&
           !(document as any).webkitFullscreenElement &&
           !(document as any).mozFullScreenElement &&
@@ -187,10 +191,19 @@ export class VoiceCallComponent implements OnInit, OnDestroy, AfterViewInit {
           await (container as any).mozRequestFullScreen();
         } else if ((container as any).msRequestFullscreen) {
           await (container as any).msRequestFullscreen();
-        } else if ((videoElement as any).webkitEnterFullScreen) {
-          await (videoElement as any).webkitEnterFullScreen();
         }
         this.isFullscreen = true;
+
+        // Restore video state after a short delay
+        setTimeout(() => {
+          if (wasPlaying) {
+            videoElement.play().catch(console.error);
+          }
+          if (currentTime > 0) {
+            videoElement.currentTime = currentTime;
+          }
+        }, 100);
+
       } else {
         // Exit fullscreen
         if (document.exitFullscreen) {
@@ -203,6 +216,16 @@ export class VoiceCallComponent implements OnInit, OnDestroy, AfterViewInit {
           await (document as any).msExitFullscreen();
         }
         this.isFullscreen = false;
+
+        // Restore video state after a short delay
+        setTimeout(() => {
+          if (wasPlaying) {
+            videoElement.play().catch(console.error);
+          }
+          if (currentTime > 0) {
+            videoElement.currentTime = currentTime;
+          }
+        }, 100);
       }
     } catch (error) {
       console.error('Error toggling fullscreen:', error);
@@ -219,7 +242,6 @@ export class VoiceCallComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
-  // Listen for fullscreen changes
   @HostListener('document:fullscreenchange')
   @HostListener('document:webkitfullscreenchange')
   @HostListener('document:mozfullscreenchange')
