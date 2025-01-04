@@ -1,48 +1,49 @@
-import { Component, OnInit, OnDestroy, HostListener, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef, ViewChild, ElementRef, HostListener } from '@angular/core';
 import { MessagingService, UserStatus, UserStatusInfo } from '../../core/services/messaging.service';
 import { Message } from '../../core/interfaces/message.interface';
 import { AuthService } from '../../core/services/auth.service';
-import { BehaviorSubject, Subscription } from 'rxjs';
+import { BehaviorSubject, Subscription, take } from 'rxjs';
 import { map, debounceTime, distinctUntilChanged } from 'rxjs/operators';
-import {FormsModule, ReactiveFormsModule} from "@angular/forms";
-import {ScrollPanel} from "primeng/scrollpanel";
-import {Avatar} from "primeng/avatar";
-import {Badge} from "primeng/badge";
-import {DatePipe, SlicePipe, CommonModule} from "@angular/common";
-import {InputText} from "primeng/inputtext";
-import {ButtonModule} from 'primeng/button';
-import {ChangeDetectorRef} from '@angular/core';
-import {VoiceCallService, CallStatus} from './services/voice-call.service';
-import {VideoCallService, VideoCallStatus} from './services/video-call.service';
-import {Dialog} from 'primeng/dialog';
-import {User} from "@core/interfaces/user.interface";
-import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {MultiSelect} from "primeng/multiselect";
+import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from "@angular/forms";
+import { ScrollPanel } from "primeng/scrollpanel";
+import { Tooltip } from "primeng/tooltip";
 import { RoomService } from './services/room.service';
-import {Room} from "@app/modules/messaging/interfaces/room.interface";
-import {Chip} from "primeng/chip";
 import { RoomMessagingService } from './services/room-messaging.service';
+import { Room } from './interfaces/room.interface';
 import { RoomMessage } from './interfaces/room-message.interface';
 import { interval } from 'rxjs';
+import { RoomCallService } from './services/room-call.service';
+import {VideoCallService, VideoCallStatus} from "@app/modules/messaging/services/video-call.service";
+import {CallStatus, VoiceCallService} from "@app/modules/messaging/services/voice-call.service";
+import {User} from "@core/interfaces/user.interface";
+import {MultiSelect} from "primeng/multiselect";
+import {Dialog} from "primeng/dialog";
+import {Avatar} from "primeng/avatar";
+import {AsyncPipe, DatePipe, NgClass, NgForOf, NgIf, NgSwitch, NgSwitchCase} from "@angular/common";
+import {Chip} from "primeng/chip";
+import {ButtonDirective} from "primeng/button";
 
 @Component({
   selector: 'app-messaging',
-  standalone: true,
+  templateUrl: './messaging.component.html',
+  styleUrls: ['./messaging.component.scss'],
   imports: [
-    CommonModule,
-    FormsModule,
-    ReactiveFormsModule,
-    ScrollPanel,
-    Avatar,
-    DatePipe,
-    InputText,
-    ButtonModule,
     MultiSelect,
     Dialog,
-    Chip
+    ReactiveFormsModule,
+    FormsModule,
+    Avatar,
+    NgClass,
+    DatePipe,
+    NgSwitchCase,
+    NgSwitch,
+    ButtonDirective,
+    ScrollPanel,
+    NgIf,
+    NgForOf,
+    AsyncPipe
   ],
-  templateUrl: './messaging.component.html',
-  styleUrls: ['./messaging.component.scss']
+  providers: [RoomCallService]
 })
 export class MessagingComponent implements OnInit, OnDestroy {
   userStatuses: UserStatusInfo[] = [];
@@ -53,7 +54,7 @@ export class MessagingComponent implements OnInit, OnDestroy {
   searchTerm: string = '';
   unreadCounts: { [key: string]: number } = {};
   currentUserId: string;
-  isMobileView: boolean = false;
+  isMobileView = false;
   private searchTermSubject = new BehaviorSubject<string>('');
   private subscriptions: Subscription[] = [];
   callStatus: CallStatus = {status: 'idle'};
@@ -70,6 +71,12 @@ export class MessagingComponent implements OnInit, OnDestroy {
   roomForm: FormGroup;
   roomMessages: RoomMessage[] = [];
   @ViewChild('scrollPanel') private scrollPanel!: ElementRef;
+  private resizeObserver: ResizeObserver;
+  private readonly MOBILE_BREAKPOINT = 768;
+
+  isInCall: boolean = false;
+  callParticipants: string[] = [];
+  private remoteAudioElements: { [userId: string]: HTMLAudioElement } = {};
 
   get searchTermValue(): string {
     return this.searchTermSubject.value;
@@ -97,12 +104,18 @@ export class MessagingComponent implements OnInit, OnDestroy {
       private videoCallService: VideoCallService,
       private roomService: RoomService,
       private roomMessagingService: RoomMessagingService,
+      protected roomCallService: RoomCallService,
       private fb: FormBuilder
   ) {
     this.currentUserId = String(this.authService.getCurrentUser()?.id);
     this.currentUser = this.authService.getCurrentUser();
     this.checkScreenSize();
     this.initRoomForm();
+    this.resizeObserver = new ResizeObserver(entries => {
+      for (const entry of entries) {
+        this.checkMobileView(entry.contentRect.width);
+      }
+    });
   }
 
   @HostListener('window:resize')
@@ -148,6 +161,27 @@ export class MessagingComponent implements OnInit, OnDestroy {
           this.filterUsers();
         })
     );
+
+    // Add resize observer to the container
+    const container = document.querySelector('.messaging-container');
+    if (container) {
+      this.resizeObserver.observe(container);
+    }
+
+    // Initial mobile check
+    this.checkMobileView(window.innerWidth);
+
+    // Subscribe to call state changes
+    this.subscriptions.push(
+      this.roomCallService.callState$.subscribe(state => {
+        this.isInCall = state.isInCall;
+        this.callParticipants = state.participants;
+        this.cdr.detectChanges();
+      })
+    );
+
+    // Listen for remote streams
+    window.addEventListener('remote-stream-added', this.handleRemoteStream);
   }
 
   private sortUsersByStatus(users: UserStatusInfo[]): UserStatusInfo[] {
@@ -212,36 +246,36 @@ export class MessagingComponent implements OnInit, OnDestroy {
 
             // Subscribe to messages if not already subscribed
             this.subscribeToMessages();
-
+          }});
             // Send system message for joining
-            const joinMessage = {
-              roomId: room.id,
-              senderId: this.currentUser.id,
-              content: `${this.currentUser.firstName} ${this.currentUser.lastName} has joined the room`,
-              timestamp: new Date(),
-              type: 'system',
-              isSystemMessage: true
-            };
+          //   const joinMessage = {
+          //     roomId: room.id,
+          //     senderId: this.currentUser.id,
+          //     content: `${this.currentUser.firstName} ${this.currentUser.lastName} has joined the room`,
+          //     timestamp: new Date(),
+          //     type: 'system',
+          //     isSystemMessage: true
+          //   };
+          //
+          //   this.roomMessagingService.sendRoomMessage(
+          //     room.id,
+          //     this.currentUser.id,
+          //     joinMessage.content,
+          //     true
+          //   ).subscribe({
+          //     next: () => {
+          //       this.cdr.detectChanges();
+          //       this.scrollToBottom();
+          //     },
+          //     error: (error) => {
+          //       console.error('Error sending join message:', error);
+          //     }
+          //   });
+          // },
+          // error: (error) => {
+          //   console.error('Error joining room:', error);
+          // }
 
-            this.roomMessagingService.sendRoomMessage(
-              room.id,
-              this.currentUser.id,
-              joinMessage.content,
-              true
-            ).subscribe({
-              next: () => {
-                this.cdr.detectChanges();
-                this.scrollToBottom();
-              },
-              error: (error) => {
-                console.error('Error sending join message:', error);
-              }
-            });
-          },
-          error: (error) => {
-            console.error('Error joining room:', error);
-          }
-        });
     }
   }
 
@@ -292,42 +326,72 @@ export class MessagingComponent implements OnInit, OnDestroy {
   }
 
   backToUserList() {
-    this.selectedUser = null;
-    this.selectedRoom = null;
+    if (this.selectedUser) {
+      this.selectedUser = null;
+    }
+    if (this.selectedRoom) {
+      this.selectedRoom = null;
+    }
   }
 
   sendMessageUser() {
-    if (this.selectedUser && this.currentMessage.trim()) {
-      this.messagingService.sendMessage(this.selectedUser.userId, this.currentMessage.trim());
-      this.currentMessage = '';
+    if (!this.currentMessage?.trim()) return;
+
+    try {
+      if (this.selectedUser && this.currentMessage.trim()) {
+        this.messagingService.sendMessage(this.selectedUser.userId, this.currentMessage.trim());
+        this.currentMessage = '';
+        
+        // Force view update and scroll
+        setTimeout(() => {
+          this.cdr.detectChanges();
+          this.scrollToBottom();
+        });
+      }
+      // Scroll to bottom immediately after sending
+      this.scrollToBottom(false);
       
-      // Force view update and scroll
-      setTimeout(() => {
-        this.cdr.detectChanges();
-        this.scrollToBottom();
-      });
+      // Clear input and blur it to hide mobile keyboard
+      this.currentMessage = '';
+      (document.activeElement as HTMLElement)?.blur();
+    } catch (error) {
+      console.error('Error sending message:', error);
+      // Show error message
     }
   }
 
   sendMessage() {
-    if (this.selectedRoom && this.currentMessage.trim()) {
-      this.roomMessagingService.sendRoomMessage(
-        this.selectedRoom.id,
-        this.currentUser.id,
-        this.currentMessage.trim()
-      ).subscribe({
-        next: () => {
-          this.currentMessage = '';
-          // Force view update and scroll
-          setTimeout(() => {
-            this.cdr.detectChanges();
-            this.scrollToBottom();
-          });
-        },
-        error: (error) => {
-          console.error('Error sending message:', error);
-        }
-      });
+    if (!this.currentMessage?.trim()) return;
+
+    try {
+      if (this.selectedRoom && this.currentMessage.trim()) {
+        this.roomMessagingService.sendRoomMessage(
+          this.selectedRoom.id,
+          this.currentUser.id,
+          this.currentMessage.trim()
+        ).subscribe({
+          next: () => {
+            this.currentMessage = '';
+            // Force view update and scroll
+            setTimeout(() => {
+              this.cdr.detectChanges();
+              this.scrollToBottom();
+            });
+          },
+          error: (error) => {
+            console.error('Error sending message:', error);
+          }
+        });
+      }
+      // Scroll to bottom immediately after sending
+      this.scrollToBottom(false);
+      
+      // Clear input and blur it to hide mobile keyboard
+      this.currentMessage = '';
+      (document.activeElement as HTMLElement)?.blur();
+    } catch (error) {
+      console.error('Error sending room message:', error);
+      // Show error message
     }
   }
 
@@ -481,6 +545,9 @@ export class MessagingComponent implements OnInit, OnDestroy {
     this.stopCallTimer();
     this.voiceCallService.endCall();
     this.videoCallService.endCall();
+    this.resizeObserver.disconnect();
+    window.removeEventListener('remote-stream-added', this.handleRemoteStream);
+    this.endRoomCall();
   }
 
   private initRoomForm() {
@@ -628,20 +695,16 @@ export class MessagingComponent implements OnInit, OnDestroy {
     this.subscriptions.push(roomRefresh);
   }
 
-  private scrollToBottom(): void {
-    try {
-      if (this.scrollPanel && this.scrollPanel.nativeElement) {
-        const element = this.scrollPanel.nativeElement;
-        setTimeout(() => {
-          element.scroll({
-            top: element.scrollHeight,
-            behavior: 'smooth'
-          });
-        }, 50);
+  private scrollToBottom(smooth = true) {
+    setTimeout(() => {
+      const messagesContainer = document.querySelector('.messages-container');
+      if (messagesContainer) {
+        messagesContainer.scrollTo({
+          top: messagesContainer.scrollHeight,
+          behavior: smooth ? 'smooth' : 'auto'
+        });
       }
-    } catch (err) {
-      console.error('Error scrolling to bottom:', err);
-    }
+    }, 100);
   }
 
   private initializeMessageSubscription() {
@@ -664,5 +727,146 @@ export class MessagingComponent implements OnInit, OnDestroy {
     setTimeout(() => {
       this.scrollToBottom();
     }, 100);
+  }
+
+  private checkMobileView(width: number) {
+    this.isMobileView = width <= this.MOBILE_BREAKPOINT;
+  }
+
+  private handleRemoteStream = (event: any) => {
+    const { userId, stream } = event.detail;
+    
+    // Create or get audio element for this user
+    let audioElement = this.remoteAudioElements[userId];
+    if (!audioElement) {
+      audioElement = new Audio();
+      audioElement.autoplay = true;
+      this.remoteAudioElements[userId] = audioElement;
+    }
+    
+    audioElement.srcObject = stream;
+  }
+
+  async toggleRoomCall() {
+    if (!this.selectedRoom) return;
+
+    try {
+      if (this.isInCall) {
+        await this.endRoomCall();
+      } else {
+        const isCallActive = await this.roomCallService.isCallActive(String(this.selectedRoom.id))
+          .pipe(take(1))
+          .toPromise();
+
+        if (isCallActive) {
+          await this.joinRoomCall();
+        } else {
+          await this.startRoomCall();
+        }
+      }
+    } catch (error) {
+      console.error('Error toggling room call:', error);
+      // Show error message to user
+    }
+  }
+
+  protected async startRoomCall() {
+    if (!this.selectedRoom || !this.currentUser) return;
+
+    try {
+      await this.roomCallService.startCall(String(this.selectedRoom.id), String(this.currentUser.id));
+      
+      // Send system message about call start
+      const message = `${this.currentUser.firstName} ${this.currentUser.lastName} started a voice call`;
+      await this.sendSystemMessage(message);
+    } catch (error) {
+      console.error('Error starting call:', error);
+      // Show error message to user
+    }
+  }
+
+  private async joinRoomCall() {
+    if (!this.selectedRoom || !this.currentUser) return;
+
+    try {
+      await this.roomCallService.joinCall(String(this.selectedRoom.id), String(this.currentUser.id));
+      
+      // Send system message about joining call
+      const message = `${this.currentUser.firstName} ${this.currentUser.lastName} joined the voice call`;
+      await this.sendSystemMessage(message);
+    } catch (error) {
+      console.error('Error joining call:', error);
+      // Show error message to user
+    }
+  }
+
+  protected async leaveRoomCall() {
+    if (!this.selectedRoom || !this.currentUser) return;
+
+    try {
+      await this.roomCallService.leaveCall(String(this.selectedRoom.id), String(this.currentUser.id));
+      
+      // Send system message about leaving call
+      const message = `${this.currentUser.firstName} ${this.currentUser.lastName} left the voice call`;
+      await this.sendSystemMessage(message);
+    } catch (error) {
+      console.error('Error leaving call:', error);
+      // Show error message to user
+    }
+  }
+
+  protected async endRoomCall() {
+    if (!this.currentUser) return;
+
+    try {
+      await this.roomCallService.endCall();
+      
+      // Cleanup audio elements
+      Object.values(this.remoteAudioElements).forEach(audio => {
+        audio.srcObject = null;
+        audio.remove();
+      });
+      this.remoteAudioElements = {};
+
+      if (this.selectedRoom) {
+        // Send system message about leaving call
+        const message = `${this.currentUser.firstName} ${this.currentUser.lastName} left the voice call`;
+        await this.sendSystemMessage(message);
+      }
+    } catch (error) {
+      console.error('Error ending call:', error);
+      // Show error message to user
+    }
+  }
+
+  private async sendSystemMessage(content: string) {
+    if (!this.selectedRoom) return;
+
+    try {
+      await this.roomMessagingService.sendRoomMessage(
+        this.selectedRoom.id,
+        this.currentUser.id,
+        content,
+        true
+      ).toPromise();
+      
+      this.cdr.detectChanges();
+      this.scrollToBottom();
+    } catch (error) {
+      console.error('Error sending system message:', error);
+    }
+  }
+
+  getParticipantName(userId: string): string {
+    const user = this.filteredUsers.find(u => String(u.userId) === userId);
+    if (user) {
+      return user.username ;
+    }
+    return this.currentUser.username;
+  }
+
+  getParticipantPhoto(userId: string): string {
+    const user = this.filteredUsers.find(u => String(u.userId) === userId);
+    return user?.photoUrl || this.currentUser.photoUrl;
   }
 }

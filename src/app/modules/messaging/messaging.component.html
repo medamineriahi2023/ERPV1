@@ -1,5 +1,5 @@
 <div class="messaging-container">
-    <div class="users-section">
+    <div class="users-section" [class.mobile-hidden]="(selectedUser || selectedRoom) && isMobileView">
         <!-- Rooms Section -->
         <div class="rooms-section">
             <div class="section-header">
@@ -84,116 +84,207 @@
         <!-- User Chat -->
         <div class="chat-area" *ngIf="selectedUser" [class.mobile-visible]="selectedUser && isMobileView">
             <div class="chat-header">
-                <div class="selected-user">
-                    <div class="user-info-left">
-                        <button *ngIf="isMobileView" pButton icon="pi pi-arrow-left" class="p-button-text back-button" (click)="backToUserList()"></button>
-                        <p-avatar [image]="selectedUser.photoUrl" size="large" shape="circle"></p-avatar>
-                        <div class="user-details">
-                            <span class="user-name">{{selectedUser.username}}</span>
-                            <span class="user-status">{{selectedUser.status}}</span>
-                        </div>
-                    </div>
-                    <div class="user-actions">
-                        <button pButton class="p-button-rounded p-button-text" icon="fas fa-phone" (click)="initiateCall()"></button>
-                        <button class="video-call-btn" (click)="startVideoCall()">
-                            <i class="fas fa-video"></i>
-                        </button>
-                        <button pButton type="button" icon="pi pi-ellipsis-v" class="p-button-rounded p-button-text"></button>
-                    </div>
-                </div>
-            </div>
-
-            <div class="chat-messages">
-                <div #scrollPanel class="messages-container" style="height: calc(100vh - 180px); overflow-y: auto;">
-                    <ng-container *ngIf="selectedUser && messages.length > 0; else noChat">
-                        <div class="messages-list">
-                            <div *ngFor="let message of messages" 
-                                 class="message-item"
-                                 [ngClass]="{'sent': message.senderId === currentUserId, 'received': message.senderId !== currentUserId}">
-                                
-                                <!-- Avatar for sent messages (current user) -->
-                                <div class="message-avatar" *ngIf="message.senderId === currentUserId">
-                                    <p-avatar [image]="getUserPhotoById(message.senderId) || 'assets/default-avatar.png'"
-                                             size="normal"
-                                             shape="circle">
-                                    </p-avatar>
-                                </div>
-                                
-                                <div class="message-content">
-                                    <!-- Sender name for received messages -->
-                                    <div class="sender-name" *ngIf="message.senderId !== currentUserId">
-                                        {{message.senderName}}
-                                    </div>
-                                    
-                                    <!-- Message bubble -->
-                                    <div class="message-bubble">
-                                        {{message.content}}
-                                    </div>
-                                    
-                                    <!-- Message time and status -->
-                                    <div class="message-time">
-                                        {{message.timestamp | date:'shortTime'}}
-                                        <span class="message-status" 
-                                              *ngIf="message.senderId === currentUserId"
-                                              [ngClass]="{'read': message.read}">
-                                            <i class="pi" [ngClass]="{'pi-check': !message.read, 'pi-check-circle': message.read}"></i>
-                                        </span>
-                                    </div>
-                                </div>
-                                
-                                <!-- Avatar for received messages (remote user) -->
-                                <div class="message-avatar" *ngIf="message.senderId !== currentUserId">
-                                    <p-avatar [image]="getUserPhotoById(message.senderId) || 'assets/default-avatar.png'"
-                                             size="normal"
-                                             shape="circle">
-                                    </p-avatar>
-                                </div>
-                            </div>
-                        </div>
-                    </ng-container>
-                </div>
-            </div>
-
-            <div class="message-input">
-                <button pButton type="button" icon="pi pi-paperclip" class="p-button-rounded p-button-text"></button>
-                <div class="input-container">
-                    <input type="text" pInputText [(ngModel)]="currentMessage"
-                           (keyup.enter)="sendMessageUser()"
-                           placeholder="Type a message...">
-                </div>
-                <button pButton type="button" icon="pi pi-send"
-                        class="p-button-rounded p-button-text"
-                        (click)="sendMessageUser()">
+                <button *ngIf="isMobileView" 
+                        pButton 
+                        type="button"
+                        icon="pi pi-arrow-left" 
+                        class="p-button-text p-button-rounded mobile-back-btn"
+                        (click)="backToUserList()" 
+                        pTooltip="Back to List"
+                        aria-label="Back to list">
                 </button>
-            </div>
-        </div>
-
-        <!-- Room Chat -->
-        <div class="chat-area" *ngIf="selectedRoom" [class.mobile-visible]="selectedRoom && isMobileView">
-            <div class="chat-header">
-                <div class="room-info">
-                    <button *ngIf="isMobileView" pButton icon="pi pi-arrow-left" class="p-button-text back-button" (click)="backToUserList()"></button>
-                    <h3>{{selectedRoom.name}}</h3>
-                    <p class="room-subject">{{selectedRoom.subject}}</p>
+                <div class="selected-user">
+                    <div class="user-avatar">
+                        <p-avatar [image]="selectedUser.photoUrl"
+                                 size="large" 
+                                 shape="circle"
+                                 [style]="{'width': '48px', 'height': '48px'}">
+                        </p-avatar>
+                        <span class="status-badge" [ngClass]="getStatusClass(selectedUser.status)">
+                            <i class="pi pi-circle-fill"></i>
+                        </span>
+                    </div>
+                    <div class="user-info">
+                        <h3>{{selectedUser.username}}</h3>
+                        <span class="status-text">{{selectedUser.status}}</span>
+                    </div>
                 </div>
-                <div class="room-actions">
-                    <button pButton icon="pi pi-sign-out"
-                            label="Leave Room"
-                            class="p-button-danger p-button-text"
-                            (click)="leaveRoom()">
+                <div class="chat-actions">
+                    <button pButton 
+                            type="button"
+                            icon="pi pi-phone" 
+                            class="p-button-rounded p-button-text"
+                            [class.active]="callStatus.status === 'calling'"
+                            (click)="initiateCall()"
+                            pTooltip="Voice Call">
+                    </button>
+                    <button pButton 
+                            type="button"
+                            icon="pi pi-video" 
+                            class="p-button-rounded p-button-text"
+                            [class.active]="videoCallStatus.status === 'calling'"
+                            (click)="startVideoCall()"
+                            pTooltip="Video Call">
                     </button>
                 </div>
             </div>
 
-            <div class="active-participants" *ngIf="selectedRoom?.activeParticipants && selectedRoom.activeParticipants.length > 0">
-                <p-chip *ngFor="let userId of selectedRoom.activeParticipants"
-                        [image]="getUserPhotoById(userId)"
-                        [label]="getUserNameById(Number(userId))"
-                        [removable]="false">
-                </p-chip>
+            <div class="chat-messages">
+                <div #scrollPanel class="messages-container">
+                    <ng-container *ngIf="getMessagesWithUser(selectedUser.userId).length > 0">
+                        <div class="message-date-separator" *ngFor="let date of getMessageDates()">
+                            <div class="date-separator">
+                                <hr>
+                                <span>{{date | date:'mediumDate'}}</span>
+                                <hr>
+                            </div>
+                            <div class="message-group">
+                                <div *ngFor="let message of getMessagesByDate(date)"
+                                     [ngClass]="{'message': true, 'sent': message.senderId === currentUserId, 'received': message.senderId !== currentUserId}">
+                                    <div class="message-content">
+                                        <div class="message-text">{{message.content}}</div>
+                                        <div class="message-time">{{message.timestamp | date:'shortTime'}}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </ng-container>
+                    <div class="no-messages" *ngIf="getMessagesWithUser(selectedUser.userId).length === 0">
+                        <i class="pi pi-comments"></i>
+                        <p>No messages yet. Start the conversation!</p>
+                    </div>
+                </div>
             </div>
 
-            <!-- Room Messages -->
+            <div class="message-input">
+                <button pButton 
+                        type="button" 
+                        icon="pi pi-paperclip" 
+                        class="p-button-rounded p-button-text attachment-btn"
+                        aria-label="Attach file">
+                </button>
+                <div class="input-container">
+                    <input type="text" 
+                           pInputText 
+                           [(ngModel)]="currentMessage"
+                           (keyup.enter)="sendMessageUser()"
+                           placeholder="Type a message..."
+                           autocomplete="off"
+                           [attr.enterkeyhint]="'send'">
+                    <button pButton 
+                            type="button" 
+                            icon="pi pi-send"
+                            class="p-button-rounded send-btn"
+                            (click)="sendMessageUser()"
+                            [disabled]="!currentMessage?.trim()"
+                            aria-label="Send message">
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Room Chat -->
+        <div class="chat-area-room" *ngIf="selectedRoom" [class.mobile-visible]="selectedRoom && isMobileView">
+            <div class="chat-header">
+                <div class="room-header">
+                    <button *ngIf="isMobileView" 
+                            pButton 
+                            type="button"
+                            icon="pi pi-arrow-left" 
+                            class="p-button-text p-button-rounded mobile-back-btn"
+                            (click)="backToUserList()" 
+                            pTooltip="Back to List"
+                            aria-label="Back to list">
+                    </button>
+                    <div class="room-info">
+                        <div class="room-details">
+                            <h3>
+                                <i class="pi pi-users"></i>
+                                {{selectedRoom?.name}}
+                                <span class="room-status">
+                                    <i class="pi pi-circle-fill"></i>
+                                    {{selectedRoom?.activeParticipants?.length || 0}} active
+                                </span>
+                            </h3>
+                            <p>
+                                <i class="pi pi-info-circle"></i>
+                                {{selectedRoom?.subject}}
+                            </p>
+                        </div>
+                        <div class="participants-preview" *ngIf="selectedRoom?.activeParticipants?.length > 0">
+                            <div class="avatars">
+                                <p-avatar *ngFor="let userId of selectedRoom.activeParticipants.slice(0, 3)"
+                                         [image]="getUserPhotoById(userId)"
+                                         size="normal"
+                                         shape="circle">
+                                </p-avatar>
+                            </div>
+                            <span class="count" *ngIf="selectedRoom.activeParticipants.length > 3">
+                                +{{selectedRoom.activeParticipants.length - 3}}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="room-actions">
+                        <button pButton 
+                                icon="pi pi-phone" 
+                                class="p-button-text"
+                                [class.active]="(roomCallService.callState$ | async)?.isInCall"
+                                (click)="startRoomCall()"
+                                pTooltip="Start Voice Call">
+                        </button>
+                        <button pButton 
+                                icon="pi pi-sign-out" 
+                                class="p-button-text p-button-danger"
+                                (click)="leaveRoom()"
+                                pTooltip="Leave Room">
+                        </button>
+                        <button pButton 
+                                icon="pi pi-ellipsis-v" 
+                                class="p-button-text"
+                                pTooltip="More Options">
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Voice Call Interface -->
+                <div class="voice-call-interface" *ngIf="(roomCallService.callState$ | async)?.isInCall">
+                    <div class="call-header">
+                        <h3>
+                            <i class="pi pi-phone"></i>
+                            Voice Call
+                        </h3>
+                        <div class="call-actions">
+                            <button pButton
+                                    type="button"
+                                    icon="pi pi-sign-out"
+                                    class="p-button-warning p-button-rounded"
+                                    (click)="leaveRoomCall()"
+                                    pTooltip="Leave Call">
+                            </button>
+                            <button pButton
+                                    type="button"
+                                    icon="pi pi-times"
+                                    class="p-button-danger p-button-rounded"
+                                    (click)="endRoomCall()"
+                                    pTooltip="End Call">
+                            </button>
+                        </div>
+                    </div>
+                    <div class="call-participants">
+                        <div class="participant" *ngFor="let participant of (roomCallService.callState$ | async)?.participants">
+                            <p-avatar [image]="getParticipantPhoto(participant)"
+                                     size="normal"
+                                     shape="circle">
+                            </p-avatar>
+                            <span class="participant-name">{{getParticipantName(participant)}}</span>
+                            <div class="audio-indicator">
+                                <i class="pi pi-volume-up"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <div class="chat-messages">
                 <div #scrollPanel class="messages-container" style="height: calc(100vh - 230px); overflow-y: auto;">
                     <ng-container *ngIf="selectedRoom && roomMessages.length > 0; else noMessages">
@@ -267,79 +358,86 @@
                 </div>
             </div>
             <div class="message-input">
-                <button pButton type="button" icon="pi pi-paperclip" class="p-button-rounded p-button-text"></button>
+                <button pButton type="button" icon="pi pi-paperclip" class="p-button-rounded p-button-text" [style]="{'width': '44px', 'height': '44px'}" aria-label="Attach file">
+                </button>
                 <div class="input-container">
                     <input type="text" pInputText [(ngModel)]="currentMessage"
                            (keyup.enter)="sendRoomMessage()"
-                           placeholder="Type a message...">
+                           [style]="{'height': '44px'}"
+                           placeholder="Type a message..."
+                           autocomplete="off"
+                           [attr.enterkeyhint]="'send'">
                     <button pButton type="button" icon="pi pi-send"
-                            class="p-button-rounded p-button-text"
-                            (click)="sendRoomMessage()">
+                            class="p-button-rounded"
+                            [style]="{'width': '44px', 'height': '44px'}"
+                            (click)="sendRoomMessage()"
+                            [disabled]="!currentMessage?.trim()"
+                            aria-label="Send message">
                     </button>
                 </div>
             </div>
         </div>
-    </ng-container>
+        </ng-container>
 
-    <ng-template #noChat>
-        <div class="no-chat">
-            <p>No messages yet</p>
-        </div>
-    </ng-template>
+        <ng-template #noChat>
+            <div class="no-chat">
+                <p>No messages yet</p>
+            </div>
+        </ng-template>
+
+        <ng-template #noUsersMessage>
+            <div class="no-users">
+                <p>No users found</p>
+            </div>
+        </ng-template>
+    </div>
+
+    <!-- Create Room Dialog -->
+    <p-dialog header="Create New Room"
+              [(visible)]="showRoomDialog"
+              [modal]="true"
+              [style]="{width: '450px'}"
+              [draggable]="false"
+              [resizable]="false">
+        <form [formGroup]="roomForm" (ngSubmit)="createRoom()">
+            <div class="field">
+                <label for="name">Room Name</label>
+                <input id="name" type="text" pInputText formControlName="name" class="w-full">
+            </div>
+            <div class="field">
+                <label for="subject">Subject</label>
+                <input id="subject" type="text" pInputText formControlName="subject" class="w-full">
+            </div>
+            <div class="field">
+                <label for="allowedUsers">Allowed Users</label>
+                <p-multiSelect id="allowedUsers"
+                               [options]="filteredUsers"
+                               formControlName="allowedUsers"
+                               optionLabel="username"
+                               optionValue="userId"
+                               [filter]="true"
+                               filterBy="username"
+                               placeholder="Select users"
+                               class="w-full">
+                </p-multiSelect>
+            </div>
+            <div class="dialog-footer">
+                <button pButton type="button" label="Cancel" class="p-button-text" (click)="showRoomDialog = false"></button>
+                <button pButton type="submit" label="Create" [disabled]="!roomForm.valid"></button>
+            </div>
+        </form>
+    </p-dialog>
 
     <ng-template #noUsersMessage>
-        <div class="no-users">
-            <p>No users found</p>
-        </div>
+      <div class="no-users-message">
+        <p>No users found</p>
+      </div>
     </ng-template>
-</div>
 
-<!-- Create Room Dialog -->
-<p-dialog header="Create New Room"
-          [(visible)]="showRoomDialog"
-          [modal]="true"
-          [style]="{width: '450px'}"
-          [draggable]="false"
-          [resizable]="false">
-    <form [formGroup]="roomForm" (ngSubmit)="createRoom()">
-        <div class="field">
-            <label for="name">Room Name</label>
-            <input id="name" type="text" pInputText formControlName="name" class="w-full">
-        </div>
-        <div class="field">
-            <label for="subject">Subject</label>
-            <input id="subject" type="text" pInputText formControlName="subject" class="w-full">
-        </div>
-        <div class="field">
-            <label for="allowedUsers">Allowed Users</label>
-            <p-multiSelect id="allowedUsers"
-                           [options]="filteredUsers"
-                           formControlName="allowedUsers"
-                           optionLabel="username"
-                           optionValue="userId"
-                           [filter]="true"
-                           filterBy="username"
-                           placeholder="Select users"
-                           class="w-full">
-            </p-multiSelect>
-        </div>
-        <div class="dialog-footer">
-            <button pButton type="button" label="Cancel" class="p-button-text" (click)="showRoomDialog = false"></button>
-            <button pButton type="submit" label="Create" [disabled]="!roomForm.valid"></button>
-        </div>
-    </form>
-</p-dialog>
-
-<ng-template #noUsersMessage>
-  <div class="no-users-message">
-    <p>No users found</p>
-  </div>
-</ng-template>
-
-<ng-template #noChat>
-  <div class="no-chat-selected">
-    <i class="pi pi-comments text-6xl text-gray-300 mb-4"></i>
-    <h2>Bienvenue dans votre messagerie</h2>
-    <p>Sélectionnez une conversation pour commencer à discuter</p>
-  </div>
-</ng-template>
+    <ng-template #noChat>
+      <div class="no-chat-selected">
+        <i class="pi pi-comments text-6xl text-gray-300 mb-4"></i>
+        <h2>Bienvenue dans votre messagerie</h2>
+        <p>Sélectionnez une conversation pour commencer à discuter</p>
+      </div>
+    </ng-template>

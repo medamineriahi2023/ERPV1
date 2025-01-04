@@ -35,7 +35,7 @@
       },
       "status": "ACTIVE",
       "contractType": "CDI",
-      "lastActive": "2025-01-04T18:15:06.455Z"
+      "lastActive": "2025-01-04T21:37:21.852Z"
     },
     {
       "username": "safwane",
@@ -64,7 +64,7 @@
       "status": "ACTIVE",
       "contractType": "CDI",
       "id": 2,
-      "lastActive": "2025-01-04T18:15:05.548Z"
+      "lastActive": "2025-01-04T21:37:21.871Z"
     },
     {
       "username": "aliriahi@gmail.com",
@@ -387,7 +387,10 @@
         "8",
         2
       ],
-      "activeParticipants": [],
+      "activeParticipants": [
+        "1",
+        "2"
+      ],
       "createdBy": 2,
       "createdAt": "2025-01-04T16:47:36.286Z",
       "activeScreenShare": null,
@@ -1396,6 +1399,2223 @@
       "timestamp": "2025-01-04T18:14:06.692Z",
       "type": "system",
       "isSystemMessage": true
+    },
+    {
+      "id": 1736015601654,
+      "roomId": 1,
+      "senderId": "1",
+      "content": "Mohamed Amine Riahi has joined the room",
+      "timestamp": "2025-01-04T18:33:21.654Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736015620918,
+      "roomId": 1,
+      "senderId": "1",
+      "content": "Mohamed Amine Riahi has joined the room",
+      "timestamp": "2025-01-04T18:33:40.918Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736015621594,
+      "roomId": 1,
+      "senderId": "1",
+      "content": "Mohamed Amine Riahi has joined the room",
+      "timestamp": "2025-01-04T18:33:41.594Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736015675800,
+      "roomId": 1,
+      "senderId": "1",
+      "content": "Mohamed Amine Riahi has joined the room",
+      "timestamp": "2025-01-04T18:34:35.800Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736015680468,
+      "roomId": 1,
+      "senderId": "1",
+      "content": "Mohamed Amine Riahi has joined the room",
+      "timestamp": "2025-01-04T18:34:40.468Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736015690606,
+      "roomId": 1,
+      "senderId": "1",
+      "content": "Mohamed Amine Riahi has joined the room",
+      "timestamp": "2025-01-04T18:34:50.606Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736015744587,
+      "roomId": 1,
+      "senderId": "1",
+      "content": "Mohamed Amine Riahi has joined the room",
+      "timestamp": "2025-01-04T18:35:44.587Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736018269460,
+      "roomId": 1,
+      "senderId": "1",
+      "content": "Mohamed Amine Riahi has joined the room",
+      "timestamp": "2025-01-04T19:17:49.460Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736018288539,
+      "roomId": 1,
+      "senderId": "1",
+      "content": "Mohamed Amine Riahi has joined the room",
+      "timestamp": "2025-01-04T19:18:08.540Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736018365542,
+      "roomId": 1,
+      "senderId": "1",
+      "content": "Mohamed Amine Riahi has joined the room",
+      "timestamp": "2025-01-04T19:19:25.542Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736019814322,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker started a voice call",
+      "timestamp": "2025-01-04T19:43:34.322Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736019948979,
+      "roomId": 1,
+      "senderId": "1",
+      "content": "Mohamed Amine Riahi joined the voice call",
+      "timestamp": "2025-01-04T19:45:48.979Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736019952450,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker joined the voice call",
+      "timestamp": "2025-01-04T19:45:52.450Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736019970542,
+      "roomId": 1,
+      "senderId": "1",
+      "content": "Mohamed Amine Riahi left the voice call",
+      "timestamp": "2025-01-04T19:46:10.542Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736019972555,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker left the voice call",
+      "timestamp": "2025-01-04T19:46:12.555Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736019980883,
+      "roomId": 1,
+      "senderId": "1",
+      "content": "Mohamed Amine Riahi has left the room",
+      "timestamp": "2025-01-04T19:46:20.883Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736019982994,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker has left the room",
+      "timestamp": "2025-01-04T19:46:22.994Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736020083612,
+      "roomId": 1,
+      "senderId": "1",
+      "content": "Mohamed Amine Riahi started a voice call",
+      "timestamp": "2025-01-04T19:48:03.612Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736020136592,
+      "roomId": 1,
+      "senderId": "1",
+      "content": "Mohamed Amine Riahi joined the voice call",
+      "timestamp": "2025-01-04T19:48:56.592Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736020140741,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker joined the voice call",
+      "timestamp": "2025-01-04T19:49:00.741Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736020154667,
+      "roomId": 1,
+      "senderId": "1",
+      "content": "Mohamed Amine Riahi left the voice call",
+      "timestamp": "2025-01-04T19:49:14.667Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736020156561,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker left the voice call",
+      "timestamp": "2025-01-04T19:49:16.561Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736020493236,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker joined the voice call",
+      "timestamp": "2025-01-04T19:54:53.236Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736020503578,
+      "roomId": 1,
+      "senderId": "1",
+      "content": "Mohamed Amine Riahi joined the voice call",
+      "timestamp": "2025-01-04T19:55:03.578Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736020524638,
+      "roomId": 1,
+      "senderId": "1",
+      "content": "Mohamed Amine Riahi left the voice call",
+      "timestamp": "2025-01-04T19:55:24.638Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736020525998,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker left the voice call",
+      "timestamp": "2025-01-04T19:55:25.998Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736020613233,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker joined the voice call",
+      "timestamp": "2025-01-04T19:56:53.233Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736020619921,
+      "roomId": 1,
+      "senderId": "1",
+      "content": "Mohamed Amine Riahi joined the voice call",
+      "timestamp": "2025-01-04T19:56:59.921Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736020638453,
+      "roomId": 1,
+      "senderId": "1",
+      "content": "Mohamed Amine Riahi joined the voice call",
+      "timestamp": "2025-01-04T19:57:18.453Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736020643953,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker left the voice call",
+      "timestamp": "2025-01-04T19:57:23.953Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736020645043,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker joined the voice call",
+      "timestamp": "2025-01-04T19:57:25.043Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736020742207,
+      "roomId": 1,
+      "senderId": "1",
+      "content": "Mohamed Amine Riahi joined the voice call",
+      "timestamp": "2025-01-04T19:59:02.207Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736020744446,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker joined the voice call",
+      "timestamp": "2025-01-04T19:59:04.446Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736020753283,
+      "roomId": 1,
+      "senderId": "1",
+      "content": "Mohamed Amine Riahi left the voice call",
+      "timestamp": "2025-01-04T19:59:13.283Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736020754956,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker left the voice call",
+      "timestamp": "2025-01-04T19:59:14.956Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736020856349,
+      "roomId": 1,
+      "senderId": "1",
+      "content": "Mohamed Amine Riahi started a voice call",
+      "timestamp": "2025-01-04T20:00:56.349Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736020859891,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker joined the voice call",
+      "timestamp": "2025-01-04T20:00:59.891Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736020872996,
+      "roomId": 1,
+      "senderId": "1",
+      "content": "Mohamed Amine Riahi left the voice call",
+      "timestamp": "2025-01-04T20:01:12.996Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736020875689,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker left the voice call",
+      "timestamp": "2025-01-04T20:01:15.689Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736020886505,
+      "roomId": 1,
+      "senderId": "1",
+      "content": "Mohamed Amine Riahi joined the voice call",
+      "timestamp": "2025-01-04T20:01:26.505Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736020889030,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker joined the voice call",
+      "timestamp": "2025-01-04T20:01:29.030Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736020894479,
+      "roomId": 1,
+      "senderId": "1",
+      "content": "Mohamed Amine Riahi left the voice call",
+      "timestamp": "2025-01-04T20:01:34.479Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736020896166,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker left the voice call",
+      "timestamp": "2025-01-04T20:01:36.166Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736020914298,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker started a voice call",
+      "timestamp": "2025-01-04T20:01:54.298Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736020916886,
+      "roomId": 1,
+      "senderId": "1",
+      "content": "Mohamed Amine Riahi joined the voice call",
+      "timestamp": "2025-01-04T20:01:56.886Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736020967203,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker left the voice call",
+      "timestamp": "2025-01-04T20:02:47.203Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736020969361,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker started a voice call",
+      "timestamp": "2025-01-04T20:02:49.361Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736020984726,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker left the voice call",
+      "timestamp": "2025-01-04T20:03:04.726Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736020991706,
+      "roomId": 1,
+      "senderId": "1",
+      "content": "Mohamed Amine Riahi left the voice call",
+      "timestamp": "2025-01-04T20:03:11.706Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736020993131,
+      "roomId": 1,
+      "senderId": "1",
+      "content": "Mohamed Amine Riahi started a voice call",
+      "timestamp": "2025-01-04T20:03:13.131Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736021010743,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker left the voice call",
+      "timestamp": "2025-01-04T20:03:30.743Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736021017249,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker joined the voice call",
+      "timestamp": "2025-01-04T20:03:37.249Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736021021655,
+      "roomId": 1,
+      "senderId": "1",
+      "content": "Mohamed Amine Riahi left the voice call",
+      "timestamp": "2025-01-04T20:03:41.655Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736021023334,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker left the voice call",
+      "timestamp": "2025-01-04T20:03:43.334Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736021085795,
+      "roomId": 1,
+      "senderId": "1",
+      "content": "Mohamed Amine Riahi joined the voice call",
+      "timestamp": "2025-01-04T20:04:45.795Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736021089605,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker joined the voice call",
+      "timestamp": "2025-01-04T20:04:49.605Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736021111253,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker started a voice call",
+      "timestamp": "2025-01-04T20:05:11.253Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736021113669,
+      "roomId": 1,
+      "senderId": "1",
+      "content": "Mohamed Amine Riahi joined the voice call",
+      "timestamp": "2025-01-04T20:05:13.669Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736021127544,
+      "roomId": 1,
+      "senderId": "1",
+      "content": "Mohamed Amine Riahi joined the voice call",
+      "timestamp": "2025-01-04T20:05:27.544Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736021131190,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker joined the voice call",
+      "timestamp": "2025-01-04T20:05:31.190Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736021150866,
+      "roomId": 1,
+      "senderId": "1",
+      "content": "Mohamed Amine Riahi started a voice call",
+      "timestamp": "2025-01-04T20:05:50.866Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736021156833,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker joined the voice call",
+      "timestamp": "2025-01-04T20:05:56.833Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736021167990,
+      "roomId": 1,
+      "senderId": "1",
+      "content": "Mohamed Amine Riahi left the voice call",
+      "timestamp": "2025-01-04T20:06:07.991Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736021172269,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker left the voice call",
+      "timestamp": "2025-01-04T20:06:12.269Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736021175073,
+      "roomId": 1,
+      "senderId": "1",
+      "content": "Mohamed Amine Riahi left the voice call",
+      "timestamp": "2025-01-04T20:06:15.073Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736021176474,
+      "roomId": 1,
+      "senderId": "1",
+      "content": "Mohamed Amine Riahi left the voice call",
+      "timestamp": "2025-01-04T20:06:16.474Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736022386100,
+      "roomId": 1,
+      "senderId": "2",
+      "senderName": "Safwen Soker",
+      "senderPhotoUrl": "https://i.imgur.com/xpVw5Ov.jpeg",
+      "content": "hi",
+      "timestamp": "2025-01-04T20:26:26.100Z",
+      "type": "text",
+      "isSystemMessage": false
+    },
+    {
+      "id": 1736022393676,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker joined the voice call",
+      "timestamp": "2025-01-04T20:26:33.676Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736022402346,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker left the voice call",
+      "timestamp": "2025-01-04T20:26:42.346Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736022413814,
+      "roomId": 1,
+      "senderId": "1",
+      "content": "Mohamed Amine Riahi started a voice call",
+      "timestamp": "2025-01-04T20:26:53.814Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736022415486,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker joined the voice call",
+      "timestamp": "2025-01-04T20:26:55.486Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736022423736,
+      "roomId": 1,
+      "senderId": "1",
+      "content": "Mohamed Amine Riahi left the voice call",
+      "timestamp": "2025-01-04T20:27:03.736Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736022426185,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker left the voice call",
+      "timestamp": "2025-01-04T20:27:06.185Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736022432607,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker joined the voice call",
+      "timestamp": "2025-01-04T20:27:12.607Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736022439121,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker left the voice call",
+      "timestamp": "2025-01-04T20:27:19.121Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736022505144,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker joined the voice call",
+      "timestamp": "2025-01-04T20:28:25.144Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736022505152,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker joined the voice call",
+      "timestamp": "2025-01-04T20:28:25.152Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736022507475,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker left the voice call",
+      "timestamp": "2025-01-04T20:28:27.475Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736022529529,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker joined the voice call",
+      "timestamp": "2025-01-04T20:28:49.529Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736022541175,
+      "roomId": 1,
+      "senderId": "1",
+      "content": "Mohamed Amine Riahi joined the voice call",
+      "timestamp": "2025-01-04T20:29:01.175Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736022549003,
+      "roomId": 1,
+      "senderId": "1",
+      "content": "Mohamed Amine Riahi left the voice call",
+      "timestamp": "2025-01-04T20:29:09.003Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736022550096,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker left the voice call",
+      "timestamp": "2025-01-04T20:29:10.096Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736022559548,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker started a voice call",
+      "timestamp": "2025-01-04T20:29:19.548Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736022561782,
+      "roomId": 1,
+      "senderId": "1",
+      "content": "Mohamed Amine Riahi joined the voice call",
+      "timestamp": "2025-01-04T20:29:21.782Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736022569645,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker left the voice call",
+      "timestamp": "2025-01-04T20:29:29.645Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736022583315,
+      "roomId": 1,
+      "senderId": "1",
+      "content": "Mohamed Amine Riahi left the voice call",
+      "timestamp": "2025-01-04T20:29:43.315Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736022656987,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker left the voice call",
+      "timestamp": "2025-01-04T20:30:56.987Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736022658760,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker left the voice call",
+      "timestamp": "2025-01-04T20:30:58.760Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736022664228,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker started a voice call",
+      "timestamp": "2025-01-04T20:31:04.228Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736022689541,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker left the voice call",
+      "timestamp": "2025-01-04T20:31:29.542Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736022812140,
+      "roomId": 1,
+      "senderId": "1",
+      "content": "Mohamed Amine Riahi joined the voice call",
+      "timestamp": "2025-01-04T20:33:32.140Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736022814954,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker joined the voice call",
+      "timestamp": "2025-01-04T20:33:34.954Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736022819825,
+      "roomId": 1,
+      "senderId": "1",
+      "content": "Mohamed Amine Riahi left the voice call",
+      "timestamp": "2025-01-04T20:33:39.825Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736022821254,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker left the voice call",
+      "timestamp": "2025-01-04T20:33:41.254Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736022826889,
+      "roomId": 1,
+      "senderId": "1",
+      "content": "Mohamed Amine Riahi started a voice call",
+      "timestamp": "2025-01-04T20:33:46.889Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736022828689,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker joined the voice call",
+      "timestamp": "2025-01-04T20:33:48.689Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736022832288,
+      "roomId": 1,
+      "senderId": "1",
+      "content": "Mohamed Amine Riahi left the voice call",
+      "timestamp": "2025-01-04T20:33:52.288Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736022842657,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker left the voice call",
+      "timestamp": "2025-01-04T20:34:02.657Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736022845615,
+      "roomId": 1,
+      "senderId": "1",
+      "content": "Mohamed Amine Riahi left the voice call",
+      "timestamp": "2025-01-04T20:34:05.615Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736022852602,
+      "roomId": 1,
+      "senderId": "1",
+      "content": "Mohamed Amine Riahi has left the room",
+      "timestamp": "2025-01-04T20:34:12.602Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736022855024,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker has left the room",
+      "timestamp": "2025-01-04T20:34:15.024Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736022875579,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker started a voice call",
+      "timestamp": "2025-01-04T20:34:35.579Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736022881221,
+      "roomId": 1,
+      "senderId": "1",
+      "content": "Mohamed Amine Riahi left the voice call",
+      "timestamp": "2025-01-04T20:34:41.221Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736022887033,
+      "roomId": 1,
+      "senderId": "1",
+      "content": "Mohamed Amine Riahi joined the voice call",
+      "timestamp": "2025-01-04T20:34:47.033Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736022890326,
+      "roomId": 1,
+      "senderId": "1",
+      "content": "Mohamed Amine Riahi left the voice call",
+      "timestamp": "2025-01-04T20:34:50.326Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736022892124,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker left the voice call",
+      "timestamp": "2025-01-04T20:34:52.124Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736022894815,
+      "roomId": 1,
+      "senderId": "1",
+      "content": "Mohamed Amine Riahi started a voice call",
+      "timestamp": "2025-01-04T20:34:54.815Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736022901245,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker left the voice call",
+      "timestamp": "2025-01-04T20:35:01.245Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736022902366,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker left the voice call",
+      "timestamp": "2025-01-04T20:35:02.366Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736022904336,
+      "roomId": 1,
+      "senderId": "1",
+      "content": "Mohamed Amine Riahi left the voice call",
+      "timestamp": "2025-01-04T20:35:04.336Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736022905602,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker left the voice call",
+      "timestamp": "2025-01-04T20:35:05.602Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736022907084,
+      "roomId": 1,
+      "senderId": "1",
+      "content": "Mohamed Amine Riahi started a voice call",
+      "timestamp": "2025-01-04T20:35:07.084Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736022909097,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker left the voice call",
+      "timestamp": "2025-01-04T20:35:09.099Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736022909301,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker left the voice call",
+      "timestamp": "2025-01-04T20:35:09.301Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736022910268,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker left the voice call",
+      "timestamp": "2025-01-04T20:35:10.268Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736022912611,
+      "roomId": 1,
+      "senderId": "1",
+      "content": "Mohamed Amine Riahi left the voice call",
+      "timestamp": "2025-01-04T20:35:12.611Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736022914902,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker left the voice call",
+      "timestamp": "2025-01-04T20:35:14.902Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736022915096,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker left the voice call",
+      "timestamp": "2025-01-04T20:35:15.096Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736022915258,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker left the voice call",
+      "timestamp": "2025-01-04T20:35:15.258Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736022922232,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker left the voice call",
+      "timestamp": "2025-01-04T20:35:22.232Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736022924082,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker left the voice call",
+      "timestamp": "2025-01-04T20:35:24.082Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736022925046,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker left the voice call",
+      "timestamp": "2025-01-04T20:35:25.046Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736022975525,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker has left the room",
+      "timestamp": "2025-01-04T20:36:15.525Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736022979389,
+      "roomId": 1,
+      "senderId": "1",
+      "content": "Mohamed Amine Riahi has left the room",
+      "timestamp": "2025-01-04T20:36:19.389Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736023085828,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker has left the room",
+      "timestamp": "2025-01-04T20:38:05.828Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736023219247,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker has left the room",
+      "timestamp": "2025-01-04T20:40:19.247Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736023322885,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker left the voice call",
+      "timestamp": "2025-01-04T20:42:02.885Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736023534134,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker has left the room",
+      "timestamp": "2025-01-04T20:45:34.134Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736023730163,
+      "roomId": 1,
+      "senderId": "1",
+      "content": "Mohamed Amine Riahi left the voice call",
+      "timestamp": "2025-01-04T20:48:50.163Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736024092768,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker has left the room",
+      "timestamp": "2025-01-04T20:54:52.769Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736024097162,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker has left the room",
+      "timestamp": "2025-01-04T20:54:57.162Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736024400266,
+      "roomId": 1,
+      "senderId": "1",
+      "content": "Mohamed Amine Riahi started a voice call",
+      "timestamp": "2025-01-04T21:00:00.267Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736024408256,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker started a voice call",
+      "timestamp": "2025-01-04T21:00:08.256Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736024431480,
+      "roomId": 1,
+      "senderId": "1",
+      "content": "Mohamed Amine Riahi started a voice call",
+      "timestamp": "2025-01-04T21:00:31.480Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736024433632,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker started a voice call",
+      "timestamp": "2025-01-04T21:00:33.632Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736024449116,
+      "roomId": 1,
+      "senderId": "1",
+      "content": "Mohamed Amine Riahi left the voice call",
+      "timestamp": "2025-01-04T21:00:49.116Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736024450696,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker left the voice call",
+      "timestamp": "2025-01-04T21:00:50.696Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736024452790,
+      "roomId": 1,
+      "senderId": "1",
+      "content": "Mohamed Amine Riahi started a voice call",
+      "timestamp": "2025-01-04T21:00:52.790Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736024456190,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker started a voice call",
+      "timestamp": "2025-01-04T21:00:56.190Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736024460779,
+      "roomId": 1,
+      "senderId": "1",
+      "content": "Mohamed Amine Riahi left the voice call",
+      "timestamp": "2025-01-04T21:01:00.779Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736024462789,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker started a voice call",
+      "timestamp": "2025-01-04T21:01:02.789Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736024464529,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker left the voice call",
+      "timestamp": "2025-01-04T21:01:04.529Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736024465863,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker started a voice call",
+      "timestamp": "2025-01-04T21:01:05.863Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736024467796,
+      "roomId": 1,
+      "senderId": "1",
+      "content": "Mohamed Amine Riahi started a voice call",
+      "timestamp": "2025-01-04T21:01:07.796Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736024471970,
+      "roomId": 1,
+      "senderId": "1",
+      "content": "Mohamed Amine Riahi started a voice call",
+      "timestamp": "2025-01-04T21:01:11.970Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736024474298,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker left the voice call",
+      "timestamp": "2025-01-04T21:01:14.298Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736024478672,
+      "roomId": 1,
+      "senderId": "1",
+      "content": "Mohamed Amine Riahi left the voice call",
+      "timestamp": "2025-01-04T21:01:18.672Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736024483642,
+      "roomId": 1,
+      "senderId": "1",
+      "content": "Mohamed Amine Riahi started a voice call",
+      "timestamp": "2025-01-04T21:01:23.642Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736024485562,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker started a voice call",
+      "timestamp": "2025-01-04T21:01:25.562Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736024492844,
+      "roomId": 1,
+      "senderId": "1",
+      "content": "Mohamed Amine Riahi left the voice call",
+      "timestamp": "2025-01-04T21:01:32.844Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736024493042,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker left the voice call",
+      "timestamp": "2025-01-04T21:01:33.042Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736024494673,
+      "roomId": 1,
+      "senderId": "1",
+      "content": "Mohamed Amine Riahi left the voice call",
+      "timestamp": "2025-01-04T21:01:34.673Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736024499305,
+      "roomId": 1,
+      "senderId": "1",
+      "content": "Mohamed Amine Riahi left the voice call",
+      "timestamp": "2025-01-04T21:01:39.305Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736024499947,
+      "roomId": 1,
+      "senderId": "1",
+      "content": "Mohamed Amine Riahi left the voice call",
+      "timestamp": "2025-01-04T21:01:39.947Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736024529872,
+      "roomId": 1,
+      "senderId": "1",
+      "content": "Mohamed Amine Riahi started a voice call",
+      "timestamp": "2025-01-04T21:02:09.872Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736024532667,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker started a voice call",
+      "timestamp": "2025-01-04T21:02:12.667Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736024536307,
+      "roomId": 1,
+      "senderId": "1",
+      "content": "Mohamed Amine Riahi left the voice call",
+      "timestamp": "2025-01-04T21:02:16.307Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736024538017,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker left the voice call",
+      "timestamp": "2025-01-04T21:02:18.017Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736024742645,
+      "roomId": 1,
+      "senderId": "1",
+      "content": "Mohamed Amine Riahi started a voice call",
+      "timestamp": "2025-01-04T21:05:42.645Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736024745590,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker started a voice call",
+      "timestamp": "2025-01-04T21:05:45.590Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736024750948,
+      "roomId": 1,
+      "senderId": "1",
+      "content": "Mohamed Amine Riahi left the voice call",
+      "timestamp": "2025-01-04T21:05:50.948Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736024752387,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker left the voice call",
+      "timestamp": "2025-01-04T21:05:52.387Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736024807628,
+      "roomId": 1,
+      "senderId": "1",
+      "content": "Mohamed Amine Riahi left the voice call",
+      "timestamp": "2025-01-04T21:06:47.628Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736024811171,
+      "roomId": 1,
+      "senderId": "1",
+      "content": "Mohamed Amine Riahi started a voice call",
+      "timestamp": "2025-01-04T21:06:51.171Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736024812791,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker started a voice call",
+      "timestamp": "2025-01-04T21:06:52.791Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736024817921,
+      "roomId": 1,
+      "senderId": "1",
+      "content": "Mohamed Amine Riahi left the voice call",
+      "timestamp": "2025-01-04T21:06:57.921Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736024821203,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker left the voice call",
+      "timestamp": "2025-01-04T21:07:01.203Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736024825066,
+      "roomId": 1,
+      "senderId": "1",
+      "content": "Mohamed Amine Riahi started a voice call",
+      "timestamp": "2025-01-04T21:07:05.067Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736024827293,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker started a voice call",
+      "timestamp": "2025-01-04T21:07:07.293Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736024829871,
+      "roomId": 1,
+      "senderId": "1",
+      "content": "Mohamed Amine Riahi left the voice call",
+      "timestamp": "2025-01-04T21:07:09.871Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736024832911,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker left the voice call",
+      "timestamp": "2025-01-04T21:07:12.911Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736024931906,
+      "roomId": 1,
+      "senderId": "1",
+      "content": "Mohamed Amine Riahi started a voice call",
+      "timestamp": "2025-01-04T21:08:51.906Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736024939507,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker started a voice call",
+      "timestamp": "2025-01-04T21:08:59.507Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736024943319,
+      "roomId": 1,
+      "senderId": "1",
+      "content": "Mohamed Amine Riahi left the voice call",
+      "timestamp": "2025-01-04T21:09:03.319Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736024945640,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker left the voice call",
+      "timestamp": "2025-01-04T21:09:05.640Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736025152142,
+      "roomId": 1,
+      "senderId": "1",
+      "content": "Mohamed Amine Riahi started a voice call",
+      "timestamp": "2025-01-04T21:12:32.142Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736025158963,
+      "roomId": 1,
+      "senderId": "1",
+      "content": "Mohamed Amine Riahi left the voice call",
+      "timestamp": "2025-01-04T21:12:38.963Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736025242957,
+      "roomId": 1,
+      "senderId": "1",
+      "content": "Mohamed Amine Riahi started a voice call",
+      "timestamp": "2025-01-04T21:14:02.957Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736025245666,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker started a voice call",
+      "timestamp": "2025-01-04T21:14:05.666Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736025257613,
+      "roomId": 1,
+      "senderId": "1",
+      "content": "Mohamed Amine Riahi started a voice call",
+      "timestamp": "2025-01-04T21:14:17.613Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736025348310,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker started a voice call",
+      "timestamp": "2025-01-04T21:15:48.310Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736025354526,
+      "roomId": 1,
+      "senderId": "1",
+      "content": "Mohamed Amine Riahi started a voice call",
+      "timestamp": "2025-01-04T21:15:54.526Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736025360058,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker started a voice call",
+      "timestamp": "2025-01-04T21:16:00.058Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736025402628,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker started a voice call",
+      "timestamp": "2025-01-04T21:16:42.628Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736025416481,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker started a voice call",
+      "timestamp": "2025-01-04T21:16:56.481Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736025433347,
+      "roomId": 1,
+      "senderId": "1",
+      "content": "Mohamed Amine Riahi started a voice call",
+      "timestamp": "2025-01-04T21:17:13.347Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736025435714,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker started a voice call",
+      "timestamp": "2025-01-04T21:17:15.714Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736025443727,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker left the voice call",
+      "timestamp": "2025-01-04T21:17:23.728Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736025446282,
+      "roomId": 1,
+      "senderId": "1",
+      "content": "Mohamed Amine Riahi left the voice call",
+      "timestamp": "2025-01-04T21:17:26.282Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736025448464,
+      "roomId": 1,
+      "senderId": "1",
+      "content": "Mohamed Amine Riahi started a voice call",
+      "timestamp": "2025-01-04T21:17:28.464Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736025454870,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker started a voice call",
+      "timestamp": "2025-01-04T21:17:34.870Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736025460729,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker left the voice call",
+      "timestamp": "2025-01-04T21:17:40.729Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736025462832,
+      "roomId": 1,
+      "senderId": "1",
+      "content": "Mohamed Amine Riahi left the voice call",
+      "timestamp": "2025-01-04T21:17:42.832Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736025468715,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker started a voice call",
+      "timestamp": "2025-01-04T21:17:48.715Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736025471075,
+      "roomId": 1,
+      "senderId": "1",
+      "content": "Mohamed Amine Riahi started a voice call",
+      "timestamp": "2025-01-04T21:17:51.075Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736025476992,
+      "roomId": 1,
+      "senderId": "1",
+      "content": "Mohamed Amine Riahi left the voice call",
+      "timestamp": "2025-01-04T21:17:56.992Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736025478915,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker left the voice call",
+      "timestamp": "2025-01-04T21:17:58.915Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736025482276,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker started a voice call",
+      "timestamp": "2025-01-04T21:18:02.276Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736025484892,
+      "roomId": 1,
+      "senderId": "1",
+      "content": "Mohamed Amine Riahi started a voice call",
+      "timestamp": "2025-01-04T21:18:04.892Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736025487098,
+      "roomId": 1,
+      "senderId": "1",
+      "content": "Mohamed Amine Riahi left the voice call",
+      "timestamp": "2025-01-04T21:18:07.098Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736025487843,
+      "roomId": 1,
+      "senderId": "1",
+      "content": "Mohamed Amine Riahi started a voice call",
+      "timestamp": "2025-01-04T21:18:07.843Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736025488617,
+      "roomId": 1,
+      "senderId": "1",
+      "content": "Mohamed Amine Riahi left the voice call",
+      "timestamp": "2025-01-04T21:18:08.617Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736025490752,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker left the voice call",
+      "timestamp": "2025-01-04T21:18:10.752Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736025495041,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker started a voice call",
+      "timestamp": "2025-01-04T21:18:15.041Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736025497807,
+      "roomId": 1,
+      "senderId": "1",
+      "content": "Mohamed Amine Riahi started a voice call",
+      "timestamp": "2025-01-04T21:18:17.807Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736025506919,
+      "roomId": 1,
+      "senderId": "1",
+      "content": "Mohamed Amine Riahi left the voice call",
+      "timestamp": "2025-01-04T21:18:26.919Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736025509142,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker left the voice call",
+      "timestamp": "2025-01-04T21:18:29.142Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736025514490,
+      "roomId": 1,
+      "senderId": "1",
+      "content": "Mohamed Amine Riahi started a voice call",
+      "timestamp": "2025-01-04T21:18:34.490Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736025516791,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker started a voice call",
+      "timestamp": "2025-01-04T21:18:36.791Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736025521032,
+      "roomId": 1,
+      "senderId": "1",
+      "content": "Mohamed Amine Riahi left the voice call",
+      "timestamp": "2025-01-04T21:18:41.032Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736025523264,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker left the voice call",
+      "timestamp": "2025-01-04T21:18:43.264Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736025529196,
+      "roomId": 1,
+      "senderId": "1",
+      "content": "Mohamed Amine Riahi left the voice call",
+      "timestamp": "2025-01-04T21:18:49.196Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736025533708,
+      "roomId": 1,
+      "senderId": "1",
+      "content": "Mohamed Amine Riahi started a voice call",
+      "timestamp": "2025-01-04T21:18:53.708Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736025536350,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker started a voice call",
+      "timestamp": "2025-01-04T21:18:56.350Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736025539733,
+      "roomId": 1,
+      "senderId": "1",
+      "content": "Mohamed Amine Riahi left the voice call",
+      "timestamp": "2025-01-04T21:18:59.733Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736025541688,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker left the voice call",
+      "timestamp": "2025-01-04T21:19:01.688Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736025543899,
+      "roomId": 1,
+      "senderId": "1",
+      "content": "Mohamed Amine Riahi left the voice call",
+      "timestamp": "2025-01-04T21:19:03.899Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736025545211,
+      "roomId": 1,
+      "senderId": "1",
+      "content": "Mohamed Amine Riahi left the voice call",
+      "timestamp": "2025-01-04T21:19:05.211Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736025545534,
+      "roomId": 1,
+      "senderId": "1",
+      "content": "Mohamed Amine Riahi left the voice call",
+      "timestamp": "2025-01-04T21:19:05.534Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736025548135,
+      "roomId": 1,
+      "senderId": "1",
+      "content": "Mohamed Amine Riahi left the voice call",
+      "timestamp": "2025-01-04T21:19:08.135Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736025548918,
+      "roomId": 1,
+      "senderId": "1",
+      "content": "Mohamed Amine Riahi left the voice call",
+      "timestamp": "2025-01-04T21:19:08.918Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736025630258,
+      "roomId": 1,
+      "senderId": "1",
+      "content": "Mohamed Amine Riahi started a voice call",
+      "timestamp": "2025-01-04T21:20:30.258Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736025635360,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker started a voice call",
+      "timestamp": "2025-01-04T21:20:35.360Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736025641669,
+      "roomId": 1,
+      "senderId": "1",
+      "content": "Mohamed Amine Riahi left the voice call",
+      "timestamp": "2025-01-04T21:20:41.669Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736025643369,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker left the voice call",
+      "timestamp": "2025-01-04T21:20:43.369Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736025645551,
+      "roomId": 1,
+      "senderId": "1",
+      "content": "Mohamed Amine Riahi left the voice call",
+      "timestamp": "2025-01-04T21:20:45.551Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736025716323,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker has left the room",
+      "timestamp": "2025-01-04T21:21:56.323Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736025720829,
+      "roomId": 1,
+      "senderId": "1",
+      "content": "Mohamed Amine Riahi has left the room",
+      "timestamp": "2025-01-04T21:22:00.829Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736025738228,
+      "roomId": 1,
+      "senderId": "1",
+      "content": "Mohamed Amine Riahi started a voice call",
+      "timestamp": "2025-01-04T21:22:18.228Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736025740903,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker started a voice call",
+      "timestamp": "2025-01-04T21:22:20.903Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736025743434,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker left the voice call",
+      "timestamp": "2025-01-04T21:22:23.434Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736025745750,
+      "roomId": 1,
+      "senderId": "1",
+      "content": "Mohamed Amine Riahi left the voice call",
+      "timestamp": "2025-01-04T21:22:25.750Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736025748368,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker left the voice call",
+      "timestamp": "2025-01-04T21:22:28.368Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736025790548,
+      "roomId": 1,
+      "senderId": "1",
+      "content": "Mohamed Amine Riahi started a voice call",
+      "timestamp": "2025-01-04T21:23:10.548Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736025792692,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker started a voice call",
+      "timestamp": "2025-01-04T21:23:12.692Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736025795537,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker left the voice call",
+      "timestamp": "2025-01-04T21:23:15.537Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736025797603,
+      "roomId": 1,
+      "senderId": "1",
+      "content": "Mohamed Amine Riahi left the voice call",
+      "timestamp": "2025-01-04T21:23:17.603Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736025799438,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker left the voice call",
+      "timestamp": "2025-01-04T21:23:19.438Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736025834441,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker has left the room",
+      "timestamp": "2025-01-04T21:23:54.441Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736025838095,
+      "roomId": 1,
+      "senderId": "1",
+      "content": "Mohamed Amine Riahi has left the room",
+      "timestamp": "2025-01-04T21:23:58.095Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736026255455,
+      "roomId": 1,
+      "senderId": "2",
+      "senderName": "Safwen Soker",
+      "senderPhotoUrl": "https://i.imgur.com/xpVw5Ov.jpeg",
+      "content": "hi",
+      "timestamp": "2025-01-04T21:30:55.455Z",
+      "type": "text",
+      "isSystemMessage": false
+    },
+    {
+      "id": 1736026324511,
+      "roomId": 1,
+      "senderId": "2",
+      "senderName": "Safwen Soker",
+      "senderPhotoUrl": "https://i.imgur.com/xpVw5Ov.jpeg",
+      "content": "hi",
+      "timestamp": "2025-01-04T21:32:04.511Z",
+      "type": "text",
+      "isSystemMessage": false
+    },
+    {
+      "id": 1736026444815,
+      "roomId": 1,
+      "senderId": "1",
+      "senderName": "Mohamed Amine Riahi",
+      "senderPhotoUrl": "https://i.imgur.com/lGQPUvK.jpeg",
+      "content": "hi",
+      "timestamp": "2025-01-04T21:34:04.815Z",
+      "type": "text",
+      "isSystemMessage": false
+    },
+    {
+      "id": 1736026598962,
+      "roomId": 1,
+      "senderId": "2",
+      "senderName": "Safwen Soker",
+      "senderPhotoUrl": "https://i.imgur.com/xpVw5Ov.jpeg",
+      "content": "hi",
+      "timestamp": "2025-01-04T21:36:38.962Z",
+      "type": "text",
+      "isSystemMessage": false
+    },
+    {
+      "id": 1736026603651,
+      "roomId": 1,
+      "senderId": "1",
+      "senderName": "Mohamed Amine Riahi",
+      "senderPhotoUrl": "https://i.imgur.com/lGQPUvK.jpeg",
+      "content": "hi",
+      "timestamp": "2025-01-04T21:36:43.651Z",
+      "type": "text",
+      "isSystemMessage": false
     }
   ],
   "messages": [
@@ -2022,6 +4242,33 @@
       "receiverId": "1",
       "content": "chtaaml",
       "timestamp": "2025-01-04T18:13:26.997Z",
+      "read": true
+    },
+    {
+      "id": "1736020222005",
+      "senderId": "2",
+      "senderName": "safwane",
+      "receiverId": "1",
+      "content": "hi",
+      "timestamp": "2025-01-04T19:50:22.005Z",
+      "read": true
+    },
+    {
+      "id": "1736026146557",
+      "senderId": "2",
+      "senderName": "safwane",
+      "receiverId": "1",
+      "content": "hi",
+      "timestamp": "2025-01-04T21:29:06.557Z",
+      "read": true
+    },
+    {
+      "id": "1736026222813",
+      "senderId": "2",
+      "senderName": "safwane",
+      "receiverId": "1",
+      "content": "hi",
+      "timestamp": "2025-01-04T21:30:22.813Z",
       "read": true
     }
   ],
