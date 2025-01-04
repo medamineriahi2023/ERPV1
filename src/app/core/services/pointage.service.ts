@@ -91,7 +91,7 @@ export class PointageService {
     const userQuery = userIds.map(id => `userId=${id}`).join('&');
     
     return this.http.get<TimeEntry[]>(
-      `${this.apiUrl}?${userQuery}&date_gte=${startOfDay}&date_lte=${endOfDay}`
+      `${this.apiUrl}?${userQuery}&date_gte=${startOfDay}&date_lte=${endOfDay}&status_in=leave,holiday`
     ).pipe(
       map(entries => entries.map(entry => ({
         ...entry,

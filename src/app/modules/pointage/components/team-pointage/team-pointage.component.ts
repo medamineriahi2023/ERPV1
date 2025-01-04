@@ -15,6 +15,7 @@ import { ToastModule } from 'primeng/toast';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Chart, ChartConfiguration, ChartData } from 'chart.js/auto';
+import {CongeService} from "@shared/services/conge.service";
 
 interface TimeEntryWithUser {
   id?: number;
@@ -72,6 +73,7 @@ export class TeamPointageComponent implements OnInit, AfterViewInit, OnDestroy {
   };
   private destroy$ = new Subject<void>();
   loading = false;
+  congeRequests: any[] = [];
 
   selectedPeriod: 'month' | 'year' = 'month';
   selectedYear: number = new Date().getFullYear();
@@ -162,6 +164,7 @@ export class TeamPointageComponent implements OnInit, AfterViewInit, OnDestroy {
     private apiService: ApiService,
     private authService: AuthService,
     private pointageService: PointageService,
+    private congeService: CongeService,
     private messageService: MessageService
   ) {
     this.charts = {
@@ -173,6 +176,9 @@ export class TeamPointageComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngOnInit() {
     this.loadCurrentUser();
+    this.setupTimeUpdate();
+    this.setupDataRefresh();
+    this.loadCongeRequests();
   }
 
   ngOnDestroy() {
@@ -291,9 +297,7 @@ export class TeamPointageComponent implements OnInit, AfterViewInit, OnDestroy {
       this.isLate(entry)
     ).length;
 
-    const leaveCount = todayEntries.filter(entry => 
-      entry.status === 'leave'
-    ).length;
+    const leaveCount = this.getLeaveCount();
 
     const holidayCount = todayEntries.filter(entry => 
       entry.status === 'holiday'
@@ -437,7 +441,19 @@ export class TeamPointageComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   getLeaveCount(): number {
-    return this.teamEntries.filter(e => e.status === 'leave' || e.status === 'holiday').length;
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    return this.congeRequests?.filter(request => {
+      const startDate = new Date(request.startDate);
+      const endDate = new Date(request.endDate);
+      startDate.setHours(0, 0, 0, 0);
+      endDate.setHours(0, 0, 0, 0);
+
+      return request.status === 'APPROUVE' && 
+             today >= startDate && 
+             today <= endDate;
+    }).length || 0;
   }
 
   formatDate(date: Date | undefined): string {
@@ -680,6 +696,23 @@ export class TeamPointageComponent implements OnInit, AfterViewInit, OnDestroy {
                 entry.user = user;
               }
             }
+
+            // Vérifier si l'entrée est pour aujourd'hui
+            const entryDate = new Date(entry.date);
+            const today = new Date();
+            if (this.isToday(entryDate)) {
+              // Si c'est un congé ou un jour férié, conserver le statut
+              if (entry.status !== 'leave' && entry.status !== 'holiday') {
+                // Mettre à jour le statut en fonction de l'heure actuelle
+                if (this.shouldBeMarkedAsAbsent(entry)) {
+                  entry.status = 'absent';
+                } else if (this.isLate(entry)) {
+                  entry.status = 'late';
+                } else if (entry.checkIn) {
+                  entry.status = 'present';
+                }
+              }
+            }
             return entry;
           }).filter(entry => {
             const entryDate = new Date(entry.date);
@@ -704,7 +737,7 @@ export class TeamPointageComponent implements OnInit, AfterViewInit, OnDestroy {
           this.messageService.add({
             severity: 'error',
             summary: 'Erreur',
-            detail: 'Impossible de charger les entrées de pointage'
+            detail: 'Impossible de charger les pointages de l\'équipe'
           });
           this.loading = false;
         }
@@ -1273,7 +1306,7 @@ export class TeamPointageComponent implements OnInit, AfterViewInit, OnDestroy {
       const presentCount = dayEntries.filter(entry => entry.status === 'present' || entry.status === 'late').length;
       const absentCount = totalEmployees - presentCount;
       const lateCount = dayEntries.filter(entry => this.isLate(entry)).length;
-      const leaveCount = dayEntries.filter(entry => entry.status === 'leave').length;
+      const leaveCount = dayEntries.filter(entry => entry.leaveStatus === 'approved').length;
 
       return {
         date,
@@ -1355,5 +1388,16 @@ export class TeamPointageComponent implements OnInit, AfterViewInit, OnDestroy {
   private formatDayLabel(date: Date): string {
     const days = ['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam'];
     return `${days[date.getDay()]} ${date.getDate()}/${date.getMonth() + 1}`;
+  }
+
+  private loadCongeRequests() {
+    this.congeService.getCongeRequests().subscribe({
+      next: (requests) => {
+        this.congeRequests = requests;
+      },
+      error: (error) => {
+        console.error('Error loading conge requests:', error);
+      }
+    });
   }
 }

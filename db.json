@@ -218,6 +218,42 @@
       "status": "late",
       "isLate": true,
       "id": 4
+    },
+    {
+      "userId": 2,
+      "date": "2025-01-02T07:56:10.333Z",
+      "checkIn": "08:56:10",
+      "checkOut": "18:56:05",
+      "lunchStart": null,
+      "lunchEnd": null,
+      "totalHours": 10,
+      "status": "present",
+      "isLate": false,
+      "id": 5
+    },
+    {
+      "userId": 2,
+      "date": "2025-01-03T08:57:10.599Z",
+      "checkIn": "09:57:10",
+      "checkOut": "18:08:06",
+      "lunchStart": null,
+      "lunchEnd": null,
+      "totalHours": 8.18,
+      "status": "late",
+      "isLate": true,
+      "id": 6
+    },
+    {
+      "userId": 2,
+      "date": "2025-01-04T07:10:40.594Z",
+      "checkIn": "08:10:40",
+      "checkOut": "18:00:15",
+      "lunchStart": "13:11:25",
+      "lunchEnd": "14:11:14",
+      "totalHours": 8.83,
+      "status": "present",
+      "isLate": false,
+      "id": 7
     }
   ],
   "leave-requests": [],
