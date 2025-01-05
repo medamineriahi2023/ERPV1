@@ -233,6 +233,14 @@
                                 pTooltip="Start Voice Call">
                         </button>
                         <button pButton 
+                                *ngIf="(roomCallService.callState$ | async)?.isInCall"
+                                [icon]="isMuted ? 'pi pi-volume-off' : 'pi pi-volume-up'"
+                                class="p-button-rounded" 
+                                (click)="toggleMute()"
+                                [class.p-button-danger]="isMuted"
+                                pTooltip="{{isMuted ? 'Unmute' : 'Mute'}}">
+                        </button>
+                        <button pButton 
                                 icon="pi pi-sign-out" 
                                 class="p-button-text p-button-danger"
                                 (click)="leaveRoom()"

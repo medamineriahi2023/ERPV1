@@ -22,6 +22,7 @@ import {Avatar} from "primeng/avatar";
 import {AsyncPipe, DatePipe, NgClass, NgForOf, NgIf, NgSwitch, NgSwitchCase} from "@angular/common";
 import {Chip} from "primeng/chip";
 import {ButtonDirective} from "primeng/button";
+import {InputText} from "primeng/inputtext";
 
 @Component({
   selector: 'app-messaging',
@@ -41,7 +42,9 @@ import {ButtonDirective} from "primeng/button";
     ScrollPanel,
     NgIf,
     NgForOf,
-    AsyncPipe
+    AsyncPipe,
+    Tooltip,
+    InputText
   ],
   providers: [RoomCallService]
 })
@@ -54,7 +57,9 @@ export class MessagingComponent implements OnInit, OnDestroy {
   searchTerm: string = '';
   unreadCounts: { [key: string]: number } = {};
   currentUserId: string;
+  currentUser: any;
   isMobileView = false;
+  isMuted = false;
   private searchTermSubject = new BehaviorSubject<string>('');
   private subscriptions: Subscription[] = [];
   callStatus: CallStatus = {status: 'idle'};
@@ -64,7 +69,6 @@ export class MessagingComponent implements OnInit, OnDestroy {
   private videoCallStatusSubscription: Subscription | undefined;
   callDuration: string = '00:00';
   private callTimer: any;
-  currentUser: User;
   rooms: Room[] = [];
   selectedRoom: Room | null = null;
   showRoomDialog = false;
@@ -746,29 +750,14 @@ export class MessagingComponent implements OnInit, OnDestroy {
     
     audioElement.srcObject = stream;
   }
+  
 
-  async toggleRoomCall() {
-    if (!this.selectedRoom) return;
-
-    try {
-      if (this.isInCall) {
-        await this.endRoomCall();
-      } else {
-        const isCallActive = await this.roomCallService.isCallActive(String(this.selectedRoom.id))
-          .pipe(take(1))
-          .toPromise();
-
-        if (isCallActive) {
-          await this.joinRoomCall();
-        } else {
-          await this.startRoomCall();
-        }
-      }
-    } catch (error) {
-      console.error('Error toggling room call:', error);
-      // Show error message to user
-    }
+  toggleMute(): void {
+    this.isMuted = !this.isMuted;
+    this.roomCallService.toggleMute();
   }
+
+
 
   protected async startRoomCall() {
     if (!this.selectedRoom || !this.currentUser) return;
@@ -777,8 +766,8 @@ export class MessagingComponent implements OnInit, OnDestroy {
       await this.roomCallService.startCall(String(this.selectedRoom.id), String(this.currentUser.id));
       
       // Send system message about call start
-      const message = `${this.currentUser.firstName} ${this.currentUser.lastName} started a voice call`;
-      await this.sendSystemMessage(message);
+      // const message = `${this.currentUser.firstName} ${this.currentUser.lastName} started a voice call`;
+      // await this.sendSystemMessage(message);
     } catch (error) {
       console.error('Error starting call:', error);
       // Show error message to user
@@ -792,8 +781,8 @@ export class MessagingComponent implements OnInit, OnDestroy {
       await this.roomCallService.joinCall(String(this.selectedRoom.id), String(this.currentUser.id));
       
       // Send system message about joining call
-      const message = `${this.currentUser.firstName} ${this.currentUser.lastName} joined the voice call`;
-      await this.sendSystemMessage(message);
+      // const message = `${this.currentUser.firstName} ${this.currentUser.lastName} joined the voice call`;
+      // await this.sendSystemMessage(message);
     } catch (error) {
       console.error('Error joining call:', error);
       // Show error message to user

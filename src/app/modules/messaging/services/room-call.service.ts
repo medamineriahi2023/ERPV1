@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { Database, ref, set, onValue, remove, get } from '@angular/fire/database';
+import { Database, ref, set, onValue, remove, get, off } from '@angular/fire/database';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { AuthService } from '../../../core/services/auth.service';
 
@@ -9,16 +9,25 @@ interface RoomCallState {
   initiator: string;
 }
 
+interface ICECandidateData {
+  candidate: string;
+  sdpMid: string | null;
+  sdpMLineIndex: number | null;
+  usernameFragment: string | null;
+}
+
 @Injectable({
   providedIn: 'root'
 })
 export class RoomCallService {
   private peerConnections: { [userId: string]: RTCPeerConnection } = {};
-  private localStream: MediaStream | null = null;
+  private _localStream: MediaStream | null = null;
   private remoteStreams: { [userId: string]: MediaStream } = {};
   private audioElements: { [userId: string]: HTMLAudioElement } = {};
   private currentRoomId: string | null = null;
   private db: Database = inject(Database);
+  private signallingListeners: { [key: string]: any } = {};
+  private candidateListeners: { [key: string]: any } = {};
 
   private callStateSubject = new BehaviorSubject<{
     isInCall: boolean;
@@ -30,13 +39,32 @@ export class RoomCallService {
 
   callState$ = this.callStateSubject.asObservable();
 
+  private _isMuted = false;
+
+  get isMuted(): boolean {
+    return this._isMuted;
+  }
+
+  toggleMute(): void {
+    if (this._localStream) {
+      const audioTracks = this._localStream.getAudioTracks();
+      audioTracks.forEach(track => {
+        track.enabled = !track.enabled;
+        this._isMuted = !track.enabled;
+      });
+    }
+  }
+
   constructor(private authService: AuthService) {}
+
+  get localStream(): MediaStream | null {
+    return this._localStream;
+  }
 
   private createAudioElement(userId: string): HTMLAudioElement {
     const audio = new Audio();
+    audio.id = `audio-${userId}`;
     audio.autoplay = true;
-    audio.id = `remote-audio-${userId}`;
-    document.body.appendChild(audio);
     return audio;
   }
 
@@ -44,63 +72,32 @@ export class RoomCallService {
     try {
       this.currentRoomId = roomId;
       
-      // Get user media
-      this.localStream = await navigator.mediaDevices.getUserMedia({
-        audio: true,
-        video: false
+      // Get user media with specific audio constraints
+      this._localStream = await navigator.mediaDevices.getUserMedia({
+        audio: {
+          echoCancellation: true,
+          noiseSuppression: true,
+          autoGainControl: true
+        }
       });
 
-      // Get current room call state
-      const snapshot = await get(ref(this.db, `roomCalls/${roomId}`));
-      const currentCall = snapshot.val();
-
-      // Initialize or update room call state in Firebase
-      if (!currentCall || !currentCall.active) {
-        await set(ref(this.db, `roomCalls/${roomId}`), {
+      // Set up room call data
+      const roomCallRef = ref(this.db, `roomCalls/${roomId}`);
+      const snapshot = await get(roomCallRef);
+      
+      if (!snapshot.exists()) {
+        await set(roomCallRef, {
           active: true,
-          initiator: userId,
           participants: {
             [userId]: true
           }
         });
       } else {
-        // Add participant to existing call
         await set(ref(this.db, `roomCalls/${roomId}/participants/${userId}`), true);
       }
 
       // Listen for participants changes
-      onValue(ref(this.db, `roomCalls/${roomId}/participants`), (snapshot) => {
-        const participants = snapshot.val() || {};
-        const participantIds = Object.keys(participants);
-        
-        // Update state
-        this.callStateSubject.next({
-          isInCall: true,
-          participants: participantIds
-        });
-
-        // Connect with new participants
-        participantIds.forEach(participantId => {
-          if (participantId !== userId && !this.peerConnections[participantId]) {
-            this.connectWithUser(participantId, roomId, userId);
-          }
-        });
-      });
-
-      // Listen for ICE candidates from other participants
-      onValue(ref(this.db, `roomCalls/${roomId}/candidates`), (snapshot) => {
-        const candidates = snapshot.val() || {};
-        Object.entries(candidates).forEach(([senderId, senderCandidates]: [string, any]) => {
-          if (senderId !== userId) {
-            Object.values(senderCandidates).forEach((candidate: any) => {
-              const pc = this.peerConnections[senderId];
-              if (pc && candidate) {
-                pc.addIceCandidate(new RTCIceCandidate(candidate));
-              }
-            });
-          }
-        });
-      });
+      this.setupParticipantListener(roomId, userId);
 
     } catch (error) {
       console.error('Error starting call:', error);
@@ -108,85 +105,21 @@ export class RoomCallService {
     }
   }
 
-  async joinCall(roomId: string, userId: string): Promise<void> {
-    try {
-      this.currentRoomId = roomId;
-      
-      // Get user media
-      this.localStream = await navigator.mediaDevices.getUserMedia({
-        audio: true,
-        video: false
-      });
+  private async initiatePeerConnection(remoteUserId: string, roomId: string, localUserId: string) {
+    console.log(`Initiating connection with ${remoteUserId}`);
 
-      // Add participant to room
-      await set(ref(this.db, `roomCalls/${roomId}/participants/${userId}`), true);
-
-      // Get current participants and establish connections
-      const snapshot = await get(ref(this.db, `roomCalls/${roomId}/participants`));
-      const participants = snapshot.val() || {};
-
-      // Connect with existing participants
-      Object.keys(participants).forEach(participantId => {
-        if (participantId !== userId && !this.peerConnections[participantId]) {
-          this.connectWithUser(participantId, roomId, userId);
-        }
-      });
-
-      // Listen for new participants
-      onValue(ref(this.db, `roomCalls/${roomId}/participants`), (snapshot) => {
-        const participants = snapshot.val() || {};
-        const participantIds = Object.keys(participants);
-        
-        // Update state
-        this.callStateSubject.next({
-          isInCall: true,
-          participants: participantIds
-        });
-
-        // Connect with new participants
-        participantIds.forEach(participantId => {
-          if (participantId !== userId && !this.peerConnections[participantId]) {
-            this.connectWithUser(participantId, roomId, userId);
-          }
-        });
-      });
-
-      // Listen for ICE candidates
-      onValue(ref(this.db, `roomCalls/${roomId}/candidates`), (snapshot) => {
-        const candidates = snapshot.val() || {};
-        Object.entries(candidates).forEach(([senderId, senderCandidates]: [string, any]) => {
-          if (senderId !== userId) {
-            Object.values(senderCandidates).forEach((candidate: any) => {
-              const pc = this.peerConnections[senderId];
-              if (pc && candidate) {
-                pc.addIceCandidate(new RTCIceCandidate(candidate));
-              }
-            });
-          }
-        });
-      });
-
-    } catch (error) {
-      console.error('Error joining call:', error);
-      throw error;
+    // Clean up any existing connection
+    if (this.peerConnections[remoteUserId]) {
+      this.peerConnections[remoteUserId].close();
+      delete this.peerConnections[remoteUserId];
     }
-  }
-
-  private async connectWithUser(remoteUserId: string, roomId: string, localUserId: string) {
-    console.log(`Connecting with user ${remoteUserId}`);
 
     const pc = new RTCPeerConnection({
       iceServers: [
-        {
-          urls: "stun:stun.relay.metered.ca:80",
-        },
+        { urls: 'stun:stun.l.google.com:19302' },
+        { urls: 'stun:stun1.l.google.com:19302' },
         {
           urls: "turn:eu-west.relay.metered.ca:80",
-          username: "f62b917dabb7524388421224",
-          credential: "ut/b3FhDJE9dFzX8",
-        },
-        {
-          urls: "turn:eu-west.relay.metered.ca:80?transport=tcp",
           username: "f62b917dabb7524388421224",
           credential: "ut/b3FhDJE9dFzX8",
         },
@@ -194,96 +127,241 @@ export class RoomCallService {
           urls: "turn:eu-west.relay.metered.ca:443",
           username: "f62b917dabb7524388421224",
           credential: "ut/b3FhDJE9dFzX8",
-        },
-        {
-          urls: "turns:eu-west.relay.metered.ca:443?transport=tcp",
-          username: "f62b917dabb7524388421224",
-          credential: "ut/b3FhDJE9dFzX8",
-        },
-      ],
+        }
+      ]
     });
+
+    // Store connection
+    this.peerConnections[remoteUserId] = pc;
 
     // Add local stream
-    this.localStream?.getTracks().forEach(track => {
-      if (this.localStream) {
-        pc.addTrack(track, this.localStream);
-      }
-    });
+    if (this._localStream) {
+      this._localStream.getTracks().forEach(track => {
+        console.log('Adding track to peer connection:', track.kind);
+        pc.addTrack(track, this._localStream!);
+      });
+    }
 
     // Handle ICE candidates
-    pc.onicecandidate = ({ candidate }) => {
-      if (candidate) {
-        set(ref(this.db, `roomCalls/${roomId}/candidates/${localUserId}/${Date.now()}`), 
-            candidate.toJSON());
+    pc.onicecandidate = async ({ candidate }) => {
+      if (candidate && this.currentRoomId && pc.connectionState !== 'closed') {
+        try {
+          const candidateData: ICECandidateData = {
+            candidate: candidate.candidate,
+            sdpMid: candidate.sdpMid,
+            sdpMLineIndex: candidate.sdpMLineIndex,
+            usernameFragment: candidate.usernameFragment
+          };
+          
+          await set(
+            ref(this.db, `roomCalls/${this.currentRoomId}/candidates/${localUserId}_${remoteUserId}_${Date.now()}`),
+            candidateData
+          );
+        } catch (error) {
+          console.error('Error sending ICE candidate:', error);
+        }
       }
     };
 
     // Handle remote stream
     pc.ontrack = (event) => {
-      console.log('Received remote track');
+      console.log('Received remote track:', event.track.kind);
+      
       if (!this.remoteStreams[remoteUserId]) {
         this.remoteStreams[remoteUserId] = new MediaStream();
-        
         const audio = this.createAudioElement(remoteUserId);
         this.audioElements[remoteUserId] = audio;
         audio.srcObject = this.remoteStreams[remoteUserId];
+        audio.volume = 1.0;
+        document.body.appendChild(audio);
+        
+        const playAudio = async () => {
+          try {
+            await audio.play();
+            console.log('Successfully playing audio for:', remoteUserId);
+          } catch (error) {
+            console.error('Error playing audio:', error);
+            document.addEventListener('click', () => {
+              audio.play().catch(console.error);
+            }, { once: true });
+          }
+        };
+        playAudio();
       }
       
-      event.streams[0].getTracks().forEach(track => {
-        this.remoteStreams[remoteUserId].addTrack(track);
-      });
+      this.remoteStreams[remoteUserId].addTrack(event.track);
     };
 
-    // Store connection
-    this.peerConnections[remoteUserId] = pc;
-
-    // Handle signaling
-    const signaling = ref(this.db, `roomCalls/${roomId}/signaling/${localUserId}_${remoteUserId}`);
-    const remoteSignaling = ref(this.db, `roomCalls/${roomId}/signaling/${remoteUserId}_${localUserId}`);
-
-    // Listen for remote signaling
-    onValue(remoteSignaling, async (snapshot) => {
-      const data = snapshot.val();
-      if (!data) return;
-
-      try {
-        if (data.type === 'offer') {
-          await pc.setRemoteDescription(new RTCSessionDescription(data));
-          const answer = await pc.createAnswer();
-          await pc.setLocalDescription(answer);
-          await set(signaling, { type: 'answer', sdp: answer.sdp });
-        }
-        else if (data.type === 'answer') {
-          await pc.setRemoteDescription(new RTCSessionDescription(data));
-        }
-      } catch (error) {
-        console.error('Error handling signaling:', error);
+    // Handle connection state changes
+    pc.onconnectionstatechange = () => {
+      console.log(`Connection state with ${remoteUserId}:`, pc.connectionState);
+      if (pc.connectionState === 'failed' || pc.connectionState === 'disconnected') {
+        this.handleConnectionFailure(remoteUserId, roomId, localUserId);
       }
-    });
+    };
 
-    // Handle ICE candidates
-    onValue(ref(this.db, `roomCalls/${roomId}/candidates/${remoteUserId}`), (snapshot) => {
-      const candidates = snapshot.val();
-      if (candidates) {
-        Object.values(candidates).forEach((candidate: any) => {
-          pc.addIceCandidate(new RTCIceCandidate(candidate))
-            .catch(error => console.error('Error adding ICE candidate:', error));
-        });
-      }
-    });
-
-    // Create offer if we're the initiator
+    // Create and send offer immediately if we're the initiator
     if (localUserId < remoteUserId) {
       try {
-        const offer = await pc.createOffer();
+        const offer = await pc.createOffer({
+          offerToReceiveAudio: true,
+        });
+        
         await pc.setLocalDescription(offer);
-        await set(signaling, { type: 'offer', sdp: offer.sdp });
+        
+        await set(
+          ref(this.db, `roomCalls/${roomId}/signaling/${localUserId}_${remoteUserId}`),
+          { type: offer.type, sdp: offer.sdp }
+        );
       } catch (error) {
         console.error('Error creating offer:', error);
       }
     }
 
+    // Setup signaling
+    await this.setupSignalingListener(pc, remoteUserId, roomId, localUserId);
+    await this.setupCandidateListener(pc, remoteUserId, roomId);
+
     return pc;
+  }
+
+  private async handleConnectionFailure(remoteUserId: string, roomId: string, localUserId: string) {
+    console.log('Handling connection failure for:', remoteUserId);
+    
+    // Clean up old connection
+    if (this.peerConnections[remoteUserId]) {
+      this.peerConnections[remoteUserId].close();
+      delete this.peerConnections[remoteUserId];
+    }
+
+    // Clean up audio elements
+    if (this.audioElements[remoteUserId]) {
+      this.audioElements[remoteUserId].remove();
+      delete this.audioElements[remoteUserId];
+    }
+
+    // Clean up streams
+    if (this.remoteStreams[remoteUserId]) {
+      delete this.remoteStreams[remoteUserId];
+    }
+
+    // Attempt to establish a new connection
+    await this.initiatePeerConnection(remoteUserId, roomId, localUserId);
+  }
+
+  private setupCandidateListener(pc: RTCPeerConnection, remoteUserId: string, roomId: string) {
+    if (this.candidateListeners[remoteUserId]) {
+      off(ref(this.db, `roomCalls/${roomId}/candidates`), this.candidateListeners[remoteUserId]);
+    }
+
+    const listener = onValue(ref(this.db, `roomCalls/${roomId}/candidates`), async (snapshot) => {
+      const candidates = snapshot.val();
+      if (!candidates) return;
+
+      for (const [key, candidateData] of Object.entries(candidates)) {
+        if (key.startsWith(remoteUserId) && 
+            pc.remoteDescription && 
+            pc.connectionState !== 'disconnected' && 
+            pc.signalingState !== 'closed') {
+          try {
+            const iceCandidate = candidateData as ICECandidateData;
+            
+            if (!iceCandidate.candidate) continue;
+
+            const candidate = new RTCIceCandidate({
+              candidate: iceCandidate.candidate,
+              sdpMid: iceCandidate.sdpMid || '0',
+              sdpMLineIndex: iceCandidate.sdpMLineIndex || 0,
+              usernameFragment: iceCandidate.usernameFragment || undefined
+            });
+
+            await pc.addIceCandidate(candidate);
+            
+            // Clean up processed candidate
+            await remove(ref(this.db, `roomCalls/${roomId}/candidates/${key}`));
+          } catch (error) {
+            console.error('Error processing ICE candidate:', error);
+            // Remove the candidate if it's invalid or the connection is disconnected
+            if (error.name === 'InvalidStateError' || ['disconnected', 'failed'].includes(pc.connectionState)) {
+              await remove(ref(this.db, `roomCalls/${roomId}/candidates/${key}`));
+            }
+          }
+        }
+      }
+    });
+
+    this.candidateListeners[remoteUserId] = listener;
+  }
+
+  private async setupSignalingListener(pc: RTCPeerConnection, remoteUserId: string, roomId: string, localUserId: string) {
+    if (this.signallingListeners[remoteUserId]) {
+      off(ref(this.db, `roomCalls/${roomId}/signaling`), this.signallingListeners[remoteUserId]);
+    }
+
+    const listener = onValue(ref(this.db, `roomCalls/${roomId}/signaling`), async (snapshot) => {
+      const signaling = snapshot.val();
+      if (!signaling) return;
+
+      const remoteKey = `${remoteUserId}_${localUserId}`;
+      const localKey = `${localUserId}_${remoteUserId}`;
+
+      if (signaling[remoteKey] && !['disconnected', 'failed'].includes(pc.connectionState)) {
+        const data = signaling[remoteKey];
+        try {
+          if (data.type === 'offer') {
+            await pc.setRemoteDescription(new RTCSessionDescription(data));
+            
+            const answer = await pc.createAnswer();
+            await pc.setLocalDescription(answer);
+            
+            await set(ref(this.db, `roomCalls/${roomId}/signaling/${localKey}`), {
+              type: answer.type,
+              sdp: answer.sdp
+            });
+
+            // Clean up the offer after processing
+            await remove(ref(this.db, `roomCalls/${roomId}/signaling/${remoteKey}`));
+          } else if (data.type === 'answer' && pc.signalingState === 'have-local-offer') {
+            await pc.setRemoteDescription(new RTCSessionDescription(data));
+            
+            // Clean up the answer after processing
+            await remove(ref(this.db, `roomCalls/${roomId}/signaling/${remoteKey}`));
+          }
+        } catch (error) {
+          console.error('Error handling signaling message:', error);
+        }
+      }
+    });
+
+    this.signallingListeners[remoteUserId] = listener;
+  }
+
+  private setupParticipantListener(roomId: string, userId: string) {
+    const participantsRef = ref(this.db, `roomCalls/${roomId}/participants`);
+    onValue(participantsRef, async (snapshot) => {
+      const participants = snapshot.val() || {};
+      const participantIds = Object.keys(participants);
+      
+      // Update state
+      this.callStateSubject.next({
+        isInCall: true,
+        participants: participantIds
+      });
+
+      // If there are no participants, remove the entire roomCall
+      if (participantIds.length === 0) {
+        await remove(ref(this.db, `roomCalls/${roomId}`));
+        this.cleanup();
+        return;
+      }
+
+      // Connect with all participants except self
+      for (const participantId of participantIds) {
+        if (participantId !== userId && !this.peerConnections[participantId]) {
+          await this.initiatePeerConnection(participantId, roomId, userId);
+        }
+      }
+    });
   }
 
   async leaveCall(roomId: string, userId: string): Promise<void> {
@@ -291,93 +369,83 @@ export class RoomCallService {
       // Remove participant from room call
       await remove(ref(this.db, `roomCalls/${roomId}/participants/${userId}`));
 
-      // Clean up peer connections
-      Object.keys(this.peerConnections).forEach(peerId => {
-        this.peerConnections[peerId].close();
-        delete this.peerConnections[peerId];
-      });
-
-      // Clean up audio elements
-      Object.keys(this.audioElements).forEach(peerId => {
-        this.audioElements[peerId].remove();
-        delete this.audioElements[peerId];
-      });
-
-      // Stop local stream
-      this.localStream?.getTracks().forEach(track => track.stop());
-      this.localStream = null;
-
-      // Update state
-      this.callStateSubject.next({
-        isInCall: false,
-        participants: []
-      });
-
-      // Check if room call is empty
+      // Check if room is empty and clean up if it is
       const snapshot = await get(ref(this.db, `roomCalls/${roomId}/participants`));
-      const participants = snapshot.val();
-      if (!participants || Object.keys(participants).length === 0) {
-        // If no participants left, remove the room call
+      if (!snapshot.exists() || Object.keys(snapshot.val() || {}).length === 0) {
+        // Remove all room call data
+        await remove(ref(this.db, `roomCalls/${roomId}/signaling`));
+        await remove(ref(this.db, `roomCalls/${roomId}/candidates`));
         await remove(ref(this.db, `roomCalls/${roomId}`));
       }
 
+      // Cleanup local resources
+      this.cleanup();
+      
     } catch (error) {
       console.error('Error leaving call:', error);
       throw error;
     }
   }
 
-  async endCall() {
+  private cleanup() {
+    // Stop local stream
+    this._localStream?.getTracks().forEach(track => track.stop());
+    this._localStream = null;
+
+    // Close peer connections
+    Object.values(this.peerConnections).forEach(pc => pc.close());
+    this.peerConnections = {};
+
+    // Remove audio elements
+    Object.values(this.audioElements).forEach(audio => {
+      if (audio.srcObject) {
+        audio.srcObject = null;
+      }
+      audio.remove();
+    });
+
+    // Clear all streams and elements
+    this.remoteStreams = {};
+    this.audioElements = {};
+
+    // Remove all listeners
+    if (this.currentRoomId) {
+      Object.values(this.signallingListeners).forEach(listener => {
+        off(ref(this.db, `roomCalls/${this.currentRoomId}/signaling`), listener);
+      });
+      Object.values(this.candidateListeners).forEach(listener => {
+        off(ref(this.db, `roomCalls/${this.currentRoomId}/candidates`), listener);
+      });
+    }
+    this.signallingListeners = {};
+    this.candidateListeners = {};
+
+    // Reset room ID and state
+    this.currentRoomId = null;
+    this.callStateSubject.next({
+      isInCall: false,
+      participants: []
+    });
+  }
+
+  async joinCall(roomId: string, userId: string): Promise<void> {
+    await this.startCall(roomId, userId);
+  }
+
+  async endCall(): Promise<void> {
     if (this.currentRoomId) {
       const userId = this.authService.getCurrentUser()?.id;
       if (userId) {
-        try {
-          // Remove from room
-          await remove(ref(this.db, `roomCalls/${this.currentRoomId}/participants/${userId}`));
-
-          // Check if there are any participants left
-          const participantsSnapshot = await get(ref(this.db, `roomCalls/${this.currentRoomId}/participants`));
-          const remainingParticipants = participantsSnapshot.val();
-
-          // If no participants left, clean up the entire room call data
-          if (!remainingParticipants || Object.keys(remainingParticipants).length === 0) {
-            await remove(ref(this.db, `roomCalls/${this.currentRoomId}`));
-          }
-
-          // Cleanup connections
-          Object.values(this.peerConnections).forEach(pc => pc.close());
-          this.peerConnections = {};
-
-          // Stop local stream
-          this.localStream?.getTracks().forEach(track => track.stop());
-          this.localStream = null;
-
-          // Cleanup remote streams
-          Object.values(this.audioElements).forEach(audio => {
-            audio.srcObject = null;
-            audio.remove();
-          });
-          this.audioElements = {};
-          this.remoteStreams = {};
-
-          // Update state
-          this.callStateSubject.next({
-            isInCall: false,
-            participants: []
-          });
-
-          this.currentRoomId = null;
-        } catch (error) {
-          console.error('Error ending call:', error);
-        }
+        await this.leaveCall(this.currentRoomId, String(userId));
       }
     }
   }
 
   isCallActive(roomId: string): Observable<boolean> {
     return new Observable<boolean>(observer => {
-      const unsubscribe = onValue(ref(this.db, `roomCalls/${roomId}/active`), (snapshot) => {
-        observer.next(!!snapshot.val());
+      const unsubscribe = onValue(ref(this.db, `roomCalls/${roomId}/participants`), (snapshot) => {
+        const participants = snapshot.val();
+        observer.next(!!participants && Object.keys(participants).length > 0);
       });
       return () => unsubscribe();
     });
