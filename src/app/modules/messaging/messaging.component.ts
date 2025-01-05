@@ -943,4 +943,11 @@ export class MessagingComponent implements OnInit, OnDestroy {
     const user = this.filteredUsers.find(u => String(u.userId) === userId);
     return user?.photoUrl || this.currentUser.photoUrl;
   }
+
+  // Add this property to track collapse state
+  isVoiceCallCollapsed = false;
+
+  toggleVoiceCallCollapse() {
+    this.isVoiceCallCollapsed = !this.isVoiceCallCollapsed;
+  }
 }

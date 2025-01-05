@@ -261,11 +261,18 @@
                 <!-- Voice Call Interface -->
                 <div class="voice-call-interface" *ngIf="(roomCallService.callState$ | async)?.isInCall">
                     <div class="call-header">
-                        <h3>
+                        <div class="call-title">
                             <i class="pi pi-phone"></i>
-                            Voice Call
-                        </h3>
-                        <div class="call-actions">
+                            <h3>Voice Call</h3>
+                        </div>
+                        <div class="call-controls">
+                            <button pButton
+                                    type="button"
+                                    [icon]="isVoiceCallCollapsed ? 'pi pi-chevron-down' : 'pi pi-chevron-up'"
+                                    class="p-button-rounded p-button-text"
+                                    (click)="toggleVoiceCallCollapse()"
+                                    pTooltip="{{isVoiceCallCollapsed ? 'Expand' : 'Collapse'}}">
+                            </button>
                             <button pButton
                                     type="button"
                                     icon="pi pi-sign-out"
@@ -282,7 +289,7 @@
                             </button>
                         </div>
                     </div>
-                    <div class="call-participants">
+                    <div class="call-participants" [class.collapsed]="isVoiceCallCollapsed">
                         <div class="participant" *ngFor="let participant of (roomCallService.callState$ | async)?.participants">
                             <p-avatar [image]="getParticipantPhoto(participant)"
                                      size="normal"
