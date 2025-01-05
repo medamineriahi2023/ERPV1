@@ -227,38 +227,33 @@
                     <div class="room-actions">
                         <button pButton 
                                 icon="pi pi-phone" 
-                                class="p-button-text"
-                                [class.active]="(roomCallService.callState$ | async)?.isInCall"
+                                [class.p-button-text]="!(roomCallService.callState$ | async)?.isInCall"
+                                [class.p-button-success]="(roomCallService.callState$ | async)?.isInCall"
                                 (click)="startRoomCall()"
                                 pTooltip="Start Voice Call">
                         </button>
                         <button pButton 
                                 *ngIf="(roomCallService.callState$ | async)?.isInCall"
                                 [icon]="isMuted ? 'pi pi-volume-off' : 'pi pi-volume-up'"
-                                class="p-button-rounded" 
-                                (click)="toggleMute()"
+                                [class.p-button-text]="!isMuted"
                                 [class.p-button-danger]="isMuted"
+                                (click)="toggleMute()"
                                 pTooltip="{{isMuted ? 'Unmute' : 'Mute'}}">
                         </button>
                         <button pButton 
                                 *ngIf="(roomCallService.callState$ | async)?.isInCall"
                                 [icon]="(roomScreenShareService.screenShareState$ | async)?.isScreenSharing ? 'pi pi-stop' : 'pi pi-desktop'"
-                                class="p-button-rounded" 
+                                [class.p-button-text]="!(roomScreenShareService.screenShareState$ | async)?.isScreenSharing"
+                                [class.p-button-success]="(roomScreenShareService.screenShareState$ | async)?.isScreenSharing"
                                 (click)="toggleScreenShare()"
                                 [disabled]="!(roomScreenShareService.screenShareState$ | async)?.canShare"
-                                [class.p-button-success]="(roomScreenShareService.screenShareState$ | async)?.isScreenSharing"
-                                [pTooltip]="(roomScreenShareService.screenShareState$ | async)?.isScreenSharing ? 'Stop Sharing' : 'Share Screen'">
+                                pTooltip="{{(roomScreenShareService.screenShareState$ | async)?.isScreenSharing ? 'Stop Sharing' : 'Share Screen'}}">
                         </button>
                         <button pButton 
                                 icon="pi pi-sign-out" 
-                                class="p-button-text p-button-danger"
+                                class="p-button-danger"
                                 (click)="leaveRoom()"
                                 pTooltip="Leave Room">
-                        </button>
-                        <button pButton 
-                                icon="pi pi-ellipsis-v" 
-                                class="p-button-text"
-                                pTooltip="More Options">
                         </button>
                     </div>
                 </div>

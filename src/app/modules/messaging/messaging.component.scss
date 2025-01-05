@@ -741,6 +741,38 @@
           display: flex;
           align-items: center;
           gap: 0.5rem;
+          flex-wrap: wrap;
+
+          @media screen and (max-width: 430px) {
+            position: fixed;
+            bottom: 80px;
+            left: 0;
+            right: 0;
+            background: var(--surface-card);
+            padding: 0.5rem;
+            justify-content: center;
+            box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.1);
+            z-index: 100;
+
+            button {
+              margin: 0 0.25rem;
+
+              &.p-button-text {
+                color: var(--primary-color);
+              }
+
+              &.p-button-danger {
+                background: var(--red-500);
+                border-color: var(--red-500);
+                color: white;
+
+                &:hover {
+                  background: var(--red-600);
+                  border-color: var(--red-600);
+                }
+              }
+            }
+          }
 
           .p-button {
             width: 2.5rem !important;
@@ -789,6 +821,10 @@
       position: relative;
       height: calc(100vh - 160px); /* Adjust based on header and input heights */
       overflow-y: auto;
+
+      @media screen and (max-width: 430px) {
+        margin-bottom: 60px; // Add space for fixed action buttons
+      }
 
       .messages-container {
         padding: 1.5rem;
@@ -870,12 +906,12 @@
                 border: 1px solid var(--surface-border);
                 box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
                 transition: all 0.2s ease;
-                
+
                 .message-header {
                   padding: 0.5rem 0.5rem 0.25rem;
                   margin-bottom: 0;
                   justify-content: center;
-                  
+
                   .username {
                     color: var(--primary-color);
                     font-size: 0.85rem;
@@ -883,12 +919,12 @@
                     display: flex;
                     align-items: center;
                     gap: 0.5rem;
-                    
+
                     i {
                       font-size: 0.9rem;
                     }
                   }
-                  
+
                   .time {
                     font-size: 0.75rem;
                     opacity: 0.7;
@@ -1009,6 +1045,16 @@
       position: sticky;
       bottom: 0;
       left: 0;
+
+      @media screen and (max-width: 430px) {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: var(--surface-card);
+        padding: 0.5rem;
+        z-index: 101;
+      }
 
       .input-container {
         flex: 1;
@@ -1250,7 +1296,11 @@
     border-radius: 8px;
     overflow: hidden;
     margin: 1rem 0;
-  
+
+    @media screen and (max-width: 430px) {
+      margin-bottom: 140px; // Account for both action buttons and message input
+    }
+
     &[hidden] {
       display: none;
     }
