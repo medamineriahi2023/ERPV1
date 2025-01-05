@@ -19,10 +19,11 @@ import {User} from "@core/interfaces/user.interface";
 import {MultiSelect} from "primeng/multiselect";
 import {Dialog} from "primeng/dialog";
 import {Avatar} from "primeng/avatar";
-import {AsyncPipe, DatePipe, NgClass, NgForOf, NgIf, NgSwitch, NgSwitchCase} from "@angular/common";
+import {AsyncPipe, DatePipe, NgClass, NgForOf, NgIf, NgStyle, NgSwitch, NgSwitchCase} from "@angular/common";
 import {Chip} from "primeng/chip";
 import {ButtonDirective} from "primeng/button";
 import {InputText} from "primeng/inputtext";
+import { RoomScreenShareService } from './services/room-screen-share.service';
 
 @Component({
   selector: 'app-messaging',
@@ -44,9 +45,10 @@ import {InputText} from "primeng/inputtext";
     NgForOf,
     AsyncPipe,
     Tooltip,
-    InputText
+    InputText,
+    NgStyle
   ],
-  providers: [RoomCallService]
+  providers: [RoomCallService, RoomScreenShareService]
 })
 export class MessagingComponent implements OnInit, OnDestroy {
   userStatuses: UserStatusInfo[] = [];
@@ -77,11 +79,13 @@ export class MessagingComponent implements OnInit, OnDestroy {
   @ViewChild('scrollPanel') private scrollPanel!: ElementRef;
   private resizeObserver: ResizeObserver;
   private readonly MOBILE_BREAKPOINT = 768;
-
+  @ViewChild('screenShareVideo') screenShareVideo!: ElementRef<HTMLVideoElement>;
+  isScreenShareVisible = true;
+  screenSharingActive = false;
+  screenStream: MediaStream | null = null;
   isInCall: boolean = false;
   callParticipants: string[] = [];
   private remoteAudioElements: { [userId: string]: HTMLAudioElement } = {};
-
   get searchTermValue(): string {
     return this.searchTermSubject.value;
   }
@@ -100,6 +104,28 @@ export class MessagingComponent implements OnInit, OnDestroy {
     return user?.photoUrl || 'assets/images/default-avatar.png';
   }
 
+  getScreenSharerName(sharerId: string | null): string {
+    if (!sharerId) return '';
+    const user = this.userStatuses.find(u => String(u.userId) === sharerId);
+    return user ? user.username : 'Unknown user';
+  }
+
+  closeScreenShare() {
+    const screenShareState = this.roomScreenShareService.screenShareState;
+    if (screenShareState.isLocal) {
+      this.toggleScreenShare();
+    } else {
+      if (this.screenShareVideo) {
+        this.screenShareVideo.nativeElement.srcObject = null;
+      }
+      // Just hide the video for remote users
+      this.roomScreenShareService.screenShareStateSubject.next({
+        ...screenShareState,
+        isScreenSharing: false
+      });
+    }
+  }
+
   constructor(
       private messagingService: MessagingService,
       private authService: AuthService,
@@ -109,6 +135,7 @@ export class MessagingComponent implements OnInit, OnDestroy {
       private roomService: RoomService,
       private roomMessagingService: RoomMessagingService,
       protected roomCallService: RoomCallService,
+      public roomScreenShareService: RoomScreenShareService,
       private fb: FormBuilder
   ) {
     this.currentUserId = String(this.authService.getCurrentUser()?.id);
@@ -139,7 +166,7 @@ export class MessagingComponent implements OnInit, OnDestroy {
     // Load initial data
     this.loadRooms();
     // this.loadUsers();
-    
+
     // Start room refresh
     this.startRoomRefresh();
 
@@ -186,6 +213,31 @@ export class MessagingComponent implements OnInit, OnDestroy {
 
     // Listen for remote streams
     window.addEventListener('remote-stream-added', this.handleRemoteStream);
+
+    // Subscribe to screen share state changes
+    this.subscriptions.push(
+      this.roomScreenShareService.screenShareState$.subscribe(state => {
+        if (state.isScreenSharing) {
+          console.log('Screen share state changed:', state);
+          if (state.isLocal) {
+            // Local stream
+            if (this.roomScreenShareService.localStream) {
+              console.log('Setting local stream to video element');
+              this.screenShareVideo.nativeElement.srcObject = this.roomScreenShareService.localStream;
+            }
+          } else {
+            // Remote stream
+            const remoteStream = this.roomScreenShareService.remoteStream;
+            console.log('Remote stream available:', remoteStream?.active, remoteStream?.getTracks().length);
+            if (remoteStream) {
+              console.log('Setting remote stream to video element');
+              this.screenShareVideo.nativeElement.srcObject = remoteStream;
+              this.screenShareVideo.nativeElement.play().catch(err => console.error('Error playing video:', err));
+            }
+          }
+        }
+      })
+    );
   }
 
   private sortUsersByStatus(users: UserStatusInfo[]): UserStatusInfo[] {
@@ -216,7 +268,7 @@ export class MessagingComponent implements OnInit, OnDestroy {
 
     // Update the messages array with the selected user's messages
     this.messages = this.getMessagesWithUser(user.userId);
-    
+
     // Mark unread messages as read
     this.messages.forEach(message => {
       if (message.receiverId === String(this.authService.getCurrentUser()?.id) && !message.read) {
@@ -345,7 +397,7 @@ export class MessagingComponent implements OnInit, OnDestroy {
       if (this.selectedUser && this.currentMessage.trim()) {
         this.messagingService.sendMessage(this.selectedUser.userId, this.currentMessage.trim());
         this.currentMessage = '';
-        
+
         // Force view update and scroll
         setTimeout(() => {
           this.cdr.detectChanges();
@@ -354,7 +406,7 @@ export class MessagingComponent implements OnInit, OnDestroy {
       }
       // Scroll to bottom immediately after sending
       this.scrollToBottom(false);
-      
+
       // Clear input and blur it to hide mobile keyboard
       this.currentMessage = '';
       (document.activeElement as HTMLElement)?.blur();
@@ -389,7 +441,7 @@ export class MessagingComponent implements OnInit, OnDestroy {
       }
       // Scroll to bottom immediately after sending
       this.scrollToBottom(false);
-      
+
       // Clear input and blur it to hide mobile keyboard
       this.currentMessage = '';
       (document.activeElement as HTMLElement)?.blur();
@@ -460,7 +512,7 @@ export class MessagingComponent implements OnInit, OnDestroy {
 
   getMessagesWithUser(userId: string): Message[] {
     const currentUserId = String(this.authService.getCurrentUser()?.id);
-    return this.messages.filter(m => 
+    return this.messages.filter(m =>
       (m.senderId === userId && m.receiverId === currentUserId) ||
       (m.senderId === currentUserId && m.receiverId === userId)
     ).sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
@@ -672,7 +724,7 @@ export class MessagingComponent implements OnInit, OnDestroy {
 
   getRoomMessageDates(): string[] {
     if (!this.roomMessages?.length) return [];
-    
+
     const dates = new Set<string>();
     this.roomMessages.forEach(message => {
       const date = new Date(message.timestamp);
@@ -683,7 +735,7 @@ export class MessagingComponent implements OnInit, OnDestroy {
 
   getRoomMessagesByDate(date: string): RoomMessage[] {
     if (!this.roomMessages?.length) return [];
-    
+
     return this.roomMessages.filter(message => {
       const messageDate = new Date(message.timestamp);
       return messageDate.toDateString() === date;
@@ -739,7 +791,7 @@ export class MessagingComponent implements OnInit, OnDestroy {
 
   private handleRemoteStream = (event: any) => {
     const { userId, stream } = event.detail;
-    
+
     // Create or get audio element for this user
     let audioElement = this.remoteAudioElements[userId];
     if (!audioElement) {
@@ -747,24 +799,52 @@ export class MessagingComponent implements OnInit, OnDestroy {
       audioElement.autoplay = true;
       this.remoteAudioElements[userId] = audioElement;
     }
-    
+
     audioElement.srcObject = stream;
   }
-  
+
 
   toggleMute(): void {
     this.isMuted = !this.isMuted;
     this.roomCallService.toggleMute();
   }
 
+  async toggleScreenShare() {
+    try {
+      const roomId = this.selectedRoom?.id;
+      if (!roomId) return;
 
+      if (!this.screenSharingActive) {
+        await this.roomScreenShareService.startScreenShare(String(roomId));
+      } else {
+        await this.roomScreenShareService.stopScreenShare(String(roomId));
+      }
+    } catch (error) {
+      console.error('Error toggling screen share:', error);
+    }
+  }
+
+  async toggleFullScreen() {
+    const videoElement = this.screenShareVideo?.nativeElement;
+    if (!videoElement) return;
+
+    try {
+      if (!document.fullscreenElement) {
+        await videoElement.requestFullscreen();
+      } else {
+        await document.exitFullscreen();
+      }
+    } catch (error) {
+      console.error('Error toggling fullscreen:', error);
+    }
+  }
 
   protected async startRoomCall() {
     if (!this.selectedRoom || !this.currentUser) return;
 
     try {
       await this.roomCallService.startCall(String(this.selectedRoom.id), String(this.currentUser.id));
-      
+
       // Send system message about call start
       // const message = `${this.currentUser.firstName} ${this.currentUser.lastName} started a voice call`;
       // await this.sendSystemMessage(message);
@@ -779,7 +859,7 @@ export class MessagingComponent implements OnInit, OnDestroy {
 
     try {
       await this.roomCallService.joinCall(String(this.selectedRoom.id), String(this.currentUser.id));
-      
+
       // Send system message about joining call
       // const message = `${this.currentUser.firstName} ${this.currentUser.lastName} joined the voice call`;
       // await this.sendSystemMessage(message);
@@ -790,11 +870,16 @@ export class MessagingComponent implements OnInit, OnDestroy {
   }
 
   protected async leaveRoomCall() {
+    if (this.currentUser) {
+      await this.roomScreenShareService.stopScreenShare(String(this.selectedRoom.id));
+
+    }
+
     if (!this.selectedRoom || !this.currentUser) return;
 
     try {
       await this.roomCallService.leaveCall(String(this.selectedRoom.id), String(this.currentUser.id));
-      
+
       // Send system message about leaving call
       const message = `${this.currentUser.firstName} ${this.currentUser.lastName} left the voice call`;
       await this.sendSystemMessage(message);
@@ -808,8 +893,8 @@ export class MessagingComponent implements OnInit, OnDestroy {
     if (!this.currentUser) return;
 
     try {
-      await this.roomCallService.endCall();
-      
+      await this.roomScreenShareService.stopScreenShare(String(this.selectedRoom?.id));
+
       // Cleanup audio elements
       Object.values(this.remoteAudioElements).forEach(audio => {
         audio.srcObject = null;
@@ -838,7 +923,7 @@ export class MessagingComponent implements OnInit, OnDestroy {
         content,
         true
       ).toPromise();
-      
+
       this.cdr.detectChanges();
       this.scrollToBottom();
     } catch (error) {

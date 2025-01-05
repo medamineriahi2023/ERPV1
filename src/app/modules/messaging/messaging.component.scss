@@ -753,6 +753,7 @@
 
               &:hover {
                 background: var(--surface-hover);
+                color: var(--primary-color);
                 transform: translateY(-2px);
               }
 
@@ -1077,10 +1078,11 @@
     .call-header {
       display: flex;
       align-items: center;
-      justify-content: space-between;
+      gap: 1rem;
       padding: 1rem;
       background: var(--surface-section);
       border-bottom: 1px solid var(--surface-border);
+      height: 80px;
 
       h3 {
         display: flex;
@@ -1241,14 +1243,45 @@
     }
   }
 
-  @keyframes ripple {
-    0% {
-      transform: scale(0.8);
-      opacity: 1;
+  .screen-share-container {
+    position: relative;
+    width: 100%;
+    background: var(--surface-ground);
+    border-radius: 8px;
+    overflow: hidden;
+    margin: 1rem 0;
+  
+    &[hidden] {
+      display: none;
     }
-    100% {
-      transform: scale(1.5);
-      opacity: 0;
+
+    .screen-share-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.5rem 1rem;
+      background: var(--surface-section);
+      border-bottom: 1px solid var(--surface-border);
+
+      .screen-share-controls {
+        display: flex;
+        gap: 0.5rem;
+        align-items: center;
+      }
+    }
+
+    video {
+      width: 100%;
+      height: auto;
+      max-height: 70vh;
+      background: black;
+      display: block;
+
+      &:fullscreen {
+        max-height: none;
+        height: 100vh;
+        object-fit: contain;
+      }
     }
   }
 

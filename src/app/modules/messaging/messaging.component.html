@@ -58,7 +58,7 @@
                             <div class="user-info">
                                 <div class="user-name-time">
                                     <span class="user-name">{{user.username}}</span>
-                                    <span class="last-message-time" *ngIf="getLastMessageTime(user)">
+                                    <span class="last-message-time" [hidden]="!getLastMessageTime(user)">
                     {{getLastMessageTime(user) | date:'shortTime'}}
                   </span>
                                 </div>
@@ -184,7 +184,7 @@
         </div>
 
         <!-- Room Chat -->
-        <div class="chat-area-room" *ngIf="selectedRoom" [class.mobile-visible]="selectedRoom && isMobileView">
+        <div class="chat-area-room" [hidden]="!selectedRoom" [class.mobile-visible]="selectedRoom && isMobileView">
             <div class="chat-header">
                 <div class="room-header">
                     <button *ngIf="isMobileView" 
@@ -239,6 +239,15 @@
                                 (click)="toggleMute()"
                                 [class.p-button-danger]="isMuted"
                                 pTooltip="{{isMuted ? 'Unmute' : 'Mute'}}">
+                        </button>
+                        <button pButton 
+                                *ngIf="(roomCallService.callState$ | async)?.isInCall"
+                                [icon]="(roomScreenShareService.screenShareState$ | async)?.isScreenSharing ? 'pi pi-stop' : 'pi pi-desktop'"
+                                class="p-button-rounded" 
+                                (click)="toggleScreenShare()"
+                                [disabled]="!(roomScreenShareService.screenShareState$ | async)?.canShare"
+                                [class.p-button-success]="(roomScreenShareService.screenShareState$ | async)?.isScreenSharing"
+                                [pTooltip]="(roomScreenShareService.screenShareState$ | async)?.isScreenSharing ? 'Stop Sharing' : 'Share Screen'">
                         </button>
                         <button pButton 
                                 icon="pi pi-sign-out" 
@@ -364,6 +373,41 @@
                         </div>
                     </ng-template>
                 </div>
+            </div>
+            <div class="screen-share-container" 
+                 [hidden]="!((roomScreenShareService.screenShareState$ | async)?.isScreenSharing)"
+                 [ngStyle]="{'display': ((roomScreenShareService.screenShareState$ | async)?.isScreenSharing) ? 'block' : 'none'}">
+                <div class="screen-share-header">
+                    <span *ngIf="(roomScreenShareService.screenShareState$ | async)?.isLocal">
+                        You are sharing your screen
+                    </span>
+                    <span *ngIf="!(roomScreenShareService.screenShareState$ | async)?.isLocal">
+                        Screen being shared
+                    </span>
+                    <div class="screen-share-controls">
+                        <button pButton 
+                                type="button" 
+                                icon="pi pi-window-maximize" 
+                                class="p-button-rounded p-button-text"
+                                (click)="toggleFullScreen()"
+                                pTooltip="Toggle fullscreen">
+                        </button>
+                        <button pButton 
+                                *ngIf="(roomScreenShareService.screenShareState$ | async)?.isLocal"
+                                type="button" 
+                                icon="pi pi-times" 
+                                class="p-button-rounded p-button-text"
+                                (click)="toggleScreenShare()"
+                                pTooltip="Close screen share">
+                        </button>
+                    </div>
+                </div>
+                <video #screenShareVideo 
+                       [autoplay]="true" 
+                       [muted]="(roomScreenShareService.screenShareState$ | async)?.isLocal" 
+                       playsinline
+                       style="width: 100%; height: auto; background: black;">
+                </video>
             </div>
             <div class="message-input">
                 <button pButton type="button" icon="pi pi-paperclip" class="p-button-rounded p-button-text" [style]="{'width': '44px', 'height': '44px'}" aria-label="Attach file">

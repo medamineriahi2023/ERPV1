@@ -2,6 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { Database, ref, set, onValue, remove, get, off } from '@angular/fire/database';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { AuthService } from '../../../core/services/auth.service';
+import {RoomScreenShareService} from "@app/modules/messaging/services/room-screen-share.service";
 
 interface RoomCallState {
   active: boolean;
@@ -55,7 +56,8 @@ export class RoomCallService {
     }
   }
 
-  constructor(private authService: AuthService) {}
+  constructor(private authService: AuthService,
+              private roomScreenShareService: RoomScreenShareService) {}
 
   get localStream(): MediaStream | null {
     return this._localStream;
@@ -98,7 +100,7 @@ export class RoomCallService {
 
       // Listen for participants changes
       this.setupParticipantListener(roomId, userId);
-
+      this.roomScreenShareService.listenToScreenShare(roomId);
     } catch (error) {
       console.error('Error starting call:', error);
       throw error;
@@ -339,7 +341,7 @@ export class RoomCallService {
   private setupParticipantListener(roomId: string, userId: string) {
     const participantsRef = ref(this.db, `roomCalls/${roomId}/participants`);
     onValue(participantsRef, async (snapshot) => {
-      const participants = snapshot.val() || {};
+      const participants = snapshot.val();
       const participantIds = Object.keys(participants);
       
       // Update state
@@ -432,12 +434,30 @@ export class RoomCallService {
     await this.startCall(roomId, userId);
   }
 
-  async endCall(): Promise<void> {
-    if (this.currentRoomId) {
-      const userId = this.authService.getCurrentUser()?.id;
-      if (userId) {
-        await this.leaveCall(this.currentRoomId, String(userId));
+  async endCall(roomId: string): Promise<void> {
+    try {
+      console.log('Ending call in room:', roomId);
+      
+      // End screen share if active
+      const screenShareState = this.roomScreenShareService.screenShareState;
+      if (screenShareState.isScreenSharing) {
+        await this.roomScreenShareService.stopScreenShare(roomId);
       }
+
+      // Remove call data from Firebase
+      await set(ref(this.db, `roomCalls/${roomId}`), null);
+      
+      // Clean up local resources
+      this.cleanup();
+      
+      // Update call state
+      this.callStateSubject.next({
+        isInCall: false,
+        participants: []
+      });
+      
+    } catch (error) {
+      console.error('Error ending call:', error);
     }
   }
 
