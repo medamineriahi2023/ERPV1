@@ -190,31 +190,20 @@ export class VideoCallService {
     }
 
     const configuration = {
-      iceServers: [
-        {
-          urls: "stun:stun.relay.metered.ca:80"
-        },
-        {
-          urls: "turn:global.relay.metered.ca:80",
-          username: "f62b917dabb7524388421224",
-          credential: "ut/b3FhDJE9dFzX8"
-        },
-        {
-          urls: "turn:global.relay.metered.ca:80?transport=tcp",
-          username: "f62b917dabb7524388421224",
-          credential: "ut/b3FhDJE9dFzX8"
-        },
-        {
-          urls: "turn:global.relay.metered.ca:443",
-          username: "f62b917dabb7524388421224",
-          credential: "ut/b3FhDJE9dFzX8"
-        },
-        {
-          urls: "turns:global.relay.metered.ca:443?transport=tcp",
-          username: "f62b917dabb7524388421224",
-          credential: "ut/b3FhDJE9dFzX8"
-        }
-      ]
+      iceServers: [{
+        urls: [ "stun:fr-turn1.xirsys.com" ]
+      }, {
+        username: "Wv-mSGEE-ILOUk_kyhlfn2w39Zq9jMmTCH3ife2YMljfX_ZK6Eb10QEiMB7N1sLhAAAAAGd3B6dtZWRhbWluZXI=",
+        credential: "18b4c574-c952-11ef-b6d6-0242ac120004",
+        urls: [
+          "turn:fr-turn1.xirsys.com:80?transport=udp",
+          "turn:fr-turn1.xirsys.com:3478?transport=udp",
+          "turn:fr-turn1.xirsys.com:80?transport=tcp",
+          "turn:fr-turn1.xirsys.com:3478?transport=tcp",
+          "turns:fr-turn1.xirsys.com:443?transport=tcp",
+          "turns:fr-turn1.xirsys.com:5349?transport=tcp"
+        ]
+      }]
     };
 
     this.peerConnection = new RTCPeerConnection(configuration);
@@ -315,7 +304,11 @@ export class VideoCallService {
           width: { ideal: 1280 },
           height: { ideal: 720 }
         },
-        audio: true
+        audio: {
+          echoCancellation: true,
+          noiseSuppression: true,
+          autoGainControl: true
+        }
       }).catch(error => {
         if (error.name === 'NotReadableError' || error.name === 'NotFoundError') {
           return navigator.mediaDevices.getUserMedia({

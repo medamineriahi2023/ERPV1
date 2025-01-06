@@ -58,7 +58,7 @@
 
         <!-- Local Video -->
         <div class="local-video-wrapper" [class.dragging]="isDragging">
-            <video #localVideo autoplay playsinline muted class="local-video"></video>
+            <video #localVideo autoplay playsinline [muted]="true" class="local-video"></video>
             <div class="local-video-controls">
                 <button class="control-btn" [class.active]="!isCameraOff" (click)="toggleCamera()">
                     <i class="fas" [class.fa-video]="!isCameraOff" [class.fa-video-slash]="isCameraOff"></i>
