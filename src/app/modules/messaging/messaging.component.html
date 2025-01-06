@@ -184,7 +184,7 @@
         </div>
 
         <!-- Room Chat -->
-        <div class="chat-area-room" [hidden]="!selectedRoom" [class.mobile-visible]="selectedRoom && isMobileView">
+        <div class="chat-area-room" *ngIf="selectedRoom" [class.mobile-visible]="selectedRoom && isMobileView">
             <div class="chat-header">
                 <div class="room-header">
                     <button *ngIf="isMobileView" 
