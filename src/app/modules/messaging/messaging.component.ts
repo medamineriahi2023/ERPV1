@@ -143,7 +143,7 @@ export class MessagingComponent implements OnInit, OnDestroy {
     this.checkScreenSize();
     this.initRoomForm();
     this.resizeObserver = new ResizeObserver(entries => {
-      for (const entry of entries) {
+      for ( const entry of entries) {
         this.checkMobileView(entry.contentRect.width);
       }
     });
@@ -215,29 +215,32 @@ export class MessagingComponent implements OnInit, OnDestroy {
     window.addEventListener('remote-stream-added', this.handleRemoteStream);
 
     // Subscribe to screen share state changes
-    this.subscriptions.push(
-      this.roomScreenShareService.screenShareState$.subscribe(state => {
-        if (state.isScreenSharing) {
-          console.log('Screen share state changed:', state);
-          if (state.isLocal) {
-            // Local stream
-            if (this.roomScreenShareService.localStream) {
-              console.log('Setting local stream to video element');
-              this.screenShareVideo.nativeElement.srcObject = this.roomScreenShareService.localStream;
-            }
-          } else {
-            // Remote stream
-            const remoteStream = this.roomScreenShareService.remoteStream;
-            console.log('Remote stream available:', remoteStream?.active, remoteStream?.getTracks().length);
-            if (remoteStream) {
-              console.log('Setting remote stream to video element');
-              this.screenShareVideo.nativeElement.srcObject = remoteStream;
-              this.screenShareVideo.nativeElement.play().catch(err => console.error('Error playing video:', err));
-            }
-          }
-        }
-      })
-    );
+    this.initializeScreenShare();
+
+    // Subscribe to screen share state changes
+    // this.subscriptions.push(
+    //   this.roomScreenShareService.screenShareState$.subscribe(state => {
+    //     if (state.isScreenSharing) {
+    //       console.log('Screen share state changed:', state);
+    //       if (state.isLocal) {
+    //         // Local stream
+    //         if (this.roomScreenShareService.localStream) {
+    //           console.log('Setting local stream to video element');
+    //           this.screenShareVideo.nativeElement.srcObject = this.roomScreenShareService.localStream;
+    //         }
+    //       } else {
+    //         // Remote stream
+    //         const remoteStream = this.roomScreenShareService.remoteStream;
+    //         console.log('Remote stream available:', remoteStream?.active, remoteStream?.getTracks().length);
+    //         if (remoteStream) {
+    //           console.log('Setting remote stream to video element');
+    //           this.screenShareVideo.nativeElement.srcObject = remoteStream;
+    //           this.screenShareVideo.nativeElement.play().catch(err => console.error('Error playing video:', err));
+    //         }
+    //       }
+    //     }
+    //   })
+    // );
   }
 
   private sortUsersByStatus(users: UserStatusInfo[]): UserStatusInfo[] {
@@ -803,25 +806,106 @@ export class MessagingComponent implements OnInit, OnDestroy {
     audioElement.srcObject = stream;
   }
 
+  private initializeScreenShare() {
+    this.subscriptions.push(
+      this.roomScreenShareService.screenShareState$.subscribe(state => {
+        console.log('Screen share state changed:', state);
+        
+        if (state.isLocal) {
+          // Local stream
+          if (this.roomScreenShareService.localStream) {
+            console.log('Setting local stream to video element');
+            this.screenShareVideo.nativeElement.srcObject = this.roomScreenShareService.localStream;
+            this.screenShareVideo.nativeElement.play()
+              .catch(err => console.error('Error playing local video:', err));
+          }
+        } else if (state.isScreenSharing && state.sharerId) {
+          // Remote stream
+          const remoteStreams = this.roomScreenShareService.remoteStreams;
+          console.log('Available remote streams:', 
+            Array.from(remoteStreams.entries()).map(([id, stream]) => ({
+              userId: id,
+              streamId: stream.id,
+              tracks: stream.getTracks().map(t => ({
+                kind: t.kind,
+                enabled: t.enabled,
+                muted: t.muted
+              }))
+            }))
+          );
 
-  toggleMute(): void {
-    this.isMuted = !this.isMuted;
-    this.roomCallService.toggleMute();
+          const sharerStream = remoteStreams.get(state.sharerId);
+          if (sharerStream) {
+            console.log('Found sharer stream:', {
+              sharerId: state.sharerId,
+              streamId: sharerStream.id,
+              tracks: sharerStream.getTracks().map(t => ({
+                kind: t.kind,
+                enabled: t.enabled,
+                muted: t.muted,
+                readyState: t.readyState
+              }))
+            });
+
+            // Ensure video element is ready
+            if (!this.screenShareVideo?.nativeElement) {
+              console.error('Video element not found!');
+              return;
+            }
+
+            // Set stream and play
+            this.screenShareVideo.nativeElement.srcObject = sharerStream;
+            this.screenShareVideo.nativeElement.play()
+              .then(() => console.log('Remote video playing successfully'))
+              .catch(err => {
+                console.error('Error playing remote video:', err);
+                // Try to play on user interaction if autoplay fails
+                const playOnInteraction = () => {
+                  this.screenShareVideo.nativeElement.play()
+                    .then(() => {
+                      document.removeEventListener('click', playOnInteraction);
+                      console.log('Video played after user interaction');
+                    })
+                    .catch(console.error);
+                };
+                document.addEventListener('click', playOnInteraction, { once: true });
+              });
+          } else {
+            console.log('No stream found for sharer:', state.sharerId);
+          }
+        } else {
+          // No sharing active, clear video
+          if (this.screenShareVideo?.nativeElement) {
+            this.screenShareVideo.nativeElement.srcObject = null;
+          }
+        }
+        
+        // Force change detection
+        this.cdr.detectChanges();
+      })
+    );
   }
 
   async toggleScreenShare() {
-    try {
-      const roomId = this.selectedRoom?.id;
-      if (!roomId) return;
+    if (!this.selectedRoom) return;
 
-      if (!this.screenSharingActive) {
-        await this.roomScreenShareService.startScreenShare(String(roomId));
-      } else {
-        await this.roomScreenShareService.stopScreenShare(String(roomId));
+    try {
+      const state = this.roomScreenShareService.screenShareState;
+      if (state.isLocal) {
+        // Stop sharing
+        await this.roomScreenShareService.stopScreenShare(String(this.selectedRoom.id));
+      } else if (!state.isScreenSharing) {
+        // Start sharing
+        await this.roomScreenShareService.startScreenShare(String(this.selectedRoom.id));
       }
     } catch (error) {
       console.error('Error toggling screen share:', error);
     }
+  }
+
+  toggleMute(): void {
+    this.isMuted = !this.isMuted;
+    this.roomCallService.toggleMute();
   }
 
   async toggleFullScreen() {

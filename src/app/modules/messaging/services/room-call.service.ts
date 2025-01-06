@@ -343,7 +343,8 @@ export class RoomCallService {
     onValue(participantsRef, async (snapshot) => {
       const participants = snapshot.val();
       const participantIds = Object.keys(participants);
-      
+      console.log("participantIds");
+      console.log(participantIds);
       // Update state
       this.callStateSubject.next({
         isInCall: true,

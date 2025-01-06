@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
-import { Database, ref, set, onValue, remove, get, off, update } from '@angular/fire/database';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { Database, ref, set, onValue, remove, off } from '@angular/fire/database';
+import { BehaviorSubject } from 'rxjs';
 import { AuthService } from '../../../core/services/auth.service';
 
 interface ScreenShareState {
@@ -10,30 +10,26 @@ interface ScreenShareState {
   isLocal: boolean;
 }
 
-interface IceCandidate {
-  candidate: RTCIceCandidateInit;
-  timestamp: number;
-}
-
-interface SignalingData {
-  sdp: string;
-  type: RTCSdpType;
-  timestamp: number;
-}
-
-interface ScreenShareData {
-  active: boolean;
-  sharerId: string;
-  offer?: RTCSessionDescriptionInit;
-  answers?: { [userId: string]: RTCSessionDescriptionInit };
-  participants: { [key: string]: boolean };
-  timestamp: number;
+interface ICECandidateData {
+  candidate: string;
+  sdpMid: string | null;
+  sdpMLineIndex: number | null;
+  usernameFragment: string | null;
 }
 
 @Injectable({
   providedIn: 'root'
 })
 export class RoomScreenShareService {
+  private peerConnections: Map<string, RTCPeerConnection> = new Map();
+  private _localStream: MediaStream | null = null;
+  private _remoteStreams: Map<string, MediaStream> = new Map();
+  private db: Database = inject(Database);
+  private roomRef: any;
+  private candidatesRef: any;
+  private signallingListeners: { [key: string]: any } = {};
+  private candidateListeners: { [key: string]: any } = {};
+
   screenShareStateSubject = new BehaviorSubject<ScreenShareState>({
     isScreenSharing: false,
     sharerId: null,
@@ -41,90 +37,46 @@ export class RoomScreenShareService {
     isLocal: false
   });
 
-  private _localStream: MediaStream | null = null;
-  private _remoteStream: MediaStream | null = null;
-  private peerConnection: RTCPeerConnection | null = null;
+  screenShareState$ = this.screenShareStateSubject.asObservable();
 
-  constructor(
-    private db: Database,
-    private authService: AuthService
-  ) { }
-
-  get screenShareState$() {
-    return this.screenShareStateSubject.asObservable();
-  }
-
-  get screenShareState() {
+  get screenShareState(): ScreenShareState {
     return this.screenShareStateSubject.value;
   }
 
-  get localStream() {
+  get localStream(): MediaStream | null {
     return this._localStream;
   }
 
-  get remoteStream() {
-    return this._remoteStream;
+  get remoteStreams(): Map<string, MediaStream> {
+    return this._remoteStreams;
   }
 
-  async startScreenShare(roomId: string) {
+  constructor(private authService: AuthService) {}
+
+  async startScreenShare(roomId: string): Promise<void> {
     try {
-      console.log('Starting screen share');
+      const currentUserId = String(this.authService.getCurrentUser()?.id);
       
       // Get screen share stream
       this._localStream = await navigator.mediaDevices.getDisplayMedia({
         video: true,
-        audio: false
+        audio: true
       });
 
-      // Create peer connection
-      this.peerConnection = new RTCPeerConnection({
-        iceServers: [
-          { urls: 'stun:stun.l.google.com:19302' },
-          { urls: 'stun:stun1.l.google.com:19302' },
-          {
-            urls: "turn:eu-west.relay.metered.ca:80",
-            username: "f62b917dabb7524388421224",
-            credential: "ut/b3FhDJE9dFzX8",
-          },
-          {
-            urls: "turn:eu-west.relay.metered.ca:443",
-            username: "f62b917dabb7524388421224",
-            credential: "ut/b3FhDJE9dFzX8",
-          }
-        ]
-      });
-
-      // Set up peer connection event handlers
-      this.setupPeerConnectionHandlers(this.peerConnection, roomId);
-
-      // Add local stream tracks to peer connection
-      this._localStream.getTracks().forEach(track => {
-        console.log('Adding track to peer connection:', track.kind);
-        this.peerConnection?.addTrack(track, this._localStream!);
-      });
-
-      // Create and set local description
-      const offer = await this.peerConnection.createOffer();
-      await this.peerConnection.setLocalDescription(offer);
-      console.log('Created and set local offer');
-
-      // Save offer to Firebase
-      const currentUserId = String(this.authService.getCurrentUser()?.id);
-      const screenShareData: ScreenShareData = {
+      // Update room state
+      const roomRef = ref(this.db, `roomScreenCalls/${roomId}`);
+      await set(roomRef, {
         active: true,
         sharerId: currentUserId,
-        offer: {
-          type: offer.type,
-          sdp: offer.sdp
-        },
-        timestamp: Date.now(),
-        participants: { [currentUserId]: true }
-      };
+        timestamp: Date.now()
+      });
 
-      await set(ref(this.db, `roomScreenCalls/${roomId}`), screenShareData);
-      console.log('Saved offer to Firebase');
+      // Set up participants separately to avoid overwriting
+      await set(ref(this.db, `roomScreenCalls/${roomId}/participants/${currentUserId}`), true);
 
-      // Update screen share state
+      // Listen for participants and handle connections
+      this.listenToScreenShare(roomId);
+
       this.screenShareStateSubject.next({
         isScreenSharing: true,
         sharerId: currentUserId,
@@ -132,292 +84,337 @@ export class RoomScreenShareService {
         isLocal: true
       });
 
-      // Handle track end
-      this._localStream.getTracks().forEach(track => {
-        track.onended = () => {
-          console.log('Track ended:', track.kind);
-          this.stopScreenShare(roomId);
-        };
-      });
-
+      // Handle stream ending
+      this._localStream.getVideoTracks()[0].onended = () => {
+        this.stopScreenShare(roomId).catch(console.error);
+      };
     } catch (error) {
       console.error('Error starting screen share:', error);
-      this.cleanup();
+      throw error;
     }
   }
 
-  async stopScreenShare(roomId: string) {
-    try {
-      console.log('Stopping screen share');
-      
-      // Remove screen share data from Firebase
-      await set(ref(this.db, `roomScreenCalls/${roomId}`), null);
-      
-      // Clean up local resources
-      this.cleanup();
-      
-      // Log success
-      console.log('Screen share stopped successfully');
-    } catch (error) {
-      console.error('Error stopping screen share:', error);
-      // Still try to cleanup local resources
-      this.cleanup();
-    }
-  }
+  private async initiatePeerConnection(remoteUserId: string, roomId: string, localUserId: string): Promise<RTCPeerConnection> {
+    console.log('Initiating screen share connection with:', remoteUserId, 'Local user:', localUserId);
 
-  private setupPeerConnectionHandlers(peerConnection: RTCPeerConnection, roomId: string) {
-    // Handle incoming tracks
-    peerConnection.ontrack = (event) => {
-      console.log('Received remote track:', event.track.kind, event.streams);
+    // Clean up existing connection
+    if (this.peerConnections.has(remoteUserId)) {
+      console.log('Cleaning up existing connection for:', remoteUserId);
+      this.peerConnections.get(remoteUserId)?.close();
+      this.peerConnections.delete(remoteUserId);
+    }
+
+    const pc = new RTCPeerConnection({
+      iceServers: [
+        { urls: 'stun:stun.l.google.com:19302' },
+        { urls: 'stun:stun1.l.google.com:19302' },
+        {
+          urls: "turn:eu-west.relay.metered.ca:80",
+          username: "f62b917dabb7524388421224",
+          credential: "ut/b3FhDJE9dFzX8",
+        },
+        {
+          urls: "turn:eu-west.relay.metered.ca:443",
+          username: "f62b917dabb7524388421224",
+          credential: "ut/b3FhDJE9dFzX8",
+        }
+      ]
+    });
+
+    this.peerConnections.set(remoteUserId, pc);
+
+    // Log connection state changes
+    pc.onconnectionstatechange = () => {
+      console.log(`Connection state changed for ${remoteUserId}:`, pc.connectionState);
+    };
+
+    pc.oniceconnectionstatechange = () => {
+      console.log(`ICE connection state changed for ${remoteUserId}:`, pc.iceConnectionState);
+    };
+
+    pc.onsignalingstatechange = () => {
+      console.log(`Signaling state changed for ${remoteUserId}:`, pc.signalingState);
+    };
+
+    // Add local stream if we're the sharer
+    if (this._localStream && this.screenShareState.isLocal) {
+      console.log('Adding local stream tracks to peer connection');
+      this._localStream.getTracks().forEach(track => {
+        console.log('Adding track:', track.kind);
+        pc.addTrack(track, this._localStream!);
+      });
+    }
+
+    // Handle ICE candidates
+    pc.onicecandidate = async ({ candidate }) => {
+      if (candidate && pc.connectionState !== 'closed') {
+        try {
+          const candidateData = {
+            candidate: candidate.candidate,
+            sdpMid: candidate.sdpMid,
+            sdpMLineIndex: candidate.sdpMLineIndex,
+            usernameFragment: candidate.usernameFragment
+          };
+          
+          await set(
+            ref(this.db, `roomScreenCalls/${roomId}/candidates/${localUserId}_${remoteUserId}_${Date.now()}`),
+            candidateData
+          );
+        } catch (error) {
+          console.error('Error sending ICE candidate:', error);
+        }
+      }
+    };
+
+    // Handle remote stream
+    pc.ontrack = (event) => {
+      console.log('Received remote track:', event.track.kind);
+      
       if (event.streams && event.streams[0]) {
         const stream = event.streams[0];
-        
-        // Log detailed track information
-        console.log('Remote stream tracks:', stream.getTracks().map(track => ({
-          kind: track.kind,
-          enabled: track.enabled,
-          muted: track.muted,
-          readyState: track.readyState,
-          id: track.id
-        })));
-
-        // Ensure track is enabled and unmuted
-        stream.getTracks().forEach(track => {
-          track.enabled = true;
-          if (track instanceof MediaStreamTrack) {
-            track.enabled = true;
-          }
+        console.log('Processing remote stream:', {
+          streamId: stream.id,
+          tracks: stream.getTracks().map(t => ({
+            kind: t.kind,
+            enabled: t.enabled,
+            muted: t.muted
+          }))
         });
 
-        // Store remote stream
-        this._remoteStream = new MediaStream(stream.getTracks());
+        this._remoteStreams.set(remoteUserId, stream);
         
-        // Force state update
         this.screenShareStateSubject.next({
           ...this.screenShareState,
           isScreenSharing: true,
           isLocal: false
         });
-
-        console.log('Remote stream updated:', {
-          streamId: this._remoteStream.id,
-          active: this._remoteStream.active,
-          tracks: this._remoteStream.getTracks().length
-        });
       }
     };
 
-    // Handle connection state changes
-    peerConnection.onconnectionstatechange = () => {
-      console.log('Connection state changed:', peerConnection.connectionState);
-      if (peerConnection.connectionState === 'connected') {
-        console.log('Peer connection established successfully');
-      } else if (peerConnection.connectionState === 'failed' || peerConnection.connectionState === 'closed') {
-        console.log('Connection failed or closed, cleaning up');
-        this.cleanup();
-      }
-    };
-
-    // Handle ICE connection state changes
-    peerConnection.oniceconnectionstatechange = () => {
-      console.log('ICE connection state changed:', peerConnection.iceConnectionState);
-      if (peerConnection.iceConnectionState === 'failed') {
-        console.log('ICE connection failed, restarting ICE');
-        peerConnection.restartIce();
-      }
-    };
-
-    // Handle ICE candidate events
-    peerConnection.onicecandidate = (event) => {
-      if (event.candidate) {
-        const currentUserId = String(this.authService.getCurrentUser()?.id);
-        const candidatePath = `roomScreenCalls/${roomId}/candidates/${currentUserId}/${Date.now()}`;
-        console.log('New ICE candidate:', event.candidate.type);
-        set(ref(this.db, candidatePath), event.candidate.toJSON())
-          .catch(error => console.error('Error saving ICE candidate:', error));
-      }
-    };
-
-    // Handle negotiation needed
-    peerConnection.onnegotiationneeded = async () => {
-      console.log('Negotiation needed');
+    // Create and send offer if we're the sharer
+    if (this.screenShareState.isLocal && this._localStream) {
       try {
-        const offer = await peerConnection.createOffer();
-        await peerConnection.setLocalDescription(offer);
+        console.log('Creating offer as local sharer');
+        const offer = await pc.createOffer({
+          offerToReceiveVideo: true,
+          offerToReceiveAudio: false
+        });
         
-        const currentUserId = String(this.authService.getCurrentUser()?.id);
-        const updates = {
-          [`roomScreenCalls/${roomId}/offer`]: {
-            type: offer.type,
-            sdp: offer.sdp
-          }
-        };
+        console.log('Setting local description');
+        await pc.setLocalDescription(offer);
         
-        await update(ref(this.db), updates);
-        console.log('Updated offer during negotiation');
+        // Save offer in Firebase under signaling/{roomId}/offers
+        const offerRef = ref(this.db, `roomScreenCalls/${roomId}/signaling/offers/${localUserId}_${remoteUserId}`);
+        await set(offerRef, {
+          type: offer.type,
+          sdp: offer.sdp,
+          timestamp: Date.now()
+        });
+        
+        console.log('Offer saved in database');
       } catch (error) {
-        console.error('Error during negotiation:', error);
+        console.error('Error creating and sending offer:', error);
       }
-    };
+    }
+
+    // Setup signaling and candidate listeners
+    await this.setupSignalingListener(pc, remoteUserId, roomId, localUserId);
+    await this.setupCandidateListener(pc, remoteUserId, roomId);
+
+    return pc;
   }
 
-  async listenToScreenShare(roomId: string) {
-    console.log('Starting to listen for screen share in room:', roomId);
-    const currentUserId = String(this.authService.getCurrentUser()?.id);
-    
-    // Listen for screen share changes
-    onValue(ref(this.db, `roomScreenCalls/${roomId}`), async (snapshot) => {
-      try {
-        const screenShareData = snapshot.val() as ScreenShareData;
-        
-        if (!screenShareData) {
-          console.log('No screen share data');
-          this.cleanup();
-          return;
-        }
+  private async setupSignalingListener(pc: RTCPeerConnection, remoteUserId: string, roomId: string, localUserId: string) {
+    if (this.signallingListeners[remoteUserId]) {
+      off(ref(this.db, `roomScreenCalls/${roomId}/signaling`), this.signallingListeners[remoteUserId]);
+    }
 
-        const isLocal = currentUserId === String(screenShareData.sharerId);
-        console.log('Screen share data:', {
-          data: screenShareData,
-          currentUserId,
-          isLocal
-        });
+    // Listen for offers
+    const offersRef = ref(this.db, `roomScreenCalls/${roomId}/signaling/offers`);
+    const answersRef = ref(this.db, `roomScreenCalls/${roomId}/signaling/answers`);
 
-        // Update state
-        this.screenShareStateSubject.next({
-          isScreenSharing: screenShareData.active,
-          sharerId: screenShareData.sharerId,
-          canShare: !screenShareData.active,
-          isLocal: isLocal
-        });
+    const listener = onValue(offersRef, async (snapshot) => {
+      const offers = snapshot.val();
+      if (!offers) return;
 
-        // If screen share is not active, clean up and return
-        if (!screenShareData.active) {
-          this.cleanup();
-          return;
-        }
+      const offerKey = `${remoteUserId}_${localUserId}`;
+      const offer = offers[offerKey];
 
-        // Handle remote screen share (we're receiving)
-        if (!isLocal && screenShareData.offer && !this.peerConnection) {
-          console.log('Detected screen share offer as remote user');
-
-          // Create new peer connection
-          this.peerConnection = new RTCPeerConnection({
-            iceServers: [
-              { urls: 'stun:stun.l.google.com:19302' },
-              { urls: 'stun:stun1.l.google.com:19302' },
-              {
-                urls: "turn:eu-west.relay.metered.ca:80",
-                username: "f62b917dabb7524388421224",
-                credential: "ut/b3FhDJE9dFzX8",
-              },
-              {
-                urls: "turn:eu-west.relay.metered.ca:443",
-                username: "f62b917dabb7524388421224",
-                credential: "ut/b3FhDJE9dFzX8",
-              }
-            ]
+      if (offer && pc.signalingState === 'stable') {
+        try {
+          console.log('Processing offer:', offer);
+          await pc.setRemoteDescription(new RTCSessionDescription(offer));
+          
+          const answer = await pc.createAnswer();
+          await pc.setLocalDescription(answer);
+          
+          // Save answer in Firebase under signaling/{roomId}/answers
+          const answerRef = ref(this.db, `roomScreenCalls/${roomId}/signaling/answers/${localUserId}_${remoteUserId}`);
+          await set(answerRef, {
+            type: answer.type,
+            sdp: answer.sdp,
+            timestamp: Date.now()
           });
-
-          // Set up peer connection handlers
-          this.setupPeerConnectionHandlers(this.peerConnection, roomId);
-
-          try {
-            // Set remote description (offer)
-            await this.peerConnection.setRemoteDescription(new RTCSessionDescription({
-              type: screenShareData.offer.type,
-              sdp: screenShareData.offer.sdp
-            }));
-            console.log('Set remote description from offer');
-
-            // Create and set local description (answer)
-            const answer = await this.peerConnection.createAnswer();
-            await this.peerConnection.setLocalDescription(answer);
-            console.log('Created and set local answer');
-
-            // Save answer to Firebase
-            const answerData: RTCSessionDescriptionInit = {
-              type: answer.type,
-              sdp: answer.sdp
-            };
-            
-            // Update participants and save answer
-            const updates = {
-              [`roomScreenCalls/${roomId}/answers/${currentUserId}`]: answerData,
-              [`roomScreenCalls/${roomId}/participants/${currentUserId}`]: true
-            };
-            
-            await update(ref(this.db), updates);
-            console.log('Saved answer and updated participants');
-
-          } catch (error) {
-            console.error('Error in WebRTC process:', error);
-          }
+          
+          console.log('Answer saved in database');
+          
+          // Clean up the processed offer
+          await remove(ref(this.db, `roomScreenCalls/${roomId}/signaling/offers/${offerKey}`));
+        } catch (error) {
+          console.error('Error processing offer:', error);
         }
-
-        // Handle answers for local user
-        if (isLocal && screenShareData.answers && this.peerConnection) {
-          Object.entries(screenShareData.answers).forEach(async ([userId, answer]: [string, RTCSessionDescriptionInit]) => {
-            if (!this.peerConnection?.currentRemoteDescription) {
-              try {
-                await this.peerConnection.setRemoteDescription(new RTCSessionDescription(answer));
-                console.log(`Set answer from user ${userId}`);
-              } catch (error) {
-                console.error(`Error setting answer from ${userId}:`, error);
-              }
-            }
-          });
-        }
-
-      } catch (error) {
-        console.error('Error in screen share listener:', error);
       }
     });
 
-    // Listen for ICE candidates
-    onValue(ref(this.db, `roomScreenCalls/${roomId}/candidates`), (snapshot) => {
+    // Listen for answers
+    const answerListener = onValue(answersRef, async (snapshot) => {
+      const answers = snapshot.val();
+      if (!answers) return;
+
+      const answerKey = `${remoteUserId}_${localUserId}`;
+      const answer = answers[answerKey];
+
+      if (answer && pc.signalingState === 'have-local-offer') {
+        try {
+          console.log('Processing answer:', answer);
+          await pc.setRemoteDescription(new RTCSessionDescription(answer));
+          
+          // Clean up the processed answer
+          await remove(ref(this.db, `roomScreenCalls/${roomId}/signaling/answers/${answerKey}`));
+        } catch (error) {
+          console.error('Error processing answer:', error);
+        }
+      }
+    });
+
+    this.signallingListeners[remoteUserId] = [listener, answerListener];
+  }
+
+  private setupCandidateListener(pc: RTCPeerConnection, remoteUserId: string, roomId: string) {
+    if (this.candidateListeners[remoteUserId]) {
+      off(ref(this.db, `roomScreenCalls/${roomId}/candidates`), this.candidateListeners[remoteUserId]);
+    }
+
+    const listener = onValue(ref(this.db, `roomScreenCalls/${roomId}/candidates`), async (snapshot) => {
       const candidates = snapshot.val();
-      if (!candidates || !this.peerConnection) return;
+      if (!candidates) return;
 
-      Object.entries(candidates).forEach(([userId, userCandidates]: [string, any]) => {
-        if (userId !== currentUserId) {
-          Object.values(userCandidates).forEach((candidate: RTCIceCandidateInit) => {
-            if (this.peerConnection?.remoteDescription) {
-              this.peerConnection.addIceCandidate(new RTCIceCandidate(candidate))
-                .catch(err => console.error('Error adding ICE candidate:', err));
+      for (const [key, candidateData] of Object.entries(candidates)) {
+        if (key.startsWith(remoteUserId) && 
+            pc.remoteDescription && 
+            pc.connectionState !== 'disconnected' && 
+            pc.signalingState !== 'closed') {
+          try {
+            const iceCandidate = candidateData as ICECandidateData;
+            if (!iceCandidate.candidate) continue;
+
+            const candidate = new RTCIceCandidate({
+              candidate: iceCandidate.candidate,
+              sdpMid: iceCandidate.sdpMid || '0',
+              sdpMLineIndex: iceCandidate.sdpMLineIndex || 0,
+              usernameFragment: iceCandidate.usernameFragment || undefined
+            });
+
+            await pc.addIceCandidate(candidate);
+            console.log('Added ICE candidate:', candidate);
+            
+            // Clean up processed candidate
+            await remove(ref(this.db, `roomScreenCalls/${roomId}/candidates/${key}`));
+          } catch (error) {
+            console.error('Error processing ICE candidate:', error);
+            // Remove the candidate if it's invalid or the connection is disconnected
+            if (error.name === 'InvalidStateError' || ['disconnected', 'failed'].includes(pc.connectionState)) {
+              await remove(ref(this.db, `roomScreenCalls/${roomId}/candidates/${key}`));
             }
-          });
+          }
         }
+      }
+    });
+
+    this.candidateListeners[remoteUserId] = listener;
+  }
+
+  async listenToScreenShare(roomId: string): Promise<void> {
+    const currentUserId = String(this.authService.getCurrentUser()?.id);
+    console.log('Current user ID:', currentUserId);
+
+    const roomRef = ref(this.db, `roomScreenCalls/${roomId}`);
+    onValue(roomRef, async (snapshot) => {
+      const screenShareData = snapshot.val();
+      console.log('Received screen share data:', screenShareData);
+      
+      if (!screenShareData) {
+        this.cleanup();
+        return;
+      }
+
+      const isLocal = screenShareData.sharerId === currentUserId;
+      
+      // Update screen share state directly through the subject
+      this.screenShareStateSubject.next({
+        isScreenSharing: true,
+        sharerId: screenShareData.sharerId,
+        canShare: !screenShareData.active,
+        isLocal: isLocal
       });
+
+      // If we're not the sharer, add ourselves as a participant
+      if (!isLocal && screenShareData.active) {
+        console.log('Adding self as participant:', currentUserId);
+        await set(ref(this.db, `roomScreenCalls/${roomId}/participants/${currentUserId}`), true);
+      }
+
+      // Handle participants
+      if (screenShareData.participants) {
+        const participants = Object.keys(screenShareData.participants);
+        console.log('Current participants:', participants);
+        
+        for (const participantId of participants) {
+          if (participantId !== currentUserId && !this.peerConnections.has(participantId)) {
+            console.log('Initiating connection with participant:', participantId);
+            await this.initiatePeerConnection(participantId, roomId, currentUserId);
+          }
+        }
+      }
     });
   }
 
-  cleanup() {
-    console.log('Cleaning up WebRTC resources');
-    
-    // Stop all tracks in local stream
+  async stopScreenShare(roomId: string): Promise<void> {
+    try {
+      const currentUserId = String(this.authService.getCurrentUser()?.id);
+      
+      // If we're the sharer, remove the entire room
+      if (this.screenShareState.isLocal) {
+        await remove(ref(this.db, `roomScreenCalls/${roomId}`));
+      } else {
+        // If we're just a participant, remove ourselves
+        await remove(ref(this.db, `roomScreenCalls/${roomId}/participants/${currentUserId}`));
+      }
+
+      this.cleanup();
+    } catch (error) {
+      console.error('Error stopping screen share:', error);
+      throw error;
+    }
+  }
+
+  private cleanup(): void {
+    // Stop local stream if it exists
     if (this._localStream) {
-      this._localStream.getTracks().forEach(track => {
-        track.stop();
-      });
+      this._localStream.getTracks().forEach(track => track.stop());
       this._localStream = null;
     }
 
-    // Stop all tracks in remote stream
-    if (this._remoteStream) {
-      this._remoteStream.getTracks().forEach(track => {
-        track.stop();
-      });
-      this._remoteStream = null;
+    // Close all peer connections
+    for (const [peerId, pc] of this.peerConnections.entries()) {
+      pc.close();
+      this.peerConnections.delete(peerId);
     }
 
-    // Close and cleanup peer connection
-    if (this.peerConnection) {
-      this.peerConnection.close();
-      this.peerConnection = null;
-    }
+    // Clear remote streams
+    this._remoteStreams.clear();
 
-    // Reset screen share state
+    // Reset screen share state using the subject
     this.screenShareStateSubject.next({
       isScreenSharing: false,
       sharerId: null,

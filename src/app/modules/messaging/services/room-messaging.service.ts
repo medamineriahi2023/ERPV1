@@ -14,7 +14,7 @@ export class RoomMessagingService implements OnDestroy {
   private roomMessages = new BehaviorSubject<RoomMessage[]>([]);
   private currentRoomId: number | null = null;
   private refreshSubscription: Subscription | null = null;
-  private readonly REFRESH_INTERVAL = 5000; // 5 seconds
+  private readonly REFRESH_INTERVAL = 600000; // 5 seconds
 
   constructor(
     private http: HttpClient,

@@ -384,31 +384,30 @@
                         You are sharing your screen
                     </span>
                     <span *ngIf="!(roomScreenShareService.screenShareState$ | async)?.isLocal">
-                        Screen being shared
+                        {{ getScreenSharerName((roomScreenShareService.screenShareState$ | async)?.sharerId) }} is sharing their screen
                     </span>
                     <div class="screen-share-controls">
                         <button pButton 
-                                type="button" 
                                 icon="pi pi-window-maximize" 
                                 class="p-button-rounded p-button-text"
                                 (click)="toggleFullScreen()"
                                 pTooltip="Toggle fullscreen">
                         </button>
-                        <button pButton 
-                                *ngIf="(roomScreenShareService.screenShareState$ | async)?.isLocal"
-                                type="button" 
+                        <button *ngIf="(roomScreenShareService.screenShareState$ | async)?.isLocal"
+                                pButton 
                                 icon="pi pi-times" 
                                 class="p-button-rounded p-button-text"
                                 (click)="toggleScreenShare()"
-                                pTooltip="Close screen share">
+                                pTooltip="Stop sharing">
                         </button>
                     </div>
                 </div>
                 <video #screenShareVideo 
-                       [autoplay]="true" 
-                       [muted]="(roomScreenShareService.screenShareState$ | async)?.isLocal" 
+                       [autoplay]="true"
+                       [muted]="(roomScreenShareService.screenShareState$ | async)?.isLocal"
                        playsinline
-                       style="width: 100%; height: auto; background: black;">
+                       style="width: 100%; height: auto; background: black; max-height: 80vh;"
+                       [style.visibility]="(roomScreenShareService.screenShareState$ | async)?.isScreenSharing ? 'visible' : 'hidden'">
                 </video>
             </div>
             <div class="message-input">
