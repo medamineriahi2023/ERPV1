@@ -33,9 +33,9 @@
         "endTime": "17:00",
         "lunchBreakDuration": 60
       },
-      "status": "ACTIVE",
+      "status": "OFFLINE",
       "contractType": "CDI",
-      "lastActive": "2025-01-05T13:57:37.292Z"
+      "lastActive": "2025-01-06T16:52:59.049Z"
     },
     {
       "username": "safwane",
@@ -61,10 +61,10 @@
         "lunchBreakDuration": 60
       },
       "rating": 4,
-      "status": "ACTIVE",
+      "status": "OFFLINE",
       "contractType": "CDI",
       "id": 2,
-      "lastActive": "2025-01-05T13:57:35.916Z"
+      "lastActive": "2025-01-06T17:00:32.100Z"
     },
     {
       "username": "aliriahi@gmail.com",
@@ -173,11 +173,11 @@
         "lunchBreakDuration": 60
       },
       "rating": 5,
-      "status": "ACTIVE",
+      "status": "OFFLINE",
       "contractType": "CDI",
       "photoUrl": "https://i.imgur.com/BQfIQJN.jpeg",
       "id": 6,
-      "lastActive": "2025-01-04T17:33:09.760Z"
+      "lastActive": "2025-01-06T16:58:24.472Z"
     },
     {
       "username": "kamel@gmail.com",
@@ -388,6 +388,7 @@
         2
       ],
       "activeParticipants": [
+        "6",
         "1",
         "2"
       ],
@@ -1626,7 +1627,7 @@
       "receiverId": "6",
       "content": "qsdzaer",
       "timestamp": "2025-01-04T01:50:54.684Z",
-      "read": false
+      "read": true
     },
     {
       "id": "1736008956622",
@@ -1752,6 +1753,33 @@
       "receiverId": "1",
       "content": "hi",
       "timestamp": "2025-01-04T21:30:22.813Z",
+      "read": true
+    },
+    {
+      "id": "1736080229179",
+      "senderId": "2",
+      "senderName": "safwane",
+      "receiverId": "1",
+      "content": "helloooo",
+      "timestamp": "2025-01-05T12:30:29.179Z",
+      "read": true
+    },
+    {
+      "id": "1736108741560",
+      "senderId": "1",
+      "senderName": "medaminer",
+      "receiverId": "2",
+      "content": "hi",
+      "timestamp": "2025-01-05T20:25:41.560Z",
+      "read": true
+    },
+    {
+      "id": "1736112787905",
+      "senderId": "1",
+      "senderName": "medaminer",
+      "receiverId": "2",
+      "content": "awed kalamni",
+      "timestamp": "2025-01-05T21:33:07.905Z",
       "read": true
     }
   ],
