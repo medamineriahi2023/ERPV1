@@ -117,20 +117,31 @@ export class RoomCallService {
     }
 
     const pc = new RTCPeerConnection({
-      iceServers: [{
-        urls: [ "stun:fr-turn1.xirsys.com" ]
-      }, {
-        username: "Wv-mSGEE-ILOUk_kyhlfn2w39Zq9jMmTCH3ife2YMljfX_ZK6Eb10QEiMB7N1sLhAAAAAGd3B6dtZWRhbWluZXI=",
-        credential: "18b4c574-c952-11ef-b6d6-0242ac120004",
-        urls: [
-          "turn:fr-turn1.xirsys.com:80?transport=udp",
-          "turn:fr-turn1.xirsys.com:3478?transport=udp",
-          "turn:fr-turn1.xirsys.com:80?transport=tcp",
-          "turn:fr-turn1.xirsys.com:3478?transport=tcp",
-          "turns:fr-turn1.xirsys.com:443?transport=tcp",
-          "turns:fr-turn1.xirsys.com:5349?transport=tcp"
-        ]
-      }]
+      iceServers: [
+        {
+          urls: "stun:stun.relay.metered.ca:80",
+        },
+        {
+          urls: "turn:global.relay.metered.ca:80",
+          username: "792b7484640b2867935852e4",
+          credential: "yjXN2HcYE6E5eXUy",
+        },
+        {
+          urls: "turn:global.relay.metered.ca:80?transport=tcp",
+          username: "792b7484640b2867935852e4",
+          credential: "yjXN2HcYE6E5eXUy",
+        },
+        {
+          urls: "turn:global.relay.metered.ca:443",
+          username: "792b7484640b2867935852e4",
+          credential: "yjXN2HcYE6E5eXUy",
+        },
+        {
+          urls: "turns:global.relay.metered.ca:443?transport=tcp",
+          username: "792b7484640b2867935852e4",
+          credential: "yjXN2HcYE6E5eXUy",
+        },
+      ],
     });
 
     // Store connection
