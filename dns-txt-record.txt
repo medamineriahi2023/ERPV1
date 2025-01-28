@@ -1,0 +1,5 @@
+Domain: erp-backend.zapto.org
+Record Type: TXT
+Name: _acme-challenge.erp-backend.zapto.org
+Value: "gQUS8KHajk4W8V2KiR143tya10vYhYWDw2YR-AZQ9xY"
+TTL: 300

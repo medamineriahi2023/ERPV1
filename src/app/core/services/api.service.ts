@@ -14,7 +14,7 @@ import { UserStatus } from './messaging.service';
   providedIn: 'root'
 })
 export class ApiService {
-  private readonly API_URL = 'https://197.15.18.165:3000';
+  private readonly API_URL = 'https://197.26.59.239:3000';
 
   constructor(private http: HttpClient) {}
 

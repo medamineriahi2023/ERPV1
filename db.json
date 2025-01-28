@@ -35,7 +35,7 @@
       },
       "status": "OFFLINE",
       "contractType": "CDI",
-      "lastActive": "2025-01-06T16:52:59.049Z"
+      "lastActive": "2025-01-20T16:46:29.477Z"
     },
     {
       "username": "safwane",
@@ -61,10 +61,39 @@
         "lunchBreakDuration": 60
       },
       "rating": 4,
+      "status": "ACTIVE",
+      "contractType": "CDI",
+      "id": 2,
+      "lastActive": "2025-01-18T12:11:11.142Z"
+    },
+    {
+      "username": "sandouda",
+      "password": "123456",
+      "email": "sandouda@gmail.com",
+      "firstName": "Sinda",
+      "lastName": "Louil",
+      "name": "Sinda Louil",
+      "role": "employee",
+      "photoUrl": "",
+      "department": "Engineering",
+      "position": "Developpeur",
+      "managerId": 1,
+      "managedEmployees": [],
+      "hireDate": "2024-12-27T21:47:52.961Z",
+      "leaveBalance": {
+        "annual": 30,
+        "sick": 15
+      },
+      "workSchedule": {
+        "startTime": "09:00",
+        "endTime": "17:00",
+        "lunchBreakDuration": 60
+      },
+      "rating": 4,
       "status": "OFFLINE",
       "contractType": "CDI",
       "id": 2,
-      "lastActive": "2025-01-06T17:00:32.100Z"
+      "lastActive": "2025-01-13T21:10:02.724Z"
     },
     {
       "username": "aliriahi@gmail.com",
@@ -173,11 +202,11 @@
         "lunchBreakDuration": 60
       },
       "rating": 5,
-      "status": "OFFLINE",
+      "status": "ACTIVE",
       "contractType": "CDI",
       "photoUrl": "https://i.imgur.com/BQfIQJN.jpeg",
       "id": 6,
-      "lastActive": "2025-01-06T16:58:24.472Z"
+      "lastActive": "2025-01-12T22:11:14.875Z"
     },
     {
       "username": "kamel@gmail.com",
@@ -367,6 +396,42 @@
       "status": "present",
       "isLate": false,
       "id": 11
+    },
+    {
+      "userId": 1,
+      "date": "2025-01-09T20:31:25.983Z",
+      "checkIn": "21:31:25",
+      "checkOut": "21:32:25",
+      "lunchStart": "21:32:02",
+      "lunchEnd": "21:32:14",
+      "totalHours": 0.02,
+      "status": "late",
+      "isLate": true,
+      "id": 12
+    },
+    {
+      "userId": 1,
+      "date": "2025-01-11T11:21:43.800Z",
+      "checkIn": "12:21:43",
+      "checkOut": null,
+      "lunchStart": null,
+      "lunchEnd": null,
+      "totalHours": 0,
+      "status": "late",
+      "isLate": true,
+      "id": 13
+    },
+    {
+      "userId": 1,
+      "date": "2025-01-18T12:01:47.331Z",
+      "checkIn": "13:01:47",
+      "checkOut": null,
+      "lunchStart": null,
+      "lunchEnd": null,
+      "totalHours": 0,
+      "status": "late",
+      "isLate": true,
+      "id": 14
     }
   ],
   "leave-requests": [],
@@ -389,13 +454,29 @@
       ],
       "activeParticipants": [
         "6",
-        "1",
-        "2"
+        "2",
+        "1"
       ],
       "createdBy": 2,
       "createdAt": "2025-01-04T16:47:36.286Z",
       "activeScreenShare": null,
       "id": 1
+    },
+    {
+      "name": "Weekly",
+      "subject": "Weekly meetings",
+      "allowedUsers": [
+        "6",
+        1
+      ],
+      "activeParticipants": [
+        "1",
+        "6"
+      ],
+      "createdBy": 1,
+      "createdAt": "2025-01-07T23:20:02.762Z",
+      "activeScreenShare": null,
+      "id": 2
     }
   ],
   "room-messages": [
@@ -1100,6 +1181,541 @@
       "timestamp": "2025-01-05T13:57:11.759Z",
       "type": "system",
       "isSystemMessage": true
+    },
+    {
+      "id": 1736292064189,
+      "roomId": 1,
+      "senderId": "6",
+      "content": "Emna Mekni left the voice call",
+      "timestamp": "2025-01-07T23:21:04.189Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736292078981,
+      "roomId": 2,
+      "senderId": "1",
+      "content": "Mohamed Amine Riahi left the voice call",
+      "timestamp": "2025-01-07T23:21:18.981Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736292080139,
+      "roomId": 2,
+      "senderId": "6",
+      "content": "Emna Mekni left the voice call",
+      "timestamp": "2025-01-07T23:21:20.139Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736292081555,
+      "roomId": 2,
+      "senderId": "6",
+      "content": "Emna Mekni left the voice call",
+      "timestamp": "2025-01-07T23:21:21.555Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736292082372,
+      "roomId": 2,
+      "senderId": "6",
+      "content": "Emna Mekni left the voice call",
+      "timestamp": "2025-01-07T23:21:22.372Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736292084324,
+      "roomId": 2,
+      "senderId": "6",
+      "content": "Emna Mekni left the voice call",
+      "timestamp": "2025-01-07T23:21:24.324Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736292086048,
+      "roomId": 2,
+      "senderId": "1",
+      "content": "Mohamed Amine Riahi left the voice call",
+      "timestamp": "2025-01-07T23:21:26.048Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736292121850,
+      "roomId": 2,
+      "senderId": "6",
+      "content": "Emna Mekni left the voice call",
+      "timestamp": "2025-01-07T23:22:01.850Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736292126292,
+      "roomId": 2,
+      "senderId": "1",
+      "content": "Mohamed Amine Riahi left the voice call",
+      "timestamp": "2025-01-07T23:22:06.292Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736292146989,
+      "roomId": 2,
+      "senderId": "6",
+      "content": "Emna Mekni left the voice call",
+      "timestamp": "2025-01-07T23:22:26.989Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736292213710,
+      "roomId": 2,
+      "senderId": "6",
+      "content": "Emna Mekni left the voice call",
+      "timestamp": "2025-01-07T23:23:33.710Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736292502784,
+      "roomId": 2,
+      "senderId": "1",
+      "content": "Mohamed Amine Riahi left the voice call",
+      "timestamp": "2025-01-07T23:28:22.784Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736292566508,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker left the voice call",
+      "timestamp": "2025-01-07T23:29:26.508Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736292660172,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker left the voice call",
+      "timestamp": "2025-01-07T23:31:00.172Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736293096989,
+      "roomId": 2,
+      "senderId": "6",
+      "content": "Emna Mekni left the voice call",
+      "timestamp": "2025-01-07T23:38:16.989Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736293110030,
+      "roomId": 2,
+      "senderId": "1",
+      "content": "Mohamed Amine Riahi left the voice call",
+      "timestamp": "2025-01-07T23:38:30.030Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736293114436,
+      "roomId": 2,
+      "senderId": "6",
+      "content": "Emna Mekni left the voice call",
+      "timestamp": "2025-01-07T23:38:34.436Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736293138148,
+      "roomId": 2,
+      "senderId": "1",
+      "content": "Mohamed Amine Riahi left the voice call",
+      "timestamp": "2025-01-07T23:38:58.148Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736293149950,
+      "roomId": 2,
+      "senderId": "1",
+      "content": "Mohamed Amine Riahi left the voice call",
+      "timestamp": "2025-01-07T23:39:09.950Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736293156482,
+      "roomId": 2,
+      "senderId": "6",
+      "senderName": "Emna Mekni",
+      "senderPhotoUrl": "https://i.imgur.com/BQfIQJN.jpeg",
+      "content": "manich nesmaa f chy",
+      "timestamp": "2025-01-07T23:39:16.482Z",
+      "type": "text",
+      "isSystemMessage": false
+    },
+    {
+      "id": 1736293174048,
+      "roomId": 2,
+      "senderId": "6",
+      "senderName": "Emna Mekni",
+      "senderPhotoUrl": "https://i.imgur.com/BQfIQJN.jpeg",
+      "content": "whats going on",
+      "timestamp": "2025-01-07T23:39:34.048Z",
+      "type": "text",
+      "isSystemMessage": false
+    },
+    {
+      "id": 1736293219800,
+      "roomId": 2,
+      "senderId": "6",
+      "content": "Emna Mekni left the voice call",
+      "timestamp": "2025-01-07T23:40:19.800Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736387129401,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker left the voice call",
+      "timestamp": "2025-01-09T01:45:29.401Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736387141468,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker left the voice call",
+      "timestamp": "2025-01-09T01:45:41.468Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736387171881,
+      "roomId": 1,
+      "senderId": "1",
+      "content": "Mohamed Amine Riahi left the voice call",
+      "timestamp": "2025-01-09T01:46:11.881Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736387176265,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker left the voice call",
+      "timestamp": "2025-01-09T01:46:16.265Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736387325836,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker left the voice call",
+      "timestamp": "2025-01-09T01:48:45.836Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736387365645,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker left the voice call",
+      "timestamp": "2025-01-09T01:49:25.645Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736387366779,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker left the voice call",
+      "timestamp": "2025-01-09T01:49:26.779Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736416082909,
+      "roomId": 1,
+      "senderId": "1",
+      "content": "Mohamed Amine Riahi left the voice call",
+      "timestamp": "2025-01-09T09:48:02.909Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736424206866,
+      "roomId": 1,
+      "senderId": "1",
+      "content": "Mohamed Amine Riahi left the voice call",
+      "timestamp": "2025-01-09T12:03:26.866Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736454942640,
+      "roomId": 1,
+      "senderId": "1",
+      "content": "Mohamed Amine Riahi left the voice call",
+      "timestamp": "2025-01-09T20:35:42.640Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736454943822,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker left the voice call",
+      "timestamp": "2025-01-09T20:35:43.822Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736454948875,
+      "roomId": 1,
+      "senderId": "1",
+      "content": "Mohamed Amine Riahi left the voice call",
+      "timestamp": "2025-01-09T20:35:48.875Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736595609859,
+      "roomId": 1,
+      "senderId": "1",
+      "content": "Mohamed Amine Riahi left the voice call",
+      "timestamp": "2025-01-11T11:40:09.859Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736803286577,
+      "roomId": 1,
+      "senderId": "1",
+      "content": "Mohamed Amine Riahi left the voice call",
+      "timestamp": "2025-01-13T21:21:26.577Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736796886485,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker left the voice call",
+      "timestamp": "2025-01-13T19:34:46.485Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736797133158,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker has left the room",
+      "timestamp": "2025-01-13T19:38:53.158Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736803612302,
+      "roomId": 1,
+      "senderId": "1",
+      "content": "Mohamed Amine Riahi left the voice call",
+      "timestamp": "2025-01-13T21:26:52.302Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736806348005,
+      "roomId": 1,
+      "senderId": "1",
+      "content": "Mohamed Amine Riahi left the voice call",
+      "timestamp": "2025-01-13T22:12:28.005Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736802598757,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker left the voice call",
+      "timestamp": "2025-01-13T21:09:58.757Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736802600445,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker has left the room",
+      "timestamp": "2025-01-13T21:10:00.445Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1736809089313,
+      "roomId": 1,
+      "senderId": "1",
+      "content": "Mohamed Amine Riahi left the voice call",
+      "timestamp": "2025-01-13T22:58:09.313Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1737078521412,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker left the voice call",
+      "timestamp": "2025-01-17T01:48:41.412Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1737078522483,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker left the voice call",
+      "timestamp": "2025-01-17T01:48:42.483Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1737078522668,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker left the voice call",
+      "timestamp": "2025-01-17T01:48:42.668Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1737078523267,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker left the voice call",
+      "timestamp": "2025-01-17T01:48:43.267Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1737078523477,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker left the voice call",
+      "timestamp": "2025-01-17T01:48:43.477Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1737078523640,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker left the voice call",
+      "timestamp": "2025-01-17T01:48:43.640Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1737078524194,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker left the voice call",
+      "timestamp": "2025-01-17T01:48:44.194Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1737078524484,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker left the voice call",
+      "timestamp": "2025-01-17T01:48:44.484Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1737078524724,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker left the voice call",
+      "timestamp": "2025-01-17T01:48:44.724Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1737078524915,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker left the voice call",
+      "timestamp": "2025-01-17T01:48:44.915Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1737078525125,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker left the voice call",
+      "timestamp": "2025-01-17T01:48:45.125Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1737078529084,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker left the voice call",
+      "timestamp": "2025-01-17T01:48:49.084Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1737124362230,
+      "roomId": 1,
+      "senderId": "1",
+      "content": "Mohamed Amine Riahi left the voice call",
+      "timestamp": "2025-01-17T14:32:42.230Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1737201809263,
+      "roomId": 1,
+      "senderId": "1",
+      "content": "Mohamed Amine Riahi has left the room",
+      "timestamp": "2025-01-18T12:03:29.263Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1737201933779,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Safwen Soker left the voice call",
+      "timestamp": "2025-01-18T12:05:33.779Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1737201936648,
+      "roomId": 1,
+      "senderId": "1",
+      "content": "Mohamed Amine Riahi left the voice call",
+      "timestamp": "2025-01-18T12:05:36.648Z",
+      "type": "system",
+      "isSystemMessage": true
     }
   ],
   "messages": [
@@ -1780,6 +2396,105 @@
       "receiverId": "2",
       "content": "awed kalamni",
       "timestamp": "2025-01-05T21:33:07.905Z",
+      "read": true
+    },
+    {
+      "id": "1736292112301",
+      "senderId": "1",
+      "senderName": "medaminer",
+      "receiverId": "6",
+      "content": "ija",
+      "timestamp": "2025-01-07T23:21:52.301Z",
+      "read": true
+    },
+    {
+      "id": "1736292118071",
+      "senderId": "1",
+      "senderName": "medaminer",
+      "receiverId": "6",
+      "content": "lel room 2",
+      "timestamp": "2025-01-07T23:21:58.071Z",
+      "read": true
+    },
+    {
+      "id": "1736292121061",
+      "senderId": "1",
+      "senderName": "medaminer",
+      "receiverId": "6",
+      "content": "-_-",
+      "timestamp": "2025-01-07T23:22:01.061Z",
+      "read": true
+    },
+    {
+      "id": "1736292136285",
+      "senderId": "6",
+      "senderName": "mekniemna",
+      "receiverId": "1",
+      "content": "f weekly ?",
+      "timestamp": "2025-01-07T23:22:16.285Z",
+      "read": true
+    },
+    {
+      "id": "1736292149348",
+      "senderId": "1",
+      "senderName": "medaminer",
+      "receiverId": "6",
+      "content": "eyy",
+      "timestamp": "2025-01-07T23:22:29.348Z",
+      "read": true
+    },
+    {
+      "id": "1736293076184",
+      "senderId": "6",
+      "senderName": "mekniemna",
+      "receiverId": "1",
+      "content": "SOUTK KASS RAHOOO",
+      "timestamp": "2025-01-07T23:37:56.184Z",
+      "read": true
+    },
+    {
+      "id": "1736293085491",
+      "senderId": "6",
+      "senderName": "mekniemna",
+      "receiverId": "1",
+      "content": "MIN BEEKRI",
+      "timestamp": "2025-01-07T23:38:05.491Z",
+      "read": true
+    },
+    {
+      "id": "1736719008646",
+      "senderId": "6",
+      "senderName": "mekniemna",
+      "receiverId": "1",
+      "content": "Mnich nesmaa",
+      "timestamp": "2025-01-12T21:56:48.646Z",
+      "read": true
+    },
+    {
+      "id": "1736796771739",
+      "senderId": "2",
+      "senderName": "safwane",
+      "receiverId": "1",
+      "content": "hani jyt",
+      "timestamp": "2025-01-13T19:32:51.739Z",
+      "read": true
+    },
+    {
+      "id": "1736803275327",
+      "senderId": "1",
+      "senderName": "medaminer",
+      "receiverId": "2",
+      "content": "od5el lel room",
+      "timestamp": "2025-01-13T21:21:15.327Z",
+      "read": true
+    },
+    {
+      "id": "1736796811869",
+      "senderId": "2",
+      "senderName": "safwane",
+      "receiverId": "1",
+      "content": "asmaani e9leb lmesaget, hot mtaa recipient aala limin wlsender aala lisar, yaani misageti aala limin wmteek aala lisar",
+      "timestamp": "2025-01-13T19:33:31.869Z",
       "read": true
     }
   ],
