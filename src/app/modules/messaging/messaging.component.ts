@@ -775,8 +775,8 @@ export class MessagingComponent implements OnInit, OnDestroy {
       this.updateUnreadCounts();
       // Force view update and scroll
       setTimeout(() => {
+        console.log("worked");
         this.cdr.detectChanges();
-        this.scrollToBottom();
       });
     });
   }

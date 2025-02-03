@@ -313,9 +313,11 @@ export class EmployeeFormComponent implements OnInit {
     this.cancel.emit();
   }
 
-  nextStep() {
+  async nextStep() {
     if (this.currentStep < 2) {
       this.currentStep++;
+    }else {
+     await this.onSubmit();
     }
   }
 
