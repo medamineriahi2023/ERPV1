@@ -1,6 +1,6 @@
 export const environment = {
   production: false,
-  apiUrl: 'https://197.26.59.239:3000',
+  apiUrl: 'https://erpbackend.duckdns.org:3000',
   firebase: {
     apiKey: "AIzaSyCCHS4bCp0vVv_XgEWg8_q5FUlgciFGywE",
     authDomain: "whatsapp-6abb0.firebaseapp.com",

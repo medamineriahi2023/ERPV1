@@ -51,7 +51,7 @@ export interface CongeBalance {
   providedIn: 'root'
 })
 export class CongeService {
-  private apiUrl = 'https://197.26.59.239:3000/conges';
+  private apiUrl = 'https://erpbackend.duckdns.org:3000/conges';
 
   constructor(private http: HttpClient) {}
 

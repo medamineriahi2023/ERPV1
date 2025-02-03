@@ -27,12 +27,12 @@ import { LoginRequest } from '../../../../core/interfaces/user.interface';
   template: `
     <div class="min-h-screen bg-gradient-to-br from-blue-100 via-white to-blue-50 py-6 flex flex-col justify-center sm:py-12 relative">
       <div class="absolute inset-0 bg-[url('/assets/img/grid.svg')] bg-center [mask-image:linear-gradient(180deg,white,rgba(255,255,255,0))]"></div>
-      
+
       <p-toast position="top-center"></p-toast>
-      
+
       <div class="relative py-3 sm:max-w-xl sm:mx-auto">
         <div class="absolute inset-0 bg-gradient-to-r from-blue-300 to-blue-600 shadow-lg transform -skew-y-6 sm:skew-y-0 sm:-rotate-6 sm:rounded-3xl"></div>
-        
+
         <div class="relative px-4 py-10 bg-white shadow-lg sm:rounded-3xl sm:p-20">
           <div class="max-w-md mx-auto">
             <div class="divide-y divide-gray-200">
@@ -53,22 +53,22 @@ import { LoginRequest } from '../../../../core/interfaces/user.interface';
                       <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                         <i class="pi pi-user text-gray-400 group-hover:text-blue-500 transition-colors duration-200"></i>
                       </div>
-                      <input 
-                        id="username" 
-                        type="text" 
-                        formControlName="username"
-                        class="block w-full pl-10 pr-3 py-2.5 sm:text-sm border-2 border-gray-200 rounded-lg 
+                      <input
+                          id="username"
+                          type="text"
+                          formControlName="username"
+                          class="block w-full pl-10 pr-3 py-2.5 sm:text-sm border-2 border-gray-200 rounded-lg 
                                focus:ring-2 focus:ring-blue-500 focus:border-transparent
                                hover:border-blue-300 transition-all duration-200
                                bg-gray-50 hover:bg-white"
-                        [ngClass]="{'border-red-300 text-red-900 placeholder-red-300 focus:ring-red-500': submitted && loginForm.get('username')?.errors}"
-                        placeholder="Entrez votre nom d'utilisateur">
+                          [ngClass]="{'border-red-300 text-red-900 placeholder-red-300 focus:ring-red-500': submitted && loginForm.get('username')?.errors}"
+                          placeholder="Entrez votre nom d'utilisateur">
                       <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none"
                            *ngIf="submitted && loginForm.get('username')?.errors">
                         <i class="pi pi-exclamation-circle text-red-500"></i>
                       </div>
                     </div>
-                    <p class="mt-1 text-sm text-red-600 flex items-center gap-1" 
+                    <p class="mt-1 text-sm text-red-600 flex items-center gap-1"
                        *ngIf="submitted && loginForm.get('username')?.errors?.['required']">
                       <i class="pi pi-info-circle"></i>
                       Le nom d'utilisateur est requis
@@ -84,22 +84,22 @@ import { LoginRequest } from '../../../../core/interfaces/user.interface';
                       <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                         <i class="pi pi-lock text-gray-400 group-hover:text-blue-500 transition-colors duration-200"></i>
                       </div>
-                      <p-password 
-                        id="password" 
-                        formControlName="password"
-                        [feedback]="false"
-                        [toggleMask]="true"
-                        styleClass="w-full custom-password"
-                        [inputStyle]="{'padding-left': '2.5rem', 'border-radius': '0.5rem', 'height': '2.75rem'}"
-                        [ngClass]="{'ng-invalid ng-dirty': submitted && loginForm.get('password')?.errors}"
-                        placeholder="Entrez votre mot de passe">
+                      <p-password
+                          id="password"
+                          formControlName="password"
+                          [feedback]="false"
+                          [toggleMask]="true"
+                          styleClass="w-full custom-password"
+                          [inputStyle]="{'padding-left': '2.5rem', 'border-radius': '0.5rem', 'height': '2.75rem'}"
+                          [ngClass]="{'ng-invalid ng-dirty': submitted && loginForm.get('password')?.errors}"
+                          placeholder="Entrez votre mot de passe">
                       </p-password>
                       <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none"
                            *ngIf="submitted && loginForm.get('password')?.errors">
                         <i class="pi pi-exclamation-circle text-red-500"></i>
                       </div>
                     </div>
-                    <p class="mt-1 text-sm text-red-600 flex items-center gap-1" 
+                    <p class="mt-1 text-sm text-red-600 flex items-center gap-1"
                        *ngIf="submitted && loginForm.get('password')?.errors?.['required']">
                       <i class="pi pi-info-circle"></i>
                       Le mot de passe est requis
@@ -108,12 +108,12 @@ import { LoginRequest } from '../../../../core/interfaces/user.interface';
 
                   <!-- Submit Button -->
                   <div class="pt-4">
-                    <button 
-                      pButton 
-                      type="submit"
-                      [loading]="loading"
-                      label="Se connecter"
-                      class="w-full py-2.5 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white
+                    <button
+                        pButton
+                        type="submit"
+                        [loading]="loading"
+                        label="Se connecter"
+                        class="w-full py-2.5 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white
                              bg-gradient-to-r from-blue-500 to-blue-600 
                              hover:from-blue-600 hover:to-blue-700 
                              focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 
@@ -132,14 +132,14 @@ import { LoginRequest } from '../../../../core/interfaces/user.interface';
     :host ::ng-deep {
       .p-password {
         width: 100%;
-        
+
         input {
           width: 100%;
-          @apply pl-10 pr-3 py-2.5 sm:text-sm border-2 border-gray-200 rounded-lg 
-                 focus:ring-2 focus:ring-blue-500 focus:border-transparent
-                 hover:border-blue-300 transition-all duration-200
-                 bg-gray-50 hover:bg-white;
-          
+          @apply pl-10 pr-3 py-2.5 sm:text-sm border-2 border-gray-200 rounded-lg
+          focus:ring-2 focus:ring-blue-500 focus:border-transparent
+          hover:border-blue-300 transition-all duration-200
+          bg-gray-50 hover:bg-white;
+
           &.ng-invalid.ng-dirty {
             @apply border-red-300 text-red-900 placeholder-red-300 focus:ring-red-500;
           }
@@ -157,15 +157,15 @@ import { LoginRequest } from '../../../../core/interfaces/user.interface';
           @apply text-sm text-gray-600;
         }
       }
-      
+
       .p-button {
         &.p-button-loading {
           @apply opacity-75 cursor-wait;
-          
+
           .p-button-label {
             @apply opacity-0;
           }
-          
+
           .p-button-loading-icon {
             @apply opacity-100;
           }
@@ -178,6 +178,22 @@ import { LoginRequest } from '../../../../core/interfaces/user.interface';
         }
       }
     }
+    .custom-toast-error {
+      background: linear-gradient(135deg, #ff4e50, #f9d423) !important;
+      color: white !important;
+      font-weight: bold;
+      border-radius: 8px !important;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2) !important;
+    }
+
+    .custom-toast-error .p-toast-summary {
+      font-size: 1.2rem !important;
+    }
+
+    .custom-toast-error .p-toast-detail {
+      font-size: 1rem !important;
+    }
+
   `]
 })
 export class LoginComponent implements OnInit {
@@ -186,9 +202,9 @@ export class LoginComponent implements OnInit {
   submitted = false;
 
   constructor(
-    private authService: AuthService,
-    private router: Router,
-    private messageService: MessageService
+      private authService: AuthService,
+      private router: Router,
+      private messageService: MessageService
   ) {
     this.loginForm = new FormGroup({
       username: new FormControl('', [Validators.required]),
@@ -202,7 +218,7 @@ export class LoginComponent implements OnInit {
     this.authService.logout();
   }
 
-  onSubmit() {
+  async onSubmit() {
     this.submitted = true;
 
     if (this.loginForm.invalid) {
@@ -223,15 +239,17 @@ export class LoginComponent implements OnInit {
         password: this.loginForm.get('password')?.value
       };
 
-      this.authService.login(credentials);
-      this.router.navigate(['/dashboard']);
+      await this.authService.login(credentials);
+      await this.router.navigate(['/dashboard']);
     } catch (error) {
       this.messageService.add({
         severity: 'error',
-        summary: 'Erreur',
-        detail: error instanceof Error ? error.message : 'Erreur de connexion',
-        life: 3000
+        summary: '❌ Erreur',
+        detail: error instanceof Error ? error.message : '⛔ Problème de connexion au serveur.',
+        life: 5000,
+        styleClass: 'custom-toast-error'
       });
+
     } finally {
       this.loading = false;
     }

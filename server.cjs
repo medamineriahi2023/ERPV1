@@ -5,8 +5,8 @@ const path = require('path');
 
 // Paths to your SSL certificate and key
 const options = {
-  key: fs.readFileSync(path.join(__dirname, 'key.pem')),
-  cert: fs.readFileSync(path.join(__dirname, 'cert.pem'))
+  key: fs.readFileSync(path.join('/etc/letsencrypt/live/erpbackend.duckdns.org/privkey.pem')),
+  cert: fs.readFileSync(path.join('/etc/letsencrypt/live/erpbackend.duckdns.org/fullchain.pem'))
 };
 
 // Create JSON Server

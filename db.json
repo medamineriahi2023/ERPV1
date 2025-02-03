@@ -9,11 +9,20 @@
       "lastName": "Abdellaoui",
       "name": "Yassin Abdellaoui",
       "role": "manager",
-      "photoUrl": "https://i.imgur.com/lGQPUvK.jpeg",
+      "photoUrl": "https://i.imgur.com/P3slQy4.png",
       "department": "IT",
       "position": "IT Manager",
       "managerId": null,
       "managedEmployees": [
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10
       ],
       "hireDate": "2023-01-01",
       "leaveBalance": {
@@ -27,7 +36,288 @@
       },
       "status": "ACTIVE",
       "contractType": "CDI",
-      "lastActive": "2025-02-03T13:50:27.177Z"
+      "lastActive": "2025-02-03T14:46:29.999Z"
+    },
+    {
+      "username": "medaminer",
+      "email": "riahimedaminer@gmail.com",
+      "firstName": "Mohamed Amine",
+      "password": "21282925Aa*",
+      "lastName": "Riahi",
+      "name": "Mohamed Amine Riahi",
+      "role": "employee",
+      "department": "Engineering",
+      "position": "Developpeur",
+      "managerId": 1,
+      "managedEmployees": [],
+      "hireDate": "2025-02-03T13:59:36.033Z",
+      "leaveBalance": {
+        "annual": 30,
+        "sick": 15
+      },
+      "workSchedule": {
+        "startTime": "09:00",
+        "endTime": "17:00",
+        "lunchBreakDuration": 60
+      },
+      "rating": 0,
+      "status": "active",
+      "contractType": "CDI",
+      "photoUrl": "https://res.cloudinary.com/ddhnjfnce/image/upload/v1738591251/p3furzxmrl2hfiw1p7jk.jpg",
+      "id": 2
+    },
+    {
+      "username": "amine.lemsi",
+      "email": "aminelemsi@gmail.com",
+      "firstName": "Amine",
+      "password": "amine.lemsi",
+      "lastName": "Lemsi",
+      "name": "Amine Lemsi",
+      "role": "employee",
+      "department": "Engineering",
+      "position": "Stagaire",
+      "managerId": 1,
+      "managedEmployees": [],
+      "hireDate": "2025-02-03T13:59:36.033Z",
+      "leaveBalance": {
+        "annual": 30,
+        "sick": 15
+      },
+      "workSchedule": {
+        "startTime": "09:00",
+        "endTime": "17:00",
+        "lunchBreakDuration": 60
+      },
+      "rating": 0,
+      "status": "active",
+      "contractType": "CDI",
+      "photoUrl": "",
+      "id": 3
+    },
+    {
+      "role": "employee",
+      "department": "Engineering",
+      "position": "Stagaire",
+      "managerId": 1,
+      "managedEmployees": [],
+      "hireDate": "2025-02-03T13:59:36.033Z",
+      "leaveBalance": {
+        "annual": 30,
+        "sick": 15
+      },
+      "workSchedule": {
+        "startTime": "09:00",
+        "endTime": "17:00",
+        "lunchBreakDuration": 60
+      },
+      "rating": 0,
+      "status": "OFFLINE",
+      "contractType": "CDI",
+      "photoUrl": "",
+      "username": "aziz.louati",
+      "email": "aziz.louati@gmail.com",
+      "firstName": "Aziz",
+      "password": "aziz.louati",
+      "lastName": "Louati",
+      "name": "Aziz Louati",
+      "id": 4,
+      "lastActive": "2025-02-03T14:25:21.809Z"
+    },
+    {
+      "role": "employee",
+      "department": "Engineering",
+      "position": "Stagaire",
+      "managerId": 1,
+      "managedEmployees": [],
+      "hireDate": "2025-02-03T13:59:36.033Z",
+      "leaveBalance": {
+        "annual": 30,
+        "sick": 15
+      },
+      "workSchedule": {
+        "startTime": "09:00",
+        "endTime": "17:00",
+        "lunchBreakDuration": 60
+      },
+      "rating": 0,
+      "status": "active",
+      "contractType": "CDI",
+      "photoUrl": "",
+      "username": "nourhene.sahraoui",
+      "email": "nourhene.sahraoui@gmail.com",
+      "firstName": "Nourhene",
+      "password": "nourhene.sahraoui",
+      "lastName": "Sahraoui",
+      "name": "Nourhene Sahraoui",
+      "id": 5
+    },
+    {
+      "role": "employee",
+      "department": "Engineering",
+      "position": "Stagaire",
+      "managerId": 1,
+      "managedEmployees": [],
+      "hireDate": "2025-02-03T13:59:36.033Z",
+      "leaveBalance": {
+        "annual": 30,
+        "sick": 15
+      },
+      "workSchedule": {
+        "startTime": "09:00",
+        "endTime": "17:00",
+        "lunchBreakDuration": 60
+      },
+      "rating": 0,
+      "status": "active",
+      "contractType": "CDI",
+      "photoUrl": "",
+      "username": "ons.ghariani",
+      "email": "ons.ghariani@gmail.com",
+      "firstName": "Ons",
+      "password": "ons.ghariani",
+      "lastName": "Ghariani",
+      "name": "Ons Ghariani",
+      "id": 6
+    },
+    {
+      "role": "employee",
+      "department": "Engineering",
+      "position": "Stagaire",
+      "managerId": 1,
+      "managedEmployees": [],
+      "hireDate": "2025-02-03T13:59:36.033Z",
+      "leaveBalance": {
+        "annual": 30,
+        "sick": 15
+      },
+      "workSchedule": {
+        "startTime": "09:00",
+        "endTime": "17:00",
+        "lunchBreakDuration": 60
+      },
+      "rating": 0,
+      "status": "active",
+      "contractType": "CDI",
+      "photoUrl": "",
+      "username": "rihab.cherni",
+      "email": "rihab.cherni@gmail.com",
+      "firstName": "Rihab",
+      "password": "rihab.cherni",
+      "lastName": "Cherni",
+      "name": "Rihab Cherni",
+      "id": 7
+    },
+    {
+      "role": "employee",
+      "department": "Engineering",
+      "position": "Stagaire",
+      "managerId": 1,
+      "managedEmployees": [],
+      "hireDate": "2025-02-03T13:59:36.033Z",
+      "leaveBalance": {
+        "annual": 30,
+        "sick": 15
+      },
+      "workSchedule": {
+        "startTime": "09:00",
+        "endTime": "17:00",
+        "lunchBreakDuration": 60
+      },
+      "rating": 0,
+      "status": "active",
+      "contractType": "CDI",
+      "photoUrl": "",
+      "username": "sawssen.cherif",
+      "email": "sawssen.cherif@gmail.com",
+      "firstName": "Sawssen",
+      "password": "sawssen.cherif",
+      "lastName": "Cherif",
+      "name": "Sawssen Cherif",
+      "id": 8
+    },
+    {
+      "role": "employee",
+      "department": "Engineering",
+      "position": "Stagaire",
+      "managerId": 1,
+      "managedEmployees": [],
+      "hireDate": "2025-02-03T13:59:36.033Z",
+      "leaveBalance": {
+        "annual": 30,
+        "sick": 15
+      },
+      "workSchedule": {
+        "startTime": "09:00",
+        "endTime": "17:00",
+        "lunchBreakDuration": 60
+      },
+      "rating": 0,
+      "status": "active",
+      "contractType": "CDI",
+      "photoUrl": "",
+      "username": "shahd.mrabet",
+      "email": "shahd.mrabet@gmail.com",
+      "firstName": "Shahd",
+      "password": "shahd.mrabet",
+      "lastName": "Mrabet",
+      "name": "Shahd Mrabet",
+      "id": 9
+    },
+    {
+      "role": "employee",
+      "department": "Engineering",
+      "position": "Stagaire",
+      "managerId": 1,
+      "managedEmployees": [],
+      "hireDate": "2025-02-03T13:59:36.033Z",
+      "leaveBalance": {
+        "annual": 30,
+        "sick": 15
+      },
+      "workSchedule": {
+        "startTime": "09:00",
+        "endTime": "17:00",
+        "lunchBreakDuration": 60
+      },
+      "rating": 0,
+      "status": "active",
+      "contractType": "CDI",
+      "photoUrl": "",
+      "username": "sirine.ammar",
+      "email": "sirine.ammar@gmail.com",
+      "firstName": "Sirine",
+      "password": "sirine.ammar",
+      "lastName": "Ammar",
+      "name": "Sirine Ammar",
+      "id": 10
+    },
+    {
+      "role": "employee",
+      "department": "Engineering",
+      "position": "Stagaire",
+      "managerId": 1,
+      "managedEmployees": [],
+      "hireDate": "2025-02-03T13:59:36.033Z",
+      "leaveBalance": {
+        "annual": 30,
+        "sick": 15
+      },
+      "workSchedule": {
+        "startTime": "09:00",
+        "endTime": "17:00",
+        "lunchBreakDuration": 60
+      },
+      "rating": 0,
+      "status": "active",
+      "contractType": "CDI",
+      "photoUrl": "",
+      "username": "wafa.mili",
+      "email": "wafa.mili@gmail.com",
+      "firstName": "Wafa",
+      "password": "wafa.mili",
+      "lastName": "Mili",
+      "name": "Wafa Mili",
+      "id": 11
     }
   ],
   "time-entries": [],
