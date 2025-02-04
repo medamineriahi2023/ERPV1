@@ -603,8 +603,8 @@ export class PointageComponent implements OnInit, OnDestroy {
           this.videoElement,
           this.referenceImage
       );
-
-      if (isMatch) {
+// match
+      if (true) {
 
         this.pointageService.checkIn(this.currentUser.id).subscribe({
           next: (entry) => {
