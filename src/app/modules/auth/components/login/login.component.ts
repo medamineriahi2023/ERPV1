@@ -40,7 +40,8 @@ import { LoginRequest } from '../../../../core/interfaces/user.interface';
                 <div class="text-center mb-8">
                   <img src="assets/logo/logo.png" alt="Logo" class="mx-auto h-16 mb-4">
                   <h2 class="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-blue-400 mb-2">Bienvenue!</h2>
-                  <p class="text-gray-600">Connectez-vous pour continuer</p>
+                  <p class="text-gray-600">Connectez-vous pour continuer</p><br>
+                  <p class="text-red-500">Pour le démo connecter avec demo/demo</p>
                 </div>
 
                 <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="space-y-8">
@@ -207,8 +208,8 @@ export class LoginComponent implements OnInit {
       private messageService: MessageService
   ) {
     this.loginForm = new FormGroup({
-      username: new FormControl('', [Validators.required]),
-      password: new FormControl('', [Validators.required])
+      username: new FormControl('demo', [Validators.required]),
+      password: new FormControl('demo', [Validators.required])
     });
   }
 
