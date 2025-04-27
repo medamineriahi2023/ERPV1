@@ -1,4 +1,4 @@
 export const environment = {
   production: false,
-  apiUrl: 'https://erpbackend.duckdns.org:3000'
+  apiUrl: 'https://41.225.244.19:3000'
 };

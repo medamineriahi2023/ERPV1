@@ -22,7 +22,9 @@
         7,
         8,
         9,
-        10
+        10,
+        11,
+        12
       ],
       "hireDate": "2023-01-01",
       "leaveBalance": {
@@ -34,9 +36,39 @@
         "endTime": "17:00",
         "lunchBreakDuration": 60
       },
-      "status": "ACTIVE",
+      "status": "INACTIVE",
       "contractType": "CDI",
-      "lastActive": "2025-02-03T14:46:29.999Z"
+      "lastActive": "2025-02-12T10:38:25.885Z"
+    },
+    {
+      "id": 14,
+      "username": "demo",
+      "password": "demo",
+      "email": "demo@demo.com",
+      "firstName": "Demo",
+      "lastName": "Demo",
+      "name": "Demo Demo",
+      "role": "manager",
+      "photoUrl": "https://i.imgur.com/P3slQy4.png",
+      "department": "IT",
+      "position": "IT Manager",
+      "managerId": null,
+      "managedEmployees": [
+        2
+      ],
+      "hireDate": "2023-01-01",
+      "leaveBalance": {
+        "annual": 30,
+        "sick": 15
+      },
+      "workSchedule": {
+        "startTime": "09:00",
+        "endTime": "17:00",
+        "lunchBreakDuration": 60
+      },
+      "status": "OFFLINE",
+      "contractType": "CDI",
+      "lastActive": "2025-04-27T05:26:09.890Z"
     },
     {
       "username": "medaminer",
@@ -61,10 +93,11 @@
         "lunchBreakDuration": 60
       },
       "rating": 0,
-      "status": "active",
+      "status": "OFFLINE",
       "contractType": "CDI",
       "photoUrl": "https://res.cloudinary.com/ddhnjfnce/image/upload/v1738591251/p3furzxmrl2hfiw1p7jk.jpg",
-      "id": 2
+      "id": 2,
+      "lastActive": "2025-02-08T20:49:42.949Z"
     },
     {
       "username": "amine.lemsi",
@@ -89,10 +122,11 @@
         "lunchBreakDuration": 60
       },
       "rating": 0,
-      "status": "active",
+      "status": "OFFLINE",
       "contractType": "CDI",
       "photoUrl": "",
-      "id": 3
+      "id": 3,
+      "lastActive": "2025-02-05T11:21:15.280Z"
     },
     {
       "role": "employee",
@@ -111,7 +145,7 @@
         "lunchBreakDuration": 60
       },
       "rating": 0,
-      "status": "OFFLINE",
+      "status": "ACTIVE",
       "contractType": "CDI",
       "photoUrl": "",
       "username": "aziz.louati",
@@ -121,7 +155,7 @@
       "lastName": "Louati",
       "name": "Aziz Louati",
       "id": 4,
-      "lastActive": "2025-02-03T14:25:21.809Z"
+      "lastActive": "2025-02-05T01:58:11.364Z"
     },
     {
       "role": "employee",
@@ -196,7 +230,7 @@
         "lunchBreakDuration": 60
       },
       "rating": 0,
-      "status": "active",
+      "status": "OFFLINE",
       "contractType": "CDI",
       "photoUrl": "",
       "username": "rihab.cherni",
@@ -205,7 +239,8 @@
       "password": "rihab.cherni",
       "lastName": "Cherni",
       "name": "Rihab Cherni",
-      "id": 7
+      "id": 7,
+      "lastActive": "2025-02-05T19:38:27.476Z"
     },
     {
       "role": "employee",
@@ -252,7 +287,7 @@
         "lunchBreakDuration": 60
       },
       "rating": 0,
-      "status": "active",
+      "status": "OFFLINE",
       "contractType": "CDI",
       "photoUrl": "",
       "username": "shahd.mrabet",
@@ -261,7 +296,8 @@
       "password": "shahd.mrabet",
       "lastName": "Mrabet",
       "name": "Shahd Mrabet",
-      "id": 9
+      "id": 9,
+      "lastActive": "2025-02-03T17:54:22.484Z"
     },
     {
       "role": "employee",
@@ -318,15 +354,765 @@
       "lastName": "Mili",
       "name": "Wafa Mili",
       "id": 11
+    },
+    {
+      "username": "aziztrifi",
+      "email": "riahimedaminer@gmail.com",
+      "firstName": "Mohamed Aziz",
+      "password": "aziztrifi",
+      "lastName": "Trifi",
+      "name": "Mohamed Aziz Trifi",
+      "role": "employee",
+      "department": "Engineering",
+      "position": "Stagaire",
+      "managerId": 1,
+      "managedEmployees": [],
+      "hireDate": "2025-02-04T08:36:59.464Z",
+      "leaveBalance": {
+        "annual": 30,
+        "sick": 15
+      },
+      "workSchedule": {
+        "startTime": "09:00",
+        "endTime": "17:00",
+        "lunchBreakDuration": 60
+      },
+      "rating": 0,
+      "status": "OFFLINE",
+      "contractType": "CDI",
+      "photoUrl": "",
+      "id": 12,
+      "lastActive": "2025-02-04T08:51:22.872Z"
     }
   ],
-  "time-entries": [],
+  "time-entries": [
+    {
+      "userId": 2,
+      "date": "2025-02-03T15:27:55.508Z",
+      "checkIn": "16:27:55",
+      "checkOut": "16:28:19",
+      "lunchStart": null,
+      "lunchEnd": null,
+      "totalHours": 0.02,
+      "status": "late",
+      "isLate": true,
+      "id": 1
+    },
+    {
+      "userId": 2,
+      "date": "2025-02-04T07:27:18.575Z",
+      "checkIn": "08:27:18",
+      "checkOut": null,
+      "lunchStart": null,
+      "lunchEnd": null,
+      "totalHours": 0,
+      "status": "present",
+      "isLate": false,
+      "id": 2
+    },
+    {
+      "userId": 11,
+      "date": "2025-02-04T07:45:01.859Z",
+      "checkIn": "08:45:01",
+      "checkOut": "17:58:16",
+      "lunchStart": null,
+      "lunchEnd": null,
+      "totalHours": 9.22,
+      "status": "present",
+      "isLate": false,
+      "id": 3
+    },
+    {
+      "userId": 9,
+      "date": "2025-02-04T07:45:59.912Z",
+      "checkIn": "08:45:59",
+      "checkOut": "17:16:48",
+      "lunchStart": "11:49:14",
+      "lunchEnd": "12:44:56",
+      "totalHours": 8.52,
+      "status": "present",
+      "isLate": false,
+      "id": 4
+    },
+    {
+      "userId": 7,
+      "date": "2025-02-04T07:49:25.598Z",
+      "checkIn": "08:49:25",
+      "checkOut": "18:18:16",
+      "lunchStart": null,
+      "lunchEnd": null,
+      "totalHours": 9.48,
+      "status": "present",
+      "isLate": false,
+      "id": 5
+    },
+    {
+      "userId": 4,
+      "date": "2025-02-04T07:50:01.286Z",
+      "checkIn": "08:50:01",
+      "checkOut": "17:00:28",
+      "lunchStart": "12:01:04",
+      "lunchEnd": "14:04:10",
+      "totalHours": 8.17,
+      "status": "present",
+      "isLate": false,
+      "id": 6
+    },
+    {
+      "userId": 3,
+      "date": "2025-02-04T08:31:56.211Z",
+      "checkIn": "09:31:56",
+      "checkOut": "18:12:02",
+      "lunchStart": null,
+      "lunchEnd": null,
+      "totalHours": 8.68,
+      "status": "late",
+      "isLate": true,
+      "id": 7
+    },
+    {
+      "userId": 4,
+      "date": "2025-02-05T07:49:41.342Z",
+      "checkIn": "08:49:41",
+      "checkOut": "17:15:35",
+      "lunchStart": "13:37:26",
+      "lunchEnd": "14:58:36",
+      "totalHours": 8.43,
+      "status": "present",
+      "isLate": false,
+      "id": 8
+    },
+    {
+      "userId": 7,
+      "date": "2025-02-05T07:51:37.768Z",
+      "checkIn": "08:51:37",
+      "checkOut": "18:03:05",
+      "lunchStart": "12:21:17",
+      "lunchEnd": "13:22:44",
+      "totalHours": 9.2,
+      "status": "present",
+      "isLate": false,
+      "id": 9
+    },
+    {
+      "userId": 3,
+      "date": "2025-02-05T08:02:58.924Z",
+      "checkIn": "09:02:58",
+      "checkOut": "17:05:14",
+      "lunchStart": null,
+      "lunchEnd": null,
+      "totalHours": 8.05,
+      "status": "late",
+      "isLate": true,
+      "id": 10
+    },
+    {
+      "userId": 11,
+      "date": "2025-02-05T08:03:23.682Z",
+      "checkIn": "09:03:23",
+      "checkOut": "17:02:46",
+      "lunchStart": "12:46:11",
+      "lunchEnd": "13:47:11",
+      "totalHours": 7.98,
+      "status": "late",
+      "isLate": true,
+      "id": 11
+    },
+    {
+      "userId": 9,
+      "date": "2025-02-05T08:26:30.298Z",
+      "checkIn": "09:26:30",
+      "checkOut": "17:18:13",
+      "lunchStart": "12:44:22",
+      "lunchEnd": "13:24:54",
+      "totalHours": 7.87,
+      "status": "late",
+      "isLate": true,
+      "id": 12
+    },
+    {
+      "userId": 1,
+      "date": "2025-02-06T00:14:49.904Z",
+      "checkIn": "01:14:49",
+      "checkOut": "01:14:55",
+      "lunchStart": null,
+      "lunchEnd": null,
+      "totalHours": 0,
+      "status": "present",
+      "isLate": false,
+      "id": 13
+    },
+    {
+      "userId": 9,
+      "date": "2025-02-06T07:03:17.738Z",
+      "checkIn": "08:03:17",
+      "checkOut": "17:07:54",
+      "lunchStart": "14:00:25",
+      "lunchEnd": "14:10:59",
+      "totalHours": 9.07,
+      "status": "present",
+      "isLate": false,
+      "id": 14
+    },
+    {
+      "userId": 11,
+      "date": "2025-02-06T07:56:35.242Z",
+      "checkIn": "08:56:35",
+      "checkOut": "17:11:20",
+      "lunchStart": "12:33:59",
+      "lunchEnd": "13:39:50",
+      "totalHours": 8.25,
+      "status": "present",
+      "isLate": false,
+      "id": 15
+    },
+    {
+      "userId": 4,
+      "date": "2025-02-06T07:57:28.093Z",
+      "checkIn": "08:57:28",
+      "checkOut": "17:00:43",
+      "lunchStart": "12:16:51",
+      "lunchEnd": "14:14:09",
+      "totalHours": 8.05,
+      "status": "present",
+      "isLate": false,
+      "id": 16
+    },
+    {
+      "userId": 3,
+      "date": "2025-02-06T08:01:29.300Z",
+      "checkIn": "09:01:29",
+      "checkOut": "17:03:52",
+      "lunchStart": null,
+      "lunchEnd": null,
+      "totalHours": 8.03,
+      "status": "late",
+      "isLate": true,
+      "id": 17
+    },
+    {
+      "userId": 9,
+      "date": "2025-02-07T07:14:18.047Z",
+      "checkIn": "08:14:18",
+      "checkOut": null,
+      "lunchStart": null,
+      "lunchEnd": null,
+      "totalHours": 0,
+      "status": "present",
+      "isLate": false,
+      "id": 18
+    },
+    {
+      "userId": 7,
+      "date": "2025-02-07T07:42:36.334Z",
+      "checkIn": "08:42:36",
+      "checkOut": null,
+      "lunchStart": null,
+      "lunchEnd": null,
+      "totalHours": 0,
+      "status": "present",
+      "isLate": false,
+      "id": 19
+    },
+    {
+      "userId": 4,
+      "date": "2025-02-07T08:01:15.031Z",
+      "checkIn": "09:01:15",
+      "checkOut": null,
+      "lunchStart": null,
+      "lunchEnd": null,
+      "totalHours": 0,
+      "status": "late",
+      "isLate": true,
+      "id": 20
+    },
+    {
+      "userId": 3,
+      "date": "2025-02-07T08:03:32.877Z",
+      "checkIn": "09:03:32",
+      "checkOut": "09:03:37",
+      "lunchStart": null,
+      "lunchEnd": null,
+      "totalHours": 0,
+      "status": "late",
+      "isLate": true,
+      "id": 21
+    },
+    {
+      "userId": 9,
+      "date": "2025-02-08T07:54:15.675Z",
+      "checkIn": "08:54:15",
+      "checkOut": null,
+      "lunchStart": null,
+      "lunchEnd": null,
+      "totalHours": 0,
+      "status": "present",
+      "isLate": false,
+      "id": 22
+    },
+    {
+      "userId": 2,
+      "date": "2025-02-08T20:14:44.974Z",
+      "checkIn": "21:14:44",
+      "checkOut": null,
+      "lunchStart": null,
+      "lunchEnd": null,
+      "totalHours": 0,
+      "status": "late",
+      "isLate": true,
+      "id": 23
+    },
+    {
+      "userId": 9,
+      "date": "2025-02-10T07:29:41.746Z",
+      "checkIn": "08:29:41",
+      "checkOut": "16:33:01",
+      "lunchStart": null,
+      "lunchEnd": null,
+      "totalHours": 8.07,
+      "status": "present",
+      "isLate": false,
+      "id": 24
+    },
+    {
+      "userId": 11,
+      "date": "2025-02-10T07:50:49.235Z",
+      "checkIn": "08:50:49",
+      "checkOut": "17:12:56",
+      "lunchStart": "12:15:55",
+      "lunchEnd": "12:41:47",
+      "totalHours": 8.37,
+      "status": "present",
+      "isLate": false,
+      "id": 25
+    },
+    {
+      "userId": 4,
+      "date": "2025-02-10T08:00:27.415Z",
+      "checkIn": "09:00:27",
+      "checkOut": "17:00:03",
+      "lunchStart": "14:34:46",
+      "lunchEnd": "15:15:13",
+      "totalHours": 8,
+      "status": "late",
+      "isLate": true,
+      "id": 26
+    },
+    {
+      "userId": 9,
+      "date": "2025-02-12T09:43:54.764Z",
+      "checkIn": "10:43:54",
+      "checkOut": "17:54:46",
+      "lunchStart": "12:18:39",
+      "lunchEnd": "12:42:27",
+      "totalHours": 7.18,
+      "status": "late",
+      "isLate": true,
+      "id": 27
+    },
+    {
+      "userId": 9,
+      "date": "2025-02-13T07:25:02.023Z",
+      "checkIn": "08:25:02",
+      "checkOut": "18:31:48",
+      "lunchStart": "11:54:03",
+      "lunchEnd": "12:42:28",
+      "totalHours": 10.1,
+      "status": "present",
+      "isLate": false,
+      "id": 28
+    },
+    {
+      "userId": 11,
+      "date": "2025-02-13T07:51:34.479Z",
+      "checkIn": "08:51:34",
+      "checkOut": "17:09:27",
+      "lunchStart": "12:23:05",
+      "lunchEnd": "13:19:13",
+      "totalHours": 8.3,
+      "status": "present",
+      "isLate": false,
+      "id": 29
+    },
+    {
+      "userId": 9,
+      "date": "2025-02-19T07:34:12.261Z",
+      "checkIn": "08:34:12",
+      "checkOut": "18:10:38",
+      "lunchStart": "11:33:30",
+      "lunchEnd": "12:45:03",
+      "totalHours": 9.6,
+      "status": "present",
+      "isLate": false,
+      "id": 30
+    }
+  ],
   "leave-requests": [],
   "projects": [],
   "weekly-reports": [],
   "notifications": [],
-  "rooms": [],
-  "room-messages": [],
-  "messages": [],
-  "conges": []
+  "rooms": [
+    {
+      "name": "Daily meeting",
+      "subject": "DalyMeetings",
+      "allowedUsers": [
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8",
+        "9",
+        "10",
+        "11",
+        1
+      ],
+      "activeParticipants": [
+        "1",
+        "2"
+      ],
+      "createdBy": 1,
+      "createdAt": "2025-02-03T15:14:34.911Z",
+      "activeScreenShare": null,
+      "id": 1
+    },
+    {
+      "name": "room1",
+      "subject": "room",
+      "allowedUsers": [
+        "12",
+        2
+      ],
+      "activeParticipants": [
+        "12",
+        "2"
+      ],
+      "createdBy": 2,
+      "createdAt": "2025-02-04T08:45:35.213Z",
+      "activeScreenShare": null,
+      "id": 2
+    }
+  ],
+  "room-messages": [
+    {
+      "id": 1738596277963,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Mohamed Amine Riahi left the voice call",
+      "timestamp": "2025-02-03T15:24:37.963Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1738596968948,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Mohamed Amine Riahi left the voice call",
+      "timestamp": "2025-02-03T15:36:08.948Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1738597640867,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Mohamed Amine Riahi left the voice call",
+      "timestamp": "2025-02-03T15:47:20.867Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1738658780431,
+      "roomId": 2,
+      "senderId": "12",
+      "senderName": "Mohamed Aziz Trifi",
+      "senderPhotoUrl": "",
+      "content": "Hi",
+      "timestamp": "2025-02-04T08:46:20.431Z",
+      "type": "text",
+      "isSystemMessage": false
+    },
+    {
+      "id": 1738658871415,
+      "roomId": 2,
+      "senderId": "2",
+      "content": "Mohamed Amine Riahi left the voice call",
+      "timestamp": "2025-02-04T08:47:51.415Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1738672863831,
+      "roomId": 2,
+      "senderId": "2",
+      "content": "Mohamed Amine Riahi has left the room",
+      "timestamp": "2025-02-04T12:41:03.831Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1738876495641,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Mohamed Amine Riahi left the voice call",
+      "timestamp": "2025-02-06T21:14:55.641Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1738876498125,
+      "roomId": 1,
+      "senderId": "1",
+      "content": "Yassin Abdellaoui left the voice call",
+      "timestamp": "2025-02-06T21:14:58.125Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1738876534569,
+      "roomId": 1,
+      "senderId": "1",
+      "content": "Yassin Abdellaoui left the voice call",
+      "timestamp": "2025-02-06T21:15:34.569Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1738876538332,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Mohamed Amine Riahi left the voice call",
+      "timestamp": "2025-02-06T21:15:38.332Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1738876583484,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Mohamed Amine Riahi left the voice call",
+      "timestamp": "2025-02-06T21:16:23.484Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1738876586996,
+      "roomId": 1,
+      "senderId": "1",
+      "content": "Yassin Abdellaoui left the voice call",
+      "timestamp": "2025-02-06T21:16:26.996Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1738876652541,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Mohamed Amine Riahi left the voice call",
+      "timestamp": "2025-02-06T21:17:32.541Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1738876654525,
+      "roomId": 1,
+      "senderId": "1",
+      "content": "Yassin Abdellaoui left the voice call",
+      "timestamp": "2025-02-06T21:17:34.525Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1738876798669,
+      "roomId": 1,
+      "senderId": "1",
+      "content": "Yassin Abdellaoui has left the room",
+      "timestamp": "2025-02-06T21:19:58.669Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1739045843598,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Mohamed Amine Riahi has left the room",
+      "timestamp": "2025-02-08T20:17:23.598Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1739045886728,
+      "roomId": 1,
+      "senderId": "1",
+      "content": "Yassin Abdellaoui left the voice call",
+      "timestamp": "2025-02-08T20:18:06.728Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1739045889203,
+      "roomId": 1,
+      "senderId": "1",
+      "content": "Yassin Abdellaoui left the voice call",
+      "timestamp": "2025-02-08T20:18:09.203Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1739045891877,
+      "roomId": 1,
+      "senderId": "1",
+      "content": "Yassin Abdellaoui left the voice call",
+      "timestamp": "2025-02-08T20:18:11.877Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1739045896767,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Mohamed Amine Riahi left the voice call",
+      "timestamp": "2025-02-08T20:18:16.767Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1739045915662,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Mohamed Amine Riahi left the voice call",
+      "timestamp": "2025-02-08T20:18:35.662Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1739045916230,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Mohamed Amine Riahi left the voice call",
+      "timestamp": "2025-02-08T20:18:36.230Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1739045918311,
+      "roomId": 1,
+      "senderId": "2",
+      "content": "Mohamed Amine Riahi left the voice call",
+      "timestamp": "2025-02-08T20:18:38.311Z",
+      "type": "system",
+      "isSystemMessage": true
+    },
+    {
+      "id": 1739045935856,
+      "roomId": 1,
+      "senderId": "2",
+      "senderName": "Mohamed Amine Riahi",
+      "senderPhotoUrl": "https://res.cloudinary.com/ddhnjfnce/image/upload/v1738591251/p3furzxmrl2hfiw1p7jk.jpg",
+      "content": "Hahahaysh",
+      "timestamp": "2025-02-08T20:18:55.856Z",
+      "type": "text",
+      "isSystemMessage": false
+    }
+  ],
+  "messages": [
+    {
+      "id": "1738658799825",
+      "senderId": "2",
+      "senderName": "medaminer",
+      "receiverId": "12",
+      "content": "hi",
+      "timestamp": "2025-02-04T08:46:39.825Z",
+      "read": false
+    },
+    {
+      "id": "1739045906606",
+      "senderId": "1",
+      "senderName": "yassin.ab",
+      "receiverId": "2",
+      "content": "Ef",
+      "timestamp": "2025-02-08T20:18:26.606Z",
+      "read": true
+    },
+    {
+      "id": "1739045958337",
+      "senderId": "2",
+      "senderName": "medaminer",
+      "receiverId": "1",
+      "content": "C’est zshshsgshs",
+      "timestamp": "2025-02-08T20:19:18.337Z",
+      "read": true
+    },
+    {
+      "id": "1739046011198",
+      "senderId": "1",
+      "senderName": "yassin.ab",
+      "receiverId": "2",
+      "content": "Dbas",
+      "timestamp": "2025-02-08T20:20:11.198Z",
+      "read": false
+    },
+    {
+      "id": "1739911872208",
+      "senderId": "14",
+      "senderName": "demo",
+      "receiverId": "2",
+      "content": "hi",
+      "timestamp": "2025-02-18T20:51:12.208Z",
+      "read": false
+    }
+  ],
+  "conges": [
+    {
+      "employeeId": 7,
+      "managerId": 1,
+      "type": {
+        "label": "Maladie",
+        "value": "MALADIE",
+        "icon": "pi pi-heart",
+        "color": "#EF4444"
+      },
+      "startDate": "2025-02-05T23:00:00.000Z",
+      "endDate": "2025-02-05T23:00:00.000Z",
+      "duration": 1,
+      "status": "APPROUVE",
+      "reason": "Je souhaitais vous informer que je devrai me rendre à la médecine demain matin, ce qui m’empêchera d’être présente. \nMerci de votre compréhension.",
+      "urgencyLevel": {
+        "label": "Normal",
+        "value": "NORMAL",
+        "icon": "pi pi-clock"
+      },
+      "attachments": [],
+      "createdAt": "2025-02-05T19:16:07.129Z",
+      "updatedAt": "2025-02-06T00:13:56.749Z",
+      "id": 1,
+      "approverComment": "D’accord Nchallah lebes"
+    },
+    {
+      "employeeId": 11,
+      "managerId": 1,
+      "type": {
+        "label": "Autre",
+        "value": "AUTRE",
+        "icon": "pi pi-ellipsis-h",
+        "color": "#6B7280"
+      },
+      "startDate": "2025-02-07T07:14:46.050Z",
+      "endDate": "2025-02-07T23:00:00.000Z",
+      "duration": 1,
+      "status": "APPROUVE",
+      "reason": "J’ai des choses importantes à faire hors de chez moi.",
+      "urgencyLevel": {
+        "label": "Normal",
+        "value": "NORMAL",
+        "icon": "pi pi-clock"
+      },
+      "attachments": [],
+      "createdAt": "2025-02-07T07:21:16.278Z",
+      "updatedAt": "2025-02-12T09:43:50.206Z",
+      "id": 2,
+      "approverComment": "d'accord"
+    }
+  ]
 }
